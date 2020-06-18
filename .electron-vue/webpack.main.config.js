@@ -6,7 +6,7 @@ const path = require('path')
 const { dependencies } = require('../package.json')
 const webpack = require('webpack')
 
-const BabiliWebpackPlugin = require('babili-webpack-plugin')
+// const MinifyPlugin = require("babel-minify-webpack-plugin")
 
 let mainConfig = {
   entry: {
@@ -17,11 +17,11 @@ let mainConfig = {
   ],
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        use: 'babel-loader',
-        exclude: /node_modules/
-      },
+      // {
+      //   test: /\.js$/,
+      //   use: 'babel-loader',
+      //   exclude: /node_modules/
+      // },
       {
         test: /\.node$/,
         use: 'node-loader'
@@ -61,10 +61,8 @@ if (process.env.NODE_ENV !== 'production') {
  * Adjust mainConfig for production settings
  */
 if (process.env.NODE_ENV === 'production') {
-  //使用sourceMap方式
-  mainConfig.devtool = '#source-map'
   mainConfig.plugins.push(
-    /*new BabiliWebpackPlugin(),*/
+    //new MinifyPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': '"production"'
     })

@@ -1,22 +1,12 @@
 /*数据提供者*/
 import SerialPort from 'serialport'
-const CONFIG = {
-	"comName": "COM3", //连接串口所需参数（重要！！）
-	"options": {    /* 可选 */
-		"baudRate": 4800,
-		"dataBits": 8,
-		"parity": "none",
-		"stopBits": 1,
-		"flowControl": false ,
-		"autoOpen":false
-	}
-};
+import CONFIG from '../../utils/comConfig.json';
 export default class DataProvider {
 
 	constructor( comConfig = CONFIG){
 
 		if (comConfig == null || comConfig.options == null){
-			throw new Error('无法识别的com配置文件');
+            comConfig = CONFIG;
 		}
 		// 必须
 		comConfig.options.autoOpen = false;

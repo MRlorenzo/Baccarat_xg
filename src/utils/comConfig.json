@@ -1,0 +1,11 @@
+{
+    "comName": "COM3", //连接串口所需参数（重要！！）
+    "options": {    /* 可选 */
+        "baudRate": 4800,
+        "dataBits": 8,
+        "parity": "none",
+        "stopBits": 1,
+        "flowControl": false ,
+        "autoOpen":false
+    }
+}

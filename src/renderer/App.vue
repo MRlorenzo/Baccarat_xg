@@ -8,7 +8,11 @@
 
   export default {
     name: 'app',
-
+    created(){
+        this.$electron.ipcRenderer.once('connected-helper' , helper=>{
+            console.log(helper);
+        })
+    }
   }
 </script>
 

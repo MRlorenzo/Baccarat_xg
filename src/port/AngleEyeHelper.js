@@ -9,12 +9,7 @@ export default class AngleEyeHelper {
 	}
 
 	form( config ){
-
-		if (typeof config === 'string'){
-			// 加载配置文件
-		}else {
-			this[connect](config);
-		}
+        this[connect](config);
 		return this;
 	}
 

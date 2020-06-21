@@ -9,9 +9,7 @@ export default class AngleEyeHelper {
 	}
 
 	form( config ){
-		if (config == null){
-			throw new Error('找不到com配置');
-		}
+
 		if (typeof config === 'string'){
 			// 加载配置文件
 		}else {
@@ -23,6 +21,8 @@ export default class AngleEyeHelper {
 	[connect]( config ){
 		let provider = new AngleEyeProvider(config , this.angleEyeSettings);
 		let connector = new Connector(provider);
+
+		connector.open();
 
 		connector.whenData(data=>{
 			console.log(data);

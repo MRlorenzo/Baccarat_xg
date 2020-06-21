@@ -6,7 +6,7 @@ import AngleEyeHelper from '../port/AngleEyeHelper';
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.config.productionTip = false
 
-Vue.prototype.$helper = new AngleEyeHelper(undefined);
+Vue.prototype.$helper = new AngleEyeHelper().form();
 
 /* eslint-disable no-new */
 new Vue({

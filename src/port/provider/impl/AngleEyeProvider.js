@@ -4,17 +4,23 @@ import AngleEyeDataParseChain from '../../parser/chain/AngleEyeDataParserChain';
 import AngleEyeData from '../../data/impl/AngleEyeData';
 const complete = Symbol(), handleData = Symbol();
 
-
-
+const CONFIG = {
+	startFlag: 0x5,
+	endFlag: 0x3,
+	typeIndex: 2
+}
 
 export default class AngleEyeProvider extends DataProvider {
 
-	constructor(comConfig , angleConfig){
+	constructor(comConfig , angleConfig = CONFIG){
 		super(comConfig);
 		this.angleConfig = angleConfig;
 		this[complete] = ()=>{}
 		this.parserChain = new AngleEyeDataParseChain(angleConfig.endFlag);
-		this.port.on('data',this[handleData]);
+
+		this.port.on('data', data=>{
+			this[handleData](data)
+		});
 	}
 
 	[handleData](data){

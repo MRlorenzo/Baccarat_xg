@@ -15,18 +15,18 @@ export default class AngleEyeProvider extends DataProvider {
 		this.angleConfig = angleConfig;
 		this[complete] = ()=>{}
 		this.parserChain = new AngleEyeDataParseChain(angleConfig.endFlag);
-
-		this.port.on('data', data=>{
-			this[handleData](data)
-		});
 	}
 
-	[handleData](data){
+    handleData(data){
 		let dataList = this.parserChain.parse(data);
 		if (dataList.length > 0){
 			this[complete](new AngleEyeData(dataList , this.angleConfig));
 		}
 	}
+
+    async getAngleConfig(){
+        return this.angleConfig;
+    }
 
 	whenCompleteData( handler ){
 		if (typeof handler === 'function'){

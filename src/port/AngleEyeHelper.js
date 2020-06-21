@@ -16,9 +16,6 @@ export default class AngleEyeHelper {
 
 
         connector.open().catch(e=>{
-        	connector.getComNameList().then(names=>{
-        		console.log(names);
-			})
         	console.error(e);
 		})
 

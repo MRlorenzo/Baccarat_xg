@@ -10,7 +10,7 @@ export default class DataProvider {
 		}
 		// 必须
 		comConfig.options.autoOpen = false;
-
+		this.comConfig = comConfig;
 		const { comName , options } = comConfig;
 
 		this.port = new SerialPort(comName , options , false);
@@ -18,6 +18,10 @@ export default class DataProvider {
 
 	getPort(){
 		return this.port;
+	}
+
+	getComConfig(){
+		return this.comConfig;
 	}
 
 	// 当检测到有完整的数据存在时

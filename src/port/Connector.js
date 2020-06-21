@@ -30,11 +30,11 @@ export default class Connector {
 		/*
         * 不管如何,只要是port.isOpen发生变化都会触发.拔掉usb会触发.
         * */
-		let timer = window.setInterval(()=>{
+		let timer = setInterval(()=>{
 			//串口发生了中断或者其他未知情况导致此时是非打开状态
 			if(port.isOpen === false){
 				this[handleDisconnect]();
-				window.clearInterval(timer);
+				clearInterval(timer);
 			}
 		} , 1000 );
 
@@ -43,7 +43,7 @@ export default class Connector {
         * */
 		port.on('error', err=> {
 			this[handleDisconnect]();
-			window.clearInterval(timer);
+			clearInterval(timer);
 		});
 
 	}

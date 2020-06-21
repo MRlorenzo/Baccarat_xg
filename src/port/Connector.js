@@ -10,31 +10,32 @@ export default class Connector {
 		this[handleData] = ()=>{};
 		provider.whenCompleteData(this[handleData]);
 
-		// 端口
-		this.port = provider.getPort();
+		this.provider = provider;
+
 		// 当端口断开连接时，是否是意外的情况发生
 		this.isAccident = true;
 		// 断线处理
 		this[handleDisconnect] = ()=> {};
-		this[watchEvent](this.port);
+		this[watchEvent]();
 	}
 
-	[watchEvent]( port ){
+	async [watchEvent](){
+		const port = await this.provider.getPort()
 		/*
         * 拔掉usb不会触发.
         * */
-		this.port.on('disconnect' , err=>{
+		port.on('disconnect' , err=>{
 			this[handleDisconnect](err);
 		});
 
 		/*
         * 不管如何,只要是port.isOpen发生变化都会触发.拔掉usb会触发.
         * */
-		let timer = window.setInterval(()=>{
+		let timer = setInterval(()=>{
 			//串口发生了中断或者其他未知情况导致此时是非打开状态
 			if(port.isOpen === false){
-				this[handleDisconnect](new Error('未知异常'));
-				window.clearInterval(timer);
+				this[handleDisconnect]();
+				clearInterval(timer);
 			}
 		} , 1000 );
 
@@ -42,8 +43,8 @@ export default class Connector {
         * 拔掉usb不会触发.
         * */
 		port.on('error', err=> {
-			this[handleDisconnect](err);
-			window.clearInterval(timer);
+			this[handleDisconnect]();
+			clearInterval(timer);
 		});
 
 	}
@@ -58,19 +59,24 @@ export default class Connector {
 	// 断线时
 	whenDisconnect( handler ){
 		if (typeof handler === 'function'){
-			this[handleDisconnect] = (err)=>{
+			this[handleDisconnect] = ()=>{
 				if (this.isAccident){
 					// 如果是意外情况
-					handler(err);
+					handler();
 				}
 			}
 		}
 	}
 
 	// 打开连接
-	open(){
+	async open(){
+		const port = await this.provider.getPort();
 		return new Promise((resolve, reject) => {
-			this.port.open( err=> {
+			if (port.isOpen === true){
+				resolve();
+				return ;
+			}
+			port.open( err=> {
 				if (err){
 					reject(err);
 				}else{
@@ -82,10 +88,15 @@ export default class Connector {
 	}
 
 	// 关闭连接
-	close(){
+	async close(){
 		this.isAccident = false;
+        const port = await this.provider.getPort();
 		return new Promise((resolve, reject) => {
-			this.port.close(err=>{
+			if (port.isOpen === false){
+				resolve();
+				return;
+			}
+			port.close(err=>{
 				if (err){
 					reject(err);
 				}else{
@@ -96,18 +107,23 @@ export default class Connector {
 	}
 
 	// 重启
-	reOpen(){
-		return new Promise((resolve, reject) => {
-			if (this.port.isOpen === false){
-				this.open().then(resolve).catch(reject);
-			}else{
-				this.close().then(()=>{
-
-					this.open().then(resolve).catch(reject);
-
-				}).catch(reject);
-			}
-		})
+	async reOpen(){
+        const port = await this.provider.getPort();
+        if (port.isOpen === false){
+        	return this.open();
+		}else{
+        	await this.close();
+        	return this.open();
+		}
 	}
 
+	// 更新资源
+	async update( provider ){
+		// 关闭资源
+		await this.close();
+		let oldPort = await this.provider.getPort();
+		oldPort = null;
+		this.provider = provider;
+		return this.open();
+	}
 }

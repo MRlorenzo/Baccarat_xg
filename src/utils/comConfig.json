@@ -1,0 +1,11 @@
+{
+    "comName": "COM3",
+    "options": {
+        "baudRate": 4800,
+        "dataBits": 8,
+        "parity": "none",
+        "stopBits": 1,
+        "flowControl": false ,
+        "autoOpen":false
+    }
+}

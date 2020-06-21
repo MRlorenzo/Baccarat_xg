@@ -1,36 +1,57 @@
 /*数据提供者*/
 import SerialPort from 'serialport'
-const CONFIG = {
-	"comName": "COM3", //连接串口所需参数（重要！！）
-	"options": {    /* 可选 */
-		"baudRate": 4800,
-		"dataBits": 8,
-		"parity": "none",
-		"stopBits": 1,
-		"flowControl": false ,
-		"autoOpen":false
-	}
-};
+import CONFIG from '../../utils/comConfig.json';
+import { forTheEnd } from "../../utils";
+
+async function getComNameList(){
+    const ports = await SerialPort.list();
+    return ports.map(port => port.comName);
+}
 export default class DataProvider {
 
 	constructor( comConfig = CONFIG){
 
 		if (comConfig == null || comConfig.options == null){
-			throw new Error('无法识别的com配置文件');
+            comConfig = CONFIG;
 		}
 		// 必须
 		comConfig.options.autoOpen = false;
-
-		const { comName , options } = comConfig;
-
-		this.port = new SerialPort(comName , options , false);
+		this.comConfig = comConfig;
+		this.port = null;
+		this.getPort().then(port => {
+            port.on('data', data=> {
+                this.handleData(data);
+            })
+        })
 	}
 
-	getPort(){
-		return this.port;
+	async getPort(){
+	    if (this.port == null){
+	        const names = await getComNameList();
+	        if (names.length === 1){
+	            [comName] = names;
+                this.comConfig.comName = names[0];
+            }
+            const { comName , options } = this.comConfig;
+            this.port = new SerialPort(comName , options , false);
+        }
+        return this.port;
+	}
+
+	// 处理数据
+    handleData( data ){
+
+    }
+
+    // 获取当前串口配置
+	async getComConfig(){
+	    await forTheEnd(()=> this.port != null);
+		return this.comConfig;
 	}
 
 	// 当检测到有完整的数据存在时
-	whenCompleteData( res ){}
+	whenCompleteData( res ){
+	    return this;
+    }
 
 }

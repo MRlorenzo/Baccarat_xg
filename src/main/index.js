@@ -1,5 +1,8 @@
 import { app, ipcMain } from 'electron'
 import "./init-window";
+import AngleEyeHelper from "../port/AngleEyeHelper";
+import Storage from '../local-storage/Storage';
+import DK from '../utils/DATA-KEY.json';
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -7,6 +10,13 @@ import "./init-window";
 if (process.env.NODE_ENV !== 'development') {
 	global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
+
+ipcMain.once('connect-serial-port', async event => {
+	let comConfig = await Storage.lastOne(DK.COM_CONFIG);
+	let angleConfig = await Storage.lastOne(DK.ANGLE_CONFIG);
+	let helper = new AngleEyeHelper(angleConfig , comConfig);
+	event.sender.send('connected-helper' , helper);
+});
 
 //当所有窗口都被关闭后退出
 app.on('window-all-closed', () => {

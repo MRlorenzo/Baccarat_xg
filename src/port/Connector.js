@@ -23,8 +23,8 @@ export default class Connector {
 		/*
         * 拔掉usb不会触发.
         * */
-		this.port.on('disconnect' , function () {
-			this[handleDisconnect]();
+		this.port.on('disconnect' , err=>{
+			this[handleDisconnect](err);
 		});
 
 		/*
@@ -33,7 +33,7 @@ export default class Connector {
 		let timer = window.setInterval(()=>{
 			//串口发生了中断或者其他未知情况导致此时是非打开状态
 			if(port.isOpen === false){
-				this[handleDisconnect]();
+				this[handleDisconnect](new Error('未知异常'));
 				window.clearInterval(timer);
 			}
 		} , 1000 );
@@ -42,7 +42,7 @@ export default class Connector {
         * 拔掉usb不会触发.
         * */
 		port.on('error', err=> {
-			this[handleDisconnect]();
+			this[handleDisconnect](err);
 			window.clearInterval(timer);
 		});
 
@@ -58,10 +58,10 @@ export default class Connector {
 	// 断线时
 	whenDisconnect( handler ){
 		if (typeof handler === 'function'){
-			this[handleDisconnect] = ()=>{
+			this[handleDisconnect] = (err)=>{
 				if (this.isAccident){
 					// 如果是意外情况
-					handler();
+					handler(err);
 				}
 			}
 		}

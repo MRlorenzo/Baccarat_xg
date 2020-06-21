@@ -3,18 +3,15 @@ import Connector from './Connector';
 import AngleEyeProvider from './provider/impl/AngleEyeProvider';
 const connect = Symbol();
 export default class AngleEyeHelper {
-	constructor(settings){
+	constructor(settings , config){
 		this.hooks = {};
 		this.angleEyeSettings = settings;
+		this.comConfig = config;
+        this[connect]();
 	}
 
-	form( config ){
-        this[connect](config);
-		return this;
-	}
-
-	[connect]( config ){
-		let provider = new AngleEyeProvider(config , this.angleEyeSettings);
+	[connect](){
+		let provider = new AngleEyeProvider(this.comConfig , this.angleEyeSettings);
 		let connector = new Connector(provider);
 
 		connector.open();

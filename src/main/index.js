@@ -14,7 +14,7 @@ if (process.env.NODE_ENV !== 'development') {
 ipcMain.once('connect-serial-port', async event => {
 	let comConfig = await Storage.lastOne(DK.COM_CONFIG);
 	let angleConfig = await Storage.lastOne(DK.ANGLE_CONFIG);
-	let helper = new AngleEyeHelper(angleConfig).form(comConfig);
+	let helper = new AngleEyeHelper(angleConfig , comConfig);
 	event.sender.send('connected-helper' , helper);
 });
 

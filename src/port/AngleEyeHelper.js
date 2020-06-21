@@ -10,15 +10,15 @@ export default class AngleEyeHelper {
         this[connect]();
 	}
 
-	[connect](){
+	async [connect](){
 		let provider = new AngleEyeProvider(this.comConfig , this.angleEyeSettings);
 		let connector = new Connector(provider);
 
-
-        connector.open().catch(e=>{
-        	console.error(e);
-		})
-
+		try {
+            await connector.open();
+		}catch (e){
+            console.error(e);
+		}
 
 		connector.whenData(data=>{
 		    console.log('监听')

@@ -4,7 +4,7 @@
 
 <script>
 	import AngleEyeHelper from "../../port/AngleEyeHelper";
-  import { com , angle } from '../../local-storage/Storage';
+  import { com , angle } from '../../local-storage';
   import defaultComConfig from '../../utils/comConfig.json';
   import defaultAngleConfig from '../../utils/angleConfig.json';
 	export default {

@@ -11,6 +11,10 @@ export default class CompleteData {
 		return false;
 	}
 
+	getSource(){
+		return this.source;
+	}
+
 	// 获取数据
 	getData(){
 		return this.source;

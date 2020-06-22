@@ -3,7 +3,6 @@ import DataProvider from '../DataProvider';
 import AngleEyeDataParseChain from '../../parser/chain/AngleEyeDataParserChain';
 import AngleEyeData from '../../data/impl/AngleEyeData';
 import CONFIG from '../../../utils/angleConfig.json';
-const complete = Symbol(), handleData = Symbol();
 
 export default class AngleEyeProvider extends DataProvider {
 
@@ -13,27 +12,24 @@ export default class AngleEyeProvider extends DataProvider {
 			angleConfig = CONFIG;
 		}
 		this.angleConfig = angleConfig;
-		this[complete] = ()=>{}
 		this.parserChain = new AngleEyeDataParseChain(angleConfig.endFlag);
 	}
 
+	// 串口数据处理
     handleData(data){
+
 		let dataList = this.parserChain.parse(data);
-		console.log(dataList);
+
 		if (dataList.length > 0){
-			this[complete](new AngleEyeData(dataList , this.angleConfig));
+			dataList.forEach(data => {
+
+				this.complete(new AngleEyeData(data, this.angleConfig));
+			})
 		}
 	}
 
+	// 获取天使靴(串口数据)配置
     async getAngleConfig(){
         return this.angleConfig;
     }
-
-	whenCompleteData( handler ){
-		if (typeof handler === 'function'){
-			this[complete] = handler;
-		}
-		return this;
-	}
-
 }

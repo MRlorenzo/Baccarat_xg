@@ -2,12 +2,13 @@
 import SerialPort from 'serialport'
 import CONFIG from '../../utils/comConfig.json';
 import { forTheEnd , clone} from "../../utils";
-
+// 获取串口名称列表
 async function getComNameList(){
     const ports = await SerialPort.list();
     return ports.map(port => port.comName);
 }
 
+// 代理串口，为串口操作对象初始化数据处理方法。
 function proxyPort( port , handler) {
 	let init = false;
 	return clone(port , {
@@ -19,6 +20,9 @@ function proxyPort( port , handler) {
 		},
 		on(...arg){
 			port.on(...arg);
+		},
+		isOpen(){
+			return port.isOpen;
 		}
 	})
 }
@@ -34,8 +38,10 @@ export default class DataProvider {
 		comConfig.options.autoOpen = false;
 		this.comConfig = comConfig;
 		this.port = null;
+		this.complete = ()=>{}
 	}
 
+	// 获取串口操作对象
 	async getPort(){
 	    if (this.port == null){
 	        const names = await getComNameList();
@@ -55,7 +61,7 @@ export default class DataProvider {
 
 	// 处理数据
     handleData( data ){
-
+		this.complete(data);
     }
 
     // 获取当前串口配置
@@ -64,9 +70,12 @@ export default class DataProvider {
 		return this.comConfig;
 	}
 
-	// 当检测到有完整的数据存在时
-	whenCompleteData( res ){
-	    return this;
-    }
+	// 当检测到有完整的数据存在时执行(handler)
+	whenCompleteData( handler ){
+		if (typeof handler === 'function'){
+			this.complete = handler;
+		}
+		return this;
+	}
 
 }

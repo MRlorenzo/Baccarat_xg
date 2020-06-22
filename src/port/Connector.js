@@ -7,9 +7,6 @@ export default class Connector {
 		if (provider == null){
 			throw new Error('找不到资源');
 		}
-		// 数据处理
-		this[handleData] = ()=>{};
-		provider.whenCompleteData(this[handleData]);
 
 		this.provider = provider;
 
@@ -55,7 +52,7 @@ export default class Connector {
         * */
 		this[timer] = setInterval(()=>{
 			//串口发生了中断或者其他未知情况导致此时是非打开状态
-			if(port.isOpen === false){
+			if(port.isOpen() === false){
 				this[handleDisconnect](new Error('未知异常'));
 				clearInterval(this[timer]);
 			}
@@ -65,7 +62,7 @@ export default class Connector {
 	// 获得数据时
 	whenData( handler ){
 		if (typeof handler === 'function'){
-			this[handleData] = handler;
+			this.provider.whenCompleteData(handler)
 		}
 	}
 
@@ -86,7 +83,7 @@ export default class Connector {
 		this.isAccident = true;
 		const port = await this.provider.getPort();
 		return new Promise((resolve, reject) => {
-			if (port.isOpen === true){
+			if (port.isOpen() === true){
 				resolve();
 				return ;
 			}
@@ -106,7 +103,7 @@ export default class Connector {
 		this.isAccident = false;
         const port = await this.provider.getPort();
 		return new Promise((resolve, reject) => {
-			if (port.isOpen === false){
+			if (port.isOpen() === false){
 				resolve();
 				return;
 			}
@@ -123,7 +120,7 @@ export default class Connector {
 	// 重启
 	async reOpen(){
         const port = await this.provider.getPort();
-        if (port.isOpen === false){
+        if (port.isOpen() === false){
         	return this.open();
 		}else{
         	await this.close();

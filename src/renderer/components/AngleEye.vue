@@ -46,13 +46,13 @@
 
         if (comConfig == null){
             comConfig = defaultComConfig;
-            com.save( comConfig);
+            com.save(comConfig);
         }
         if (angleConfig == null){
             angleConfig = defaultAngleConfig;
             angle.save(angleConfig);
         }
-        console.log(comConfig , angleConfig)
+
         let helper = new AngleEyeHelper(comConfig , angleConfig);
         this.initHooks(helper);
         window.helper = helper;

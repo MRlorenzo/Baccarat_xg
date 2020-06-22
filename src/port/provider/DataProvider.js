@@ -1,12 +1,28 @@
 /*数据提供者*/
 import SerialPort from 'serialport'
 import CONFIG from '../../utils/comConfig.json';
-import { forTheEnd } from "../../utils";
+import { forTheEnd , clone} from "../../utils";
 
 async function getComNameList(){
     const ports = await SerialPort.list();
     return ports.map(port => port.comName);
 }
+
+function proxyPort( port , handler) {
+	let init = false;
+	return clone(port , {
+		async open(...arg){
+			if (!init){
+				port.on('data', handler);
+			}
+			return port.open(...arg);
+		},
+		on(...arg){
+			port.on(...arg);
+		}
+	})
+}
+
 export default class DataProvider {
 
 	constructor( comConfig = CONFIG){
@@ -18,22 +34,21 @@ export default class DataProvider {
 		comConfig.options.autoOpen = false;
 		this.comConfig = comConfig;
 		this.port = null;
-		this.getPort().then(port => {
-            port.on('data', data=> {
-                this.handleData(data);
-            })
-        })
 	}
 
 	async getPort(){
 	    if (this.port == null){
 	        const names = await getComNameList();
 	        if (names.length === 1){
-	            [comName] = names;
-                this.comConfig.comName = names[0];
+	            let [comName] = names;
+                this.comConfig.comName = comName;
             }
+
             const { comName , options } = this.comConfig;
-            this.port = new SerialPort(comName , options , false);
+	        const port = new SerialPort(comName , options , false);
+            this.port = proxyPort(port , data => {
+				this.handleData(data);
+			});
         }
         return this.port;
 	}

@@ -19,6 +19,7 @@ export default class AngleEyeProvider extends DataProvider {
 
     handleData(data){
 		let dataList = this.parserChain.parse(data);
+		console.log(dataList);
 		if (dataList.length > 0){
 			this[complete](new AngleEyeData(dataList , this.angleConfig));
 		}

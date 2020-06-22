@@ -16,7 +16,7 @@ function createWindow () {
 		minHeight:400,
 		maxHeight:1080,
 		height:400,
-		frame:false,    //无边框
+		//frame:false,    //无边框
 		titleBarStyle: 'hiddenInset',
 		useContentSize: true,
 		webPreferences: {

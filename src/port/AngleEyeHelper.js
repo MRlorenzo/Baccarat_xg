@@ -13,12 +13,15 @@ export default class AngleEyeHelper {
 	async [connect](){
 		let provider = new AngleEyeProvider(this.comConfig , this.angleEyeSettings);
 		let connector = new Connector(provider);
-
+		this.connector = connector;
 		try {
             await connector.open();
 		}catch (e){
-            console.error(e);
+            console.dir(e);
 		}
+
+		const comConfig = await provider.getComConfig();
+		const angleConfig = await provider.getAngleConfig();
 
 		connector.whenData(data=>{
 		    console.log('监听')
@@ -27,7 +30,7 @@ export default class AngleEyeHelper {
 
 		connector.whenDisconnect(err=>{
 		    console.log('失去连接')
-			console.error(err);
+			console.dir(err);
 		});
 	}
 

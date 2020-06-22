@@ -6,12 +6,16 @@
 
 <script>
 
+  import AngleEyeHelper from "../port/AngleEyeHelper";
+
   export default {
     name: 'app',
     created(){
-        this.$electron.ipcRenderer.send('connect-serial-port');
-        this.$electron.ipcRenderer.once('connected-helper' , (event , helper)=>{
-            console.log(helper);
+        this.$electron.ipcRenderer.send('getConfig');
+        this.$electron.ipcRenderer.on('getConfig' , (event , config)=>{
+			const { comConfig, angleConfig} = config;
+			let helper = new AngleEyeHelper(comConfig , angleConfig);
+			window.helper = helper;
         })
     }
   }

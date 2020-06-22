@@ -1,5 +1,6 @@
 /*连接器*/
 const handleDisconnect = Symbol(), watchEvent = Symbol(),handleData = Symbol();
+const watchConnect = Symbol(), timer = Symbol();
 export default class Connector {
 
 	constructor( provider ){
@@ -13,10 +14,13 @@ export default class Connector {
 		this.provider = provider;
 
 		// 当端口断开连接时，是否是意外的情况发生
-		this.isAccident = true;
+		this.isAccident = false;
 		// 断线处理
 		this[handleDisconnect] = ()=> {};
 		this[watchEvent]();
+
+		// 定时器id
+		this[timer] = null;
 	}
 
 	async [watchEvent](){
@@ -26,27 +30,36 @@ export default class Connector {
         * */
 		port.on('disconnect' , err=>{
 			this[handleDisconnect](err);
+			clearInterval(this[timer]);
+			this[timer] = null;
 		});
-
-		/*
-        * 不管如何,只要是port.isOpen发生变化都会触发.拔掉usb会触发.
-        * */
-		let timer = setInterval(()=>{
-			//串口发生了中断或者其他未知情况导致此时是非打开状态
-			if(port.isOpen === false){
-				this[handleDisconnect]();
-				clearInterval(timer);
-			}
-		} , 1000 );
 
 		/*
         * 拔掉usb不会触发.
         * */
 		port.on('error', err=> {
-			this[handleDisconnect]();
-			clearInterval(timer);
+			this[handleDisconnect](err);
+			clearInterval(this[timer]);
+			this[timer] = null;
 		});
+	}
 
+	async [watchConnect](){
+		const port = await this.provider.getPort();
+
+		if (this[timer] != null){
+			clearInterval(this[timer]);
+		}
+		/*
+        * 不管如何,只要是port.isOpen发生变化都会触发.拔掉usb会触发.
+        * */
+		this[timer] = setInterval(()=>{
+			//串口发生了中断或者其他未知情况导致此时是非打开状态
+			if(port.isOpen === false){
+				this[handleDisconnect](new Error('未知异常'));
+				clearInterval(this[timer]);
+			}
+		} , 1000 );
 	}
 
 	// 获得数据时
@@ -59,10 +72,10 @@ export default class Connector {
 	// 断线时
 	whenDisconnect( handler ){
 		if (typeof handler === 'function'){
-			this[handleDisconnect] = ()=>{
+			this[handleDisconnect] = (err)=>{
 				if (this.isAccident){
 					// 如果是意外情况
-					handler();
+					handler(err);
 				}
 			}
 		}
@@ -70,6 +83,7 @@ export default class Connector {
 
 	// 打开连接
 	async open(){
+		this.isAccident = true;
 		const port = await this.provider.getPort();
 		return new Promise((resolve, reject) => {
 			if (port.isOpen === true){
@@ -80,7 +94,7 @@ export default class Connector {
 				if (err){
 					reject(err);
 				}else{
-					this.isAccident = true;
+					this[watchConnect]();
 					resolve();
 				}
 			})

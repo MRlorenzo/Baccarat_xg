@@ -3,6 +3,8 @@ import "./init-window";
 
 import Storage from '../local-storage/Storage';
 import DK from '../utils/DATA-KEY.json';
+import defaultComConfig from '../utils/comConfig.json';
+import defaultAngleConfig from '../utils/angleConfig.json';
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -14,7 +16,14 @@ if (process.env.NODE_ENV !== 'development') {
 ipcMain.on('getConfig', async event => {
 	let comConfig = await Storage.lastOne(DK.COM_CONFIG);
 	let angleConfig = await Storage.lastOne(DK.ANGLE_CONFIG);
-
+	if (comConfig == null){
+		comConfig = defaultComConfig;
+        Storage.save('comConfig', comConfig);
+	}
+	if (angleConfig == null){
+		angleConfig = defaultAngleConfig;
+		Storage.save('angleConfig' , angleConfig);
+	}
 	event.sender.send('getConfig' , {
 		comConfig,
 		angleConfig

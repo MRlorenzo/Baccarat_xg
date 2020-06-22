@@ -1,29 +1,81 @@
-import moment from 'moment';
-import { clone } from "../utils";
+import Datastore from 'nedb'
+import path from 'path'
+import { app , remote} from 'electron'
 
-const ENTITY = {
-    KEY: null,           // 标识   (字符串)
-    date: null,         // 创建日期(字符串)
-    createTime: null,   // 创建时间(number)
-    doc: null           // 存储内容
-};
+const dataPath = app != null ?
+    app.getPath('userData') :
+    remote.app.getPath('userData');
 
-export default {
-    box( key , doc ){
-        return clone(ENTITY , {
-            KEY: key,
-            date: moment().format('YYYY/MM/DD'),
-            createTime: new Date().getTime(),
-            doc: doc
+function createCollection( filePath ){
+    return new Datastore({
+        autoload: true,
+        filename: path.join( dataPath ,  filePath ),
+        timestampData: true, // createdAt，updateAt
+    })
+}
+
+export default class DataManager {
+    constructor( filePath ){
+        this.db = createCollection(filePath);
+    }
+
+    save( doc ){
+        return new Promise((resolve, reject) => {
+            this.db.insert( doc , (err, newDoc)=>{
+                if (err){
+                    reject(err)
+                }else{
+                    resolve(newDoc)
+                }
+            })
         })
-    },
-    unbox( data ){
-        if (data == null || data.doc == null){
-            throw new Error('数据异常');
-        }
-        if (Array.isArray(data)){
-            return data.map(d=> d.doc);
-        }
-        return data.doc;
+    }
+
+    update( doc , updateSetting ){
+        return new Promise((resolve, reject) => {
+            this.db.update(doc , updateSetting , (err, rows, docs)=>{
+                if (err){
+                    reject(err)
+                }else{
+                    resolve(rows)
+                }
+            })
+        })
+    }
+
+    find(query = {}){
+        return new Promise(((resolve, reject) => {
+            this.db.find(query).exec((err, docs)=>{
+                if (err){
+                    reject(err)
+                }else{
+                    resolve(docs)
+                }
+            })
+        }))
+    }
+
+    findOne( query = {}){
+        return new Promise(((resolve, reject) => {
+            this.db.findOne(query).exec((err, doc)=>{
+                if (err){
+                    reject(err)
+                }else{
+                    resolve(doc)
+                }
+            })
+        }))
+    }
+
+    findAndSort(query = {} , sortParams = {}){
+        return new Promise(((resolve, reject) => {
+            this.db.find(query).sort(sortParams).exec((err , docs)=>{
+                if (err){
+                    reject(err)
+                }else{
+                    resolve(docs)
+                }
+            })
+        }))
     }
 }

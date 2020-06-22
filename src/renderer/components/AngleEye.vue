@@ -4,7 +4,9 @@
 
 <script>
 	import AngleEyeHelper from "../../port/AngleEyeHelper";
-
+  import { com , angle } from '../../local-storage/Storage';
+  import defaultComConfig from '../../utils/comConfig.json';
+  import defaultAngleConfig from '../../utils/angleConfig.json';
 	export default {
 		name: "angle-eye",
 		methods: {
@@ -38,14 +40,22 @@
 				});
 			}
 		},
-		created(){
-			this.$electron.ipcRenderer.send('getConfig');
-			this.$electron.ipcRenderer.on('getConfig' , (event , config)=>{
-				const { comConfig, angleConfig} = config;
-				let helper = new AngleEyeHelper(comConfig , angleConfig);
-				this.initHooks(helper);
-				window.helper = helper;
-			})
+		async created(){
+        let comConfig = await com.findOne();
+        let angleConfig = await angle.findOne();
+
+        if (comConfig == null){
+            comConfig = defaultComConfig;
+            com.save( comConfig);
+        }
+        if (angleConfig == null){
+            angleConfig = defaultAngleConfig;
+            angle.save(angleConfig);
+        }
+        console.log(comConfig , angleConfig)
+        let helper = new AngleEyeHelper(comConfig , angleConfig);
+        this.initHooks(helper);
+        window.helper = helper;
 		}
 	}
 </script>

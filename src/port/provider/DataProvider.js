@@ -1,12 +1,7 @@
 /*数据提供者*/
-import SerialPort from 'serialport'
 import CONFIG from '../../utils/comConfig.json';
 import { forTheEnd , clone} from "../../utils";
-// 获取串口名称列表
-async function getComNameList(){
-    const ports = await SerialPort.list();
-    return ports.map(port => port.comName);
-}
+import { getComNameList , newSerialPort } from "../utils";
 
 // 代理串口，为串口操作对象初始化数据处理方法。
 function proxyPort( port , handler) {
@@ -51,7 +46,7 @@ export default class DataProvider {
             }
 
             const { comName , options } = this.comConfig;
-	        const port = new SerialPort(comName , options , false);
+	        const port = newSerialPort(comName , options );
             this.port = proxyPort(port , data => {
 				this.handleData(data);
 			});

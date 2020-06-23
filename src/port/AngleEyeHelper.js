@@ -4,6 +4,8 @@ import AngleEyeProvider from './provider/impl/AngleEyeProvider';
 import Tm from './provider/impl/type.json';
 import { forTheEnd } from "../utils";
 import IllegalDataException from "../exception/IllegalDataException";
+import ReCloseException from "../exception/ReCloseException";
+import ModuleException from "../exception/ModuleException";
 
 const connect = Symbol(), distributor = Symbol();
 export default class AngleEyeHelper {
@@ -76,7 +78,12 @@ export default class AngleEyeHelper {
 
 	async updateComName( comName ){
 		await forTheEnd(()=> this.connector != null);
-		await this.connector.updateComName(comName);
+		try {
+			await this.connector.updateComName(comName);
+		}catch (e){
+			throw e; // UnableCloseException
+		}
+
 	}
 
 	async close(){
@@ -84,7 +91,7 @@ export default class AngleEyeHelper {
 		try {
 			await this.connector.close();
 		}catch (e){
-			console.error(e);
+			console.error(e); // ReCloseException, ModuleException
 		}
 	}
 

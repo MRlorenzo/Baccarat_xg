@@ -1,11 +1,16 @@
 /*连接器*/
-const handleDisconnect = Symbol(), watchEvent = Symbol(),handleData = Symbol();
+import NullPointerException from "../exception/NullPointerException";
+import UnknownException from "../exception/UnknownException";
+import ReOpenException from "../exception/ReOpenException";
+import ReCloseException from "../exception/ReCloseException";
+
+const handleDisconnect = Symbol(), watchEvent = Symbol();
 const watchConnect = Symbol(), timer = Symbol();
 export default class Connector {
 
 	constructor( provider ){
 		if (provider == null){
-			throw new Error('找不到资源');
+			throw new NullPointerException('找不到资源');
 		}
 
 		this.provider = provider;
@@ -14,19 +19,19 @@ export default class Connector {
 		this.isAccident = false;
 		// 断线处理
 		this[handleDisconnect] = ()=> {};
-		this[watchEvent]();
+		this[watchEvent](provider);
 
 		// 定时器id
 		this[timer] = null;
 	}
 
-	async [watchEvent](){
-		const port = await this.provider.getPort()
+	async [watchEvent](provider){
+		const port = await provider.getPort()
 		/*
         * 拔掉usb不会触发.
         * */
 		port.on('disconnect' , err=>{
-			this[handleDisconnect](err);
+			this[handleDisconnect](new UnknownException(err.message , -1));
 			clearInterval(this[timer]);
 			this[timer] = null;
 		});
@@ -35,7 +40,7 @@ export default class Connector {
         * 拔掉usb不会触发.
         * */
 		port.on('error', err=> {
-			this[handleDisconnect](err);
+			this[handleDisconnect](new UnknownException(err.message, -1));
 			clearInterval(this[timer]);
 			this[timer] = null;
 		});
@@ -53,7 +58,7 @@ export default class Connector {
 		this[timer] = setInterval(()=>{
 			//串口发生了中断或者其他未知情况导致此时是非打开状态
 			if(port.isOpen() === false){
-				this[handleDisconnect](new Error('未知异常'));
+				this[handleDisconnect](new UnknownException('检测到isOpen状态为false' , 500));
 				clearInterval(this[timer]);
 			}
 		} , 1000 );
@@ -79,12 +84,13 @@ export default class Connector {
 	}
 
 	// 打开连接
-	async open(){
-		this.isAccident = true;
+	async open( isAccident = true){
+		// 是否是意外情况导致调用open?
+		this.isAccident = isAccident;
 		const port = await this.provider.getPort();
 		return new Promise((resolve, reject) => {
 			if (port.isOpen() === true){
-				resolve();
+				reject(new ReOpenException('资源已经是打开状态'))
 				return ;
 			}
 			port.open( err=> {
@@ -104,7 +110,7 @@ export default class Connector {
         const port = await this.provider.getPort();
 		return new Promise((resolve, reject) => {
 			if (port.isOpen() === false){
-				resolve();
+				reject(new ReCloseException('资源已经是关闭状态'));
 				return;
 			}
 			port.close(err=>{
@@ -129,12 +135,9 @@ export default class Connector {
 	}
 
 	// 更新资源
-	async update( provider ){
-		// 关闭资源
-		await this.close();
-		let oldPort = await this.provider.getPort();
-		oldPort = null;
-		this.provider = provider;
-		return this.open();
+	async updateComName( comName ){
+		await this.provider.updateComName(comName);
+		this[watchEvent](this.provider);
+		return this.open(false);
 	}
 }

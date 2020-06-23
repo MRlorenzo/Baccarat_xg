@@ -1,37 +1,25 @@
 /*数据提供者*/
 import CONFIG from '../../utils/comConfig.json';
-import { forTheEnd , clone} from "../../utils";
-import { getComNameList , newSerialPort } from "../utils";
+import { forTheEnd } from "../../utils";
+import {newSerialPort} from "../utils";
+import { com } from "../../local-storage";
+import UnknownException from "../../exception/UnknownException";
 
-// 代理串口，为串口操作对象初始化数据处理方法。
-function proxyPort( port , handler) {
-	let init = false;
-	return clone(port , {
-		async open(...arg){
-			if (!init){
-				port.on('data', handler);
+function closePort( port ) {
+	return new Promise((resolve, reject) => {
+		port.close(err=>{
+			if (err){
+				reject(err);
+			}else{
+				resolve();
 			}
-			return port.open(...arg);
-		},
-		on(...arg){
-			port.on(...arg);
-		},
-		isOpen(){
-			return port.isOpen;
-		}
+		})
 	})
 }
-
 export default class DataProvider {
 
-	constructor( comConfig = CONFIG){
-
-		if (comConfig == null || comConfig.options == null){
-            comConfig = CONFIG;
-		}
-		// 必须
-		comConfig.options.autoOpen = false;
-		this.comConfig = comConfig;
+	constructor( comConfig){
+		this.setComConfig(comConfig);
 		this.port = null;
 		this.complete = ()=>{}
 	}
@@ -39,17 +27,8 @@ export default class DataProvider {
 	// 获取串口操作对象
 	async getPort(){
 	    if (this.port == null){
-	        const names = await getComNameList();
-	        if (names.length === 1){
-	            let [comName] = names;
-                this.comConfig.comName = comName;
-            }
-
             const { comName , options } = this.comConfig;
-	        const port = newSerialPort(comName , options );
-            this.port = proxyPort(port , data => {
-				this.handleData(data);
-			});
+            this.port = newSerialPort(comName , options );
         }
         return this.port;
 	}
@@ -63,6 +42,36 @@ export default class DataProvider {
 	async getComConfig(){
 	    await forTheEnd(()=> this.port != null);
 		return this.comConfig;
+	}
+
+	// 设置串口配置
+	setComConfig( comConfig ){
+		if (comConfig == null || comConfig.options == null){
+			comConfig = CONFIG;
+			com.save(comConfig);
+		}
+		comConfig.options.autoOpen = false;
+		this.comConfig = comConfig;
+	}
+
+	// 更新串口名称
+	async updateComName( comName ){
+		// 先停止port
+		if (this.port != null){
+			try {
+				await closePort(this.port);
+			}catch (e){
+				throw new UnknownException(`无法关闭资源:${e.message}` , 500);
+			}
+		}
+		// 将port置空，方便下次getPort()
+		this.port = null;
+		// 修改配置
+		this.comConfig.comName = comName;
+		// 更新数据库
+		com.update({} , {
+			$set: { comName: comName}
+		})
 	}
 
 	// 当检测到有完整的数据存在时执行(handler)

@@ -2,41 +2,57 @@
 import Connector from './Connector';
 import AngleEyeProvider from './provider/impl/AngleEyeProvider';
 import Tm from './provider/impl/type.json';
+import { forTheEnd } from "../utils";
+import IllegalDataException from "../exception/IllegalDataException";
+
 const connect = Symbol(), distributor = Symbol();
 export default class AngleEyeHelper {
-	constructor(settings , config){
+	constructor(config , settings){
 		this.hooks = {};
-		this.angleEyeSettings = settings;
-		this.comConfig = config;
-        this[connect]();
+		this.disconnect = (err)=>{};
+		(async ()=>{
+			this.connector = await this[connect](config , settings);
+		})()
+	}
+
+	async open(){
+		await forTheEnd(()=> this.connector != null);
+		try {
+			await this.connector.open();
+		}catch (e){
+			throw e;
+		}
 	}
 
 	// 连接资源
-	async [connect](){
-		let provider = new AngleEyeProvider(this.comConfig , this.angleEyeSettings);
+	async [connect](comConfig , angleEyeSettings){
+		let provider = new AngleEyeProvider(comConfig , angleEyeSettings);
 		let connector = new Connector(provider);
-		this.connector = connector;
-		try {
-            await connector.open();
-		}catch (e){
-            console.error(e);
-		}
-
-		const comConfig = await provider.getComConfig();
-		const angleConfig = await provider.getAngleConfig();
 
 		connector.whenData(d=>{
 		    // 接受到完整的数据...
 			// 数据是否合法
 			if (d.isLegal()){
 				this[distributor](d);
+			}else{
+				new IllegalDataException('非法的数据' , d.getSource());
 			}
 		});
 
 		connector.whenDisconnect(err=>{
 		    // 失去连接。。。
-			console.error(err);
+			this.disconnect(err);
 		});
+
+		return connector;
+	}
+
+	// 断线处理程序
+	whenDisconnect( handler ){
+		if (typeof handler === 'function'){
+			this.disconnect = handler;
+		}
+		return this;
 	}
 
 	// 分发任务
@@ -55,6 +71,20 @@ export default class AngleEyeHelper {
 			hook(angleData);
 		}else if(typeof this.hooks.default === 'function'){
 			this.hooks.default(angleData);
+		}
+	}
+
+	async updateComName( comName ){
+		await forTheEnd(()=> this.connector != null);
+		await this.connector.updateComName(comName);
+	}
+
+	async close(){
+		await forTheEnd(()=> this.connector != null);
+		try {
+			await this.connector.close();
+		}catch (e){
+			console.error(e);
 		}
 	}
 

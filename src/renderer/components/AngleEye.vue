@@ -4,9 +4,7 @@
 
 <script>
 	import AngleEyeHelper from "../../port/AngleEyeHelper";
-  import { com , angle } from '../../local-storage';
-  import defaultComConfig from '../../utils/comConfig.json';
-  import defaultAngleConfig from '../../utils/angleConfig.json';
+    import { com , angle } from '../../local-storage';
 	export default {
 		name: "angle-eye",
 		methods: {
@@ -41,21 +39,30 @@
 			}
 		},
 		async created(){
-        let comConfig = await com.findOne();
-        let angleConfig = await angle.findOne();
+            let comConfig = await com.findOne();
+            let angleConfig = await angle.findOne();
+            let helper = new AngleEyeHelper(comConfig , angleConfig);
 
-        if (comConfig == null){
-            comConfig = defaultComConfig;
-            com.save(comConfig);
-        }
-        if (angleConfig == null){
-            angleConfig = defaultAngleConfig;
-            angle.save(angleConfig);
-        }
+            helper.whenDisconnect(err=>{
+                console.log('失去连接');
+                console.error(err);
+            });
 
-        let helper = new AngleEyeHelper(comConfig , angleConfig);
-        this.initHooks(helper);
-        window.helper = helper;
+            try {
+            	await helper.open();
+            }catch(e){
+            	// 打开失败
+            	console.log(e);
+            	console.error()
+            }
+
+            this.initHooks(helper);
+
+            window.helper = helper;
+
+            this.$electron.ipcRenderer.on('stopPort', event => {
+            	helper.close();
+            })
 		}
 	}
 </script>

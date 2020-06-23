@@ -15,7 +15,8 @@ function createWindow () {
 		maxWidth:1920,
 		minHeight:400,
 		maxHeight:1080,
-		height:400,
+		// height:400,
+		height: 1000,
 		//frame:false,    //无边框
 		titleBarStyle: 'hiddenInset',
 		useContentSize: true,
@@ -26,6 +27,17 @@ function createWindow () {
 	})
 
 	mainWindow.loadURL(mainURL)
+
+	mainWindow.on('close', event => {
+		event.sender.send('stopPort');
+	})
+
+	if (process.platform === 'darwin') {
+		// 因为强制关机或机器重启或会话注销而导致窗口会话结束时触发
+		mainWindow.on('session-end', event => {
+			event.sender.send('stopPort');
+		})
+	}
 
 	mainWindow.on('closed', () => {
 		mainWindow = null

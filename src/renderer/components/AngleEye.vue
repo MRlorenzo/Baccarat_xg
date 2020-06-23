@@ -9,7 +9,6 @@
 	import UnknownException from "../../exception/UnknownException";
 	import EmptyPortException from "../../exception/EmptyPortException";
 	import ErrorNameException from "../../exception/ErrorNameException";
-	import UnableCloseException from "../../exception/UnableCloseException";
 	import ModuleException from "../../exception/ModuleException";
 	export default {
 		name: "angle-eye",
@@ -65,7 +64,7 @@
             try {
             	await helper.open();
             }catch(e){
-				if (err instanceof ModuleException){
+				if (e instanceof ModuleException){
 					// 模块异常
 				}
 				// 没有串口

@@ -4,6 +4,7 @@ import { forTheEnd } from "../../utils";
 import {newSerialPort} from "../utils";
 import { com } from "../../local-storage";
 import UnknownException from "../../exception/UnknownException";
+import UnableCloseException from "../../exception/UnableCloseException";
 
 function closePort( port ) {
 	return new Promise((resolve, reject) => {
@@ -61,7 +62,7 @@ export default class DataProvider {
 			try {
 				await closePort(this.port);
 			}catch (e){
-				throw new UnknownException(`无法关闭资源:${e.message}` , 500);
+				throw new UnableCloseException(`无法关闭资源:${e.message}` , 500);
 			}
 		}
 		// 将port置空，方便下次getPort()

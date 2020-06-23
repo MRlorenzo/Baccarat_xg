@@ -3,6 +3,7 @@ import NullPointerException from "../exception/NullPointerException";
 import UnknownException from "../exception/UnknownException";
 import ReOpenException from "../exception/ReOpenException";
 import ReCloseException from "../exception/ReCloseException";
+import ModuleException from "../exception/ModuleException";
 
 const handleDisconnect = Symbol(), watchEvent = Symbol();
 const watchConnect = Symbol(), timer = Symbol();
@@ -31,7 +32,7 @@ export default class Connector {
         * 拔掉usb不会触发.
         * */
 		port.on('disconnect' , err=>{
-			this[handleDisconnect](new UnknownException(err.message , -1));
+			this[handleDisconnect](new ModuleException(err.message));
 			clearInterval(this[timer]);
 			this[timer] = null;
 		});
@@ -40,7 +41,7 @@ export default class Connector {
         * 拔掉usb不会触发.
         * */
 		port.on('error', err=> {
-			this[handleDisconnect](new UnknownException(err.message, -1));
+			this[handleDisconnect](new ModuleException(err.message));
 			clearInterval(this[timer]);
 			this[timer] = null;
 		});
@@ -95,7 +96,7 @@ export default class Connector {
 			}
 			port.open( err=> {
 				if (err){
-					reject(err);
+					reject(new ModuleException(err.message));
 				}else{
 					this[watchConnect]();
 					resolve();
@@ -115,7 +116,7 @@ export default class Connector {
 			}
 			port.close(err=>{
 				if (err){
-					reject(err);
+					reject(new ModuleException(err.message));
 				}else{
 					resolve();
 				}

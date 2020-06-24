@@ -1,4 +1,6 @@
 import {app, ipcMain} from 'electron'
+import unhandled from 'electron-unhandled';
+import log from '../utils/log';
 import "./init-window";
 
 /**
@@ -9,6 +11,11 @@ if (process.env.NODE_ENV !== 'development') {
     global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 
+// 捕获所有未处理的异常
+unhandled({
+    logger:log.error,
+    showDialog:true
+});
 
 //当所有窗口都被关闭后退出
 app.on('window-all-closed', () => {

@@ -19,4 +19,12 @@ export default class CompleteData {
     getData() {
         return this.source;
     }
+
+    getType(){
+
+    }
+
+    getIndex(){
+        return -1;
+    }
 }

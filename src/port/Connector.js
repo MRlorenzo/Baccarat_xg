@@ -4,9 +4,11 @@ import UnknownException from "../exception/UnknownException";
 import ReOpenException from "../exception/ReOpenException";
 import ReCloseException from "../exception/ReCloseException";
 import ModuleException from "../exception/ModuleException";
+import EmptyPortException from "../exception/EmptyPortException";
+import {forTheEnd} from "../utils";
 
 const handleDisconnect = Symbol(), watchEvent = Symbol();
-const watchConnect = Symbol(), timer = Symbol();
+const watchConnect = Symbol(), timer = Symbol(),isEmptyPort = Symbol;
 /**
  * 连接器
  * whenData(handler)
@@ -30,7 +32,17 @@ export default class Connector {
         // 断线处理
         this[handleDisconnect] = () => {
         };
-        this[watchEvent](provider);
+
+        this[isEmptyPort] = null;
+        // catch异常，如果捕获的异常时EmptyPortException
+        // 则将当前Connector实例标记为[没有串口]
+        // 此方法非阻塞，在catch执行完回调之前，this[isEmptyPort]为null
+        this[watchEvent](provider).catch(e=>{
+            if (e instanceof EmptyPortException){
+                // 一旦this[isEmptyPort]==true，那么将无法调用open(),close(),reOpen()
+                this[isEmptyPort] = true;
+            }
+        });
 
         // 定时器id
         this[timer] = null;
@@ -62,6 +74,7 @@ export default class Connector {
     async [watchConnect]() {
         // throw EmptyPortException,ErrorNameException
         const port = await this.provider.getPort();
+        this[isEmptyPort] = false;
         // tip: 当getPort抛出异常时，不会执行下面的代码
         if (this[timer] != null) {
             clearInterval(this[timer]);
@@ -104,6 +117,10 @@ export default class Connector {
      * @returns {Promise<any>}
      */
     async open(isAccident = true) {
+        await forTheEnd(()=>this[isEmptyPort] != null)
+        if (this[isEmptyPort]){
+            throw new Error('没有串口');
+        }
         // 是否是意外情况导致调用open?
         this.isAccident = isAccident;
         // throw EmptyPortException,ErrorNameException
@@ -131,6 +148,10 @@ export default class Connector {
      * @returns {Promise<any>}
      */
     async close() {
+        await forTheEnd(()=>this[isEmptyPort] != null)
+        if (this[isEmptyPort]){
+            throw new Error('没有串口');
+        }
         this.isAccident = false;
         // throw EmptyPortException,ErrorNameException
         const port = await this.provider.getPort();
@@ -174,7 +195,7 @@ export default class Connector {
      */
     async updateComName(comName) {
         await this.provider.updateComName(comName);
-        this[watchEvent](this.provider);
+        await this[watchEvent](this.provider);
         await this.open(false);
     }
 }

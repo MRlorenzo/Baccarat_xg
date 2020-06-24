@@ -8,6 +8,14 @@ import ReCloseException from "../exception/ReCloseException";
 import ModuleException from "../exception/ModuleException";
 
 const connect = Symbol(), distributor = Symbol();
+/**
+ * 天使靴操作助手
+ * async open() throw ReOpenException,ModuleException,UnknownException,EmptyPortException,ErrorNameException
+ * whenDisconnect(handler) throw UnableCloseException,ModuleException,ReOpenException,UnknownException
+ * async updateComName(comName)
+ * async close() throw ReCloseException,ModuleException,EmptyPortException,ErrorNameException
+ * setHooks(hooks)
+ */
 export default class AngleEyeHelper {
     constructor(config, settings) {
         this.hooks = {};
@@ -16,12 +24,13 @@ export default class AngleEyeHelper {
         this.connector = this[connect](config, settings);
     }
 
+    /**
+     * 打开资源
+     * throw ReOpenException,ModuleException,UnknownException,EmptyPortException,ErrorNameException
+     * @returns {Promise<void>}
+     */
     async open() {
-        try {
-            await this.connector.open();
-        } catch (e) {
-            throw e;
-        }
+        await this.connector.open();
     }
 
     // 连接资源
@@ -74,23 +83,31 @@ export default class AngleEyeHelper {
         }
     }
 
+    /**
+     * 更新/切换串口名称
+     * throw UnableCloseException,ModuleException,ReOpenException,UnknownException
+     * @param comName
+     * @returns {Promise<void>}
+     */
     async updateComName(comName) {
-        try {
-            await this.connector.updateComName(comName);
-        } catch (e) {
-            throw e; // UnableCloseException
-        }
-
+        await this.connector.updateComName(comName);
     }
 
+    /**
+     * 关闭资源
+     * throw ReCloseException,ModuleException,EmptyPortException,ErrorNameException
+     * @returns {Promise<void>}
+     */
     async close() {
-        try {
-            await this.connector.close();
-        } catch (e) {
-            console.error(e); // ReCloseException, ModuleException
-        }
+        await this.connector.close();
     }
 
+    /**
+     * 设置各种天使靴数据的处理钩子
+     * hooks: {key: methodName , value: function(angleData: AngleData )}
+     *     methodName: boot,standBy,cardDrawing...详情见../provider/impl/type.json
+     * @param hooks
+     */
     setHooks(hooks) {
         this.hooks = hooks;
     }

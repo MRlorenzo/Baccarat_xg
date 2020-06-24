@@ -28,11 +28,21 @@ function proxyPort(port, handler) {
 }
 
 const checkComList = Symbol(), autoSet = Symbol();
+/**
+ * 自动修正配置的数据提供者
+ * async getPort() throw EmptyPortException,ErrorNameException
+ * getComConfig()
+ * async updateComName(comName)  throw UnableCloseException
+ * whenCompleteData(handler)
+ */
 export default class AutoProvider extends DataProvider {
     constructor(comConfig) {
         super(comConfig);
     }
 
+    /*
+    * throw EmptyPortException,ErrorNameException
+    * */
     async getPort() {
         if (this.port == null) {
             const names = await this[checkComList]();

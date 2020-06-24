@@ -7,6 +7,15 @@ import ModuleException from "../exception/ModuleException";
 
 const handleDisconnect = Symbol(), watchEvent = Symbol();
 const watchConnect = Symbol(), timer = Symbol();
+/**
+ * 连接器
+ * whenData(handler)
+ * whenDisconnect(handler)
+ * async open(isAccident = true) throw ReOpenException,ModuleException,UnknownException,EmptyPortException,ErrorNameException
+ * async close() throw ReCloseException,ModuleException,EmptyPortException,ErrorNameException
+ * async reOpen() throw ReOpenException,ModuleException,UnknownException,ReCloseException,EmptyPortException,ErrorNameException
+ * async updateComName(comName) throw UnableCloseException,ModuleException,ReOpenException,UnknownException
+ */
 export default class Connector {
 
     constructor(provider) {
@@ -28,7 +37,9 @@ export default class Connector {
     }
 
     async [watchEvent](provider) {
-        const port = await provider.getPort()
+        // throw EmptyPortException,ErrorNameException
+        let port  = await provider.getPort();
+        // tip: 当getPort抛出异常时不会执行下面的代码.
         /*
         * 拔掉usb不会触发.
         * */
@@ -49,8 +60,9 @@ export default class Connector {
     }
 
     async [watchConnect]() {
+        // throw EmptyPortException,ErrorNameException
         const port = await this.provider.getPort();
-
+        // tip: 当getPort抛出异常时，不会执行下面的代码
         if (this[timer] != null) {
             clearInterval(this[timer]);
         }
@@ -85,11 +97,18 @@ export default class Connector {
         }
     }
 
-    // 打开连接
+    /**
+     * 打开连接 throw ReOpenException,ModuleException,UnknownException,
+     * EmptyPortException,ErrorNameException
+     * @param isAccident    如果port.isOpen()===false是否是意外情况
+     * @returns {Promise<any>}
+     */
     async open(isAccident = true) {
         // 是否是意外情况导致调用open?
         this.isAccident = isAccident;
+        // throw EmptyPortException,ErrorNameException
         const port = await this.provider.getPort();
+
         return new Promise((resolve, reject) => {
             if (port.isOpen() === true) {
                 reject(new ReOpenException('资源已经是打开状态'))
@@ -106,9 +125,14 @@ export default class Connector {
         })
     }
 
-    // 关闭连接
+    /**
+     * 关闭连接 throw ReCloseException,ModuleException,
+     * EmptyPortException,ErrorNameException
+     * @returns {Promise<any>}
+     */
     async close() {
         this.isAccident = false;
+        // throw EmptyPortException,ErrorNameException
         const port = await this.provider.getPort();
         return new Promise((resolve, reject) => {
             if (port.isOpen() === false) {
@@ -125,21 +149,32 @@ export default class Connector {
         })
     }
 
-    // 重启
+    /**
+     * 重启 throw ReOpenException,ModuleException,
+     * UnknownException,ReCloseException,
+     * EmptyPortException,ErrorNameException
+     * @returns {Promise<any>}
+     */
     async reOpen() {
+        // throw EmptyPortException,ErrorNameException
         const port = await this.provider.getPort();
         if (port.isOpen() === false) {
-            return this.open();
+            await this.open();
         } else {
             await this.close();
-            return this.open();
+            await this.open();
         }
     }
 
-    // 更新资源
+    /**
+     * 更新资源 throw UnableCloseException,ModuleException,
+     * ReOpenException,UnknownException
+     * @param comName
+     * @returns {Promise<any>}
+     */
     async updateComName(comName) {
         await this.provider.updateComName(comName);
         this[watchEvent](this.provider);
-        return this.open(false);
+        await this.open(false);
     }
 }

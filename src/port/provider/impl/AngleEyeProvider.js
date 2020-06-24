@@ -1,10 +1,17 @@
-/*天使靴数据提供者*/
 import AutoProvider from './AutoProvider';
 import AngleEyeDataParseChain from '../../parser/chain/AngleEyeDataParserChain';
 import AngleEyeData from '../../data/impl/AngleEyeData';
 import CONFIG from '../../../utils/angleConfig.json';
 import {angle} from "../../../local-storage";
 
+/**
+ * 天使靴数据提供者
+ * async getPort() throw EmptyPortException,ErrorNameException
+ * getComConfig()
+ * async updateComName(comName)  throw UnableCloseException
+ * whenCompleteData(handler)
+ * getAngleConfig()
+ */
 export default class AngleEyeProvider extends AutoProvider {
 
     constructor(comConfig, angleConfig) {
@@ -32,7 +39,7 @@ export default class AngleEyeProvider extends AutoProvider {
     }
 
     // 获取天使靴(串口数据)配置
-    async getAngleConfig() {
+    getAngleConfig() {
         return this.angleConfig;
     }
 }

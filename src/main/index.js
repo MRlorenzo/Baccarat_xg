@@ -1,4 +1,4 @@
-import { app, ipcMain } from 'electron'
+import {app, ipcMain} from 'electron'
 import "./init-window";
 
 /**
@@ -6,17 +6,17 @@ import "./init-window";
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
  */
 if (process.env.NODE_ENV !== 'development') {
-	global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
+    global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 
 
 //当所有窗口都被关闭后退出
 app.on('window-all-closed', () => {
-	// 在 macOS 上，除非用户用 Cmd + Q 确定地退出，
-	// 否则绝大部分应用及其菜单栏会保持激活。
-	if (process.platform !== 'darwin') {
-		app.quit()
-	}
+    // 在 macOS 上，除非用户用 Cmd + Q 确定地退出，
+    // 否则绝大部分应用及其菜单栏会保持激活。
+    if (process.platform !== 'darwin') {
+        app.quit()
+    }
 });
 
 /**

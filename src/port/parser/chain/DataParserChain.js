@@ -1,25 +1,25 @@
 import DataParser from "../DataParser";
 
-export default class DataParserChain{
+export default class DataParserChain {
 
-    constructor( ...parsers ){
+    constructor(...parsers) {
         this.list = parsers;
     }
 
-    parse( data ){
+    parse(data) {
         let dp = new DataParser();
         dp.parse(data);
-        dp = this.list.reduce((acc , cur) =>{
+        dp = this.list.reduce((acc, cur) => {
             //console.log(cur);
-            while (acc.hasNext()){
+            while (acc.hasNext()) {
                 let n = acc.next();
                 cur.parse(n);
             }
             return cur;
-        } , dp);
+        }, dp);
 
         let rs = [];
-        while (dp.hasNext()){
+        while (dp.hasNext()) {
             rs.push(dp.next())
         }
 

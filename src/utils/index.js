@@ -1,28 +1,29 @@
-export function clone( ...target ) {
-    return Object.assign({} , ...target);
+export function clone(...target) {
+    return Object.assign({}, ...target);
 }
 
 //做任何事直到成功为止
 export function doAnyThingToEnd(doFunction, checkFunction) {
     let load = false;
     let i = setInterval(function () {
-        if (!load){
-            if (checkFunction()){
+        if (!load) {
+            if (checkFunction()) {
                 load = true;
                 doFunction();
             }
-        }else{
+        } else {
             clearInterval(i);
         }
     }, 50);
 }
+
 // 等待(某种条件)结束. //当fn()返回值为true时结束.
-export function forTheEnd( fn ) {
+export function forTheEnd(fn) {
     return new Promise(resolve => {
-        if (typeof fn !== 'function'){
+        if (typeof fn !== 'function') {
             resolve();
-            return ;
+            return;
         }
-        doAnyThingToEnd(resolve ,fn)
+        doAnyThingToEnd(resolve, fn)
     })
 }

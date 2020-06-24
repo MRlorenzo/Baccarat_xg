@@ -7,11 +7,12 @@
 </template>
 
 <script>
-  import AngleEye from './components/AngleEye';
-  export default {
-      name: 'app',
-      components: { AngleEye }
-  }
+    import AngleEye from './components/AngleEye';
+
+    export default {
+        name: 'app',
+        components: {AngleEye}
+    }
 </script>
 
 <style>

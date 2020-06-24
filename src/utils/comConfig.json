@@ -5,7 +5,7 @@
         "dataBits": 8,
         "parity": "none",
         "stopBits": 1,
-        "flowControl": false ,
-        "autoOpen":false
+        "flowControl": false,
+        "autoOpen": false
     }
 }

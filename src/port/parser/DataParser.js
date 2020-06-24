@@ -2,9 +2,9 @@
  * 数据解析基类
  * products是解析的结果,解析完的结果 this.products.push()
  */
-export default class DataParser{
+export default class DataParser {
 
-    constructor(){
+    constructor() {
         this.products = [];
     }
 
@@ -12,7 +12,7 @@ export default class DataParser{
      * 解析
      * @param data 数组
      */
-    parse( data ){
+    parse(data) {
         this.products.push(data);
     }
 
@@ -20,7 +20,7 @@ export default class DataParser{
      * 取下一个结果
      * @returns {*} 一维数组
      */
-    next(){
+    next() {
         return this.products.shift();
     }
 
@@ -28,7 +28,7 @@ export default class DataParser{
      * 是否还有下一个结果
      * @returns {boolean} true or false
      */
-    hasNext(){
+    hasNext() {
         return !!this.products.length;
     }
 

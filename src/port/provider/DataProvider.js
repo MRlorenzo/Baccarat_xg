@@ -2,6 +2,8 @@ import CONFIG from '../../utils/comConfig.json';
 import {com} from "../../local-storage";
 import UnableCloseException from "../../exception/UnableCloseException";
 import XgSerialPort from './XgSerialPort';
+import CompleteData from "../data/CompleteData";
+import IllegalDataException from "../../exception/IllegalDataException";
 
 // 代理串口，为串口操作对象初始化数据处理方法。
 /*function proxyPort(port, handler) {
@@ -39,7 +41,7 @@ export default class DataProvider {
     constructor(comConfig) {
         this[setComConfig](comConfig);
         this.port = null;
-        this.complete = () => {
+        this.complete = data =>{
         }
     }
 
@@ -64,7 +66,7 @@ export default class DataProvider {
 
     // 处理数据(外部最好不要调用此方法)
     _handleData(data) {
-        this.complete(data);
+        this.complete(new CompleteData(data));
     }
 
     // 获取当前串口配置
@@ -109,7 +111,13 @@ export default class DataProvider {
     // 当检测到有完整的数据存在时执行(handler)
     whenCompleteData(handler) {
         if (typeof handler === 'function') {
-            this.complete = handler;
+            this.complete = data => {
+                if (data instanceof CompleteData){
+                    handler(data);
+                }else{
+                    throw new IllegalDataException('无法解析非CompleteData类型的数据')
+                }
+            };
         }
         return this;
     }

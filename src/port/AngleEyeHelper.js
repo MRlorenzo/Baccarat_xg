@@ -2,10 +2,7 @@
 import Connector from './Connector';
 import AngleEyeProvider from './provider/impl/AngleEyeProvider';
 import Tm from './provider/impl/type.json';
-import {forTheEnd} from "../utils";
 import IllegalDataException from "../exception/IllegalDataException";
-import ReCloseException from "../exception/ReCloseException";
-import ModuleException from "../exception/ModuleException";
 
 const connect = Symbol(), distributor = Symbol();
 /**

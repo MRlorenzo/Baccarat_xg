@@ -115,7 +115,7 @@ export default class DataProvider {
                 if (data instanceof CompleteData){
                     handler(data);
                 }else{
-                    throw new IllegalDataException('无法解析非CompleteData类型的数据')
+                    throw new IllegalDataException('无法解析非CompleteData类型的数据' , data)
                 }
             };
         }

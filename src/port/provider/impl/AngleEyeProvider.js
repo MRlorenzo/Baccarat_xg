@@ -25,8 +25,8 @@ export default class AngleEyeProvider extends AutoProvider {
         this.parserChain = new AngleEyeDataParseChain(angleConfig.endFlag);
     }
 
-    // 串口数据处理
-    handleData(data) {
+    // 串口数据处理(外部最好不要调用此方法)
+    _handleData(data) {
         console.log('debug:')
         console.log(data)
         let dataList = this.parserChain.parse(data);

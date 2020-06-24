@@ -1,19 +1,31 @@
 import CONFIG from '../../utils/comConfig.json';
-import {newSerialPort} from "../utils";
 import {com} from "../../local-storage";
 import UnableCloseException from "../../exception/UnableCloseException";
+import XgSerialPort from './XgSerialPort';
 
-function closePort(port) {
-    return new Promise((resolve, reject) => {
-        port.close(err => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve();
+// 代理串口，为串口操作对象初始化数据处理方法。
+/*function proxyPort(port, handler) {
+    let init = false;
+    return clone(port, {
+        async open(...arg) {
+            if (!init) {
+                init = true;
+                port.on('data', handler);
             }
-        })
+            return port.open(...arg);
+        },
+        close(...arg) {
+            return port.close(...arg);
+        },
+        on(...arg) {
+            port.on(...arg);
+        },
+        isOpen() {
+            return port.isOpen;
+        }
     })
-}
+}*/
+
 const setComConfig = Symbol();
 /**
  * 数据提供者
@@ -31,17 +43,27 @@ export default class DataProvider {
         }
     }
 
-    // 获取串口操作对象
+    /**
+     * 获取串口操作对象
+     * @returns {Promise<null|*>} XgSerialPort
+     */
     async getPort() {
         if (this.port == null) {
-            const {comName, options} = this.comConfig;
-            this.port = newSerialPort(comName, options);
+            this.port = this._newSerialPort(this.comConfig);
         }
         return this.port;
     }
 
-    // 处理数据
-    handleData(data) {
+    // 新的串口操作对象(外部最好不要调用此方法)
+    _newSerialPort(comConfig){
+        const {comName, options} = comConfig;
+        return new XgSerialPort(comName , options , (data)=>{
+            this._handleData(data);
+        });
+    }
+
+    // 处理数据(外部最好不要调用此方法)
+    _handleData(data) {
         this.complete(data);
     }
 
@@ -69,7 +91,7 @@ export default class DataProvider {
         // 先停止port
         if (this.port != null) {
             try {
-                await closePort(this.port);
+                await this.port.close();
             } catch (e) {
                 throw new UnableCloseException(`无法关闭资源:${e.message}`);
             }

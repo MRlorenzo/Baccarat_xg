@@ -63,7 +63,7 @@
             let angleConfig = await angle.findOne();
 
             let helper = new AngleEyeHelper(comConfig, angleConfig)
-
+            this.initHooks(helper);
             // 断线时
             helper.whenDisconnect(err => {
                 if (err instanceof UnknownException) {
@@ -81,7 +81,6 @@
             // 只有尝试打开资源之后才知道连接是否成功。
             try {
                 await helper.open();
-                this.initHooks(helper);
             } catch (e) {
                 if (e instanceof ModuleException) {
                     // 模块异常

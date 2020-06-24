@@ -6,6 +6,8 @@ const opened = Symbol();
 export default class XgSerialPort {
 
     constructor(comName, options , complete){
+        // 永远都不自动打开，因为我们要代理open()方法.
+        options.autoOpen = false;
         this.port = new SerialPort(comName, options, false);
         this[opened] = false;
         this.complete = complete;

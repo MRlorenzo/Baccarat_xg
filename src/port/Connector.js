@@ -6,6 +6,7 @@ import ReCloseException from "../exception/ReCloseException";
 import ModuleException from "../exception/ModuleException";
 import EmptyPortException from "../exception/EmptyPortException";
 import {forTheEnd} from "../utils";
+import DataProvider from "./provider/DataProvider";
 
 const handleDisconnect = Symbol(), watchEvent = Symbol();
 const watchConnect = Symbol(), timer = Symbol(),isEmptyPort = Symbol;
@@ -23,6 +24,10 @@ export default class Connector {
     constructor(provider) {
         if (provider == null) {
             throw new NullPointerException('找不到资源');
+        }
+
+        if (!(provider instanceof DataProvider)){
+            throw new UnknownException('不支持的类型', 500);
         }
 
         this.provider = provider;

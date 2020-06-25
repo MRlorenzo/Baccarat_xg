@@ -86,9 +86,6 @@ export default class AngleEyeHelper {
      * @returns {Promise<void>}
      */
     async updateComName(comName) {
-		if (this.connector == null){
-			this.connector = this[genConnector]();
-		}
         await this.connector.updateComName(comName);
     }
 
@@ -98,9 +95,6 @@ export default class AngleEyeHelper {
      * @returns {Promise<void>}
      */
     async close() {
-		if (this.connector == null){
-			this.connector = this[genConnector]();
-		}
         await this.connector.close();
     }
 

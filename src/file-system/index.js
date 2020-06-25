@@ -4,12 +4,13 @@ import {remote} from 'electron';
 import path from 'path';
 const fs = _fs == null ? remote.require('fs'): _fs;
 const os = _os == null ? remote.require('os'): _os;
+import log from '../utils/log';
 
 const isDev = process.env.NODE_ENV === 'development';
 // 程序的安装目录
 export const installPath = isDev ?
 	path.resolve(__dirname, '../'):
-	path.resolve(__dirname , '../../');
+	path.resolve(__dirname , '../../../../');
 
 // 相对程序安装目录的path
 function withAppPath( _path ) {
@@ -63,6 +64,7 @@ export function stat( _path ){
 }
 
 export async function fileSize( _path ) {
+	_path = withAppPath(_path);
 	const exi = await exists(_path);
 	if (!exi){
 		return 0;
@@ -82,6 +84,7 @@ export function tempPath( _path ){
  */
 export async function saveTxtFile(_path , data){
 	_path = withAppPath(_path);
+	log.info('save at:' , _path)
 	await safetyURL(_path);
 
 	return new Promise((resolve, reject) => {
@@ -102,6 +105,7 @@ export async function saveTxtFile(_path , data){
  */
 export async function appendTxtFile( _path , data){
 	_path = withAppPath(_path);
+	log.info('save at:' , _path)
 	await safetyURL(_path);
 	return new Promise((resolve, reject) => {
 		fs.appendFile( _path , data , ( err , data ) =>{

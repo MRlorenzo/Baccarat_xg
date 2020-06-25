@@ -19,7 +19,7 @@ export default class AngleEyeHelper {
         this.disconnect = (err) => {
         };
 
-		this.connector = this[connect](config, settings);;
+		this.connector = this[connect](config, settings);
     }
 
     /**

@@ -11,7 +11,6 @@
     import ErrorNameException from "../../exception/ErrorNameException";
     import ModuleException from "../../exception/ModuleException";
 	import AccessDeniedException from "../../exception/AccessDeniedException";
-
     export default {
         name: "angle-eye",
         methods: {

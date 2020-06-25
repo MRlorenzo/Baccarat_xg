@@ -102,11 +102,11 @@ export default class BaccaratResult {
     }
 
     pairsArrToString(){
-        if(this.pairs == null || this.pairs.length == 0){
+        if(this.pairs == null || this.pairs.length === 0){
             return "";
-        }else if (this.pairs.length == 1){
+        }else if (this.pairs.length === 1){
             return "" + this.pairs[0].index;
-        }else if (this.pairs.length == 2){
+        }else if (this.pairs.length === 2){
             return "" + Pair.BP.index + Pair.PP.index;
         }else {
             throw new Error('Assertion error');
@@ -115,11 +115,11 @@ export default class BaccaratResult {
 
 
     static  pairsArrToString(... pairs){
-        if(pairs == null || pairs.length == 0){
+        if(pairs == null || pairs.length === 0){
             return "";
-        }else if (pairs.length == 1){
+        }else if (pairs.length === 1){
             return "" + pairs[0].index;
-        }else if (pairs.length == 2){
+        }else if (pairs.length === 2){
             return "" + Pair.BP.index + Pair.PP.index;
         }else {
             throw new Error('Assertion error');
@@ -147,7 +147,7 @@ export default class BaccaratResult {
     }
 
     toShowString(){
-        if(this.pairs == null || this.pairs.length == 0){
+        if(this.pairs == null || this.pairs.length === 0){
             return this.result.name();
         }
         return this.result.name() + this.pairs.values().toString();

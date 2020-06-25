@@ -12,7 +12,7 @@ let BResultEnum = {
      */
     T:{index:3 , name:()=>'T'},
 
-    getBResult:function(index){
+    getBResult(index){
         for(let bResult of this.values()){
             if(index === bResult.index){
                 return bResult;
@@ -21,7 +21,7 @@ let BResultEnum = {
         return null;
     },
 
-    values:function(){
+    values(){
         let list = [];
         for(let k in this){
             if(k !== 'values' && k!== 'getBResult'){

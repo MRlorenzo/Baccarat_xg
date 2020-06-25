@@ -11,7 +11,7 @@ let PairsEnum = {
      */
     PP:{ index :5 , name:'闲对' , toString:toString},
 
-    getPairs:function(index){
+    getPairs(index){
         for(let pairs of this.values()){
             if(index === pairs.index){
                 return pairs;
@@ -20,7 +20,7 @@ let PairsEnum = {
         return null;
     },
 
-    values:function(){
+    values(){
         let list = [];
         for(let k in this){
             if(k !== 'values' && k!== 'getPairs'){

@@ -8,7 +8,7 @@ import GamePosition from './GamePosition'
 
 /**
  * 路单工具
- * @type {module.LoadMapUtil}
+ * @type {module.RoadMapUtil}
  */
 export default class RoadMapUtil {
 

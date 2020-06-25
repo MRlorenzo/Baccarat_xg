@@ -20,7 +20,7 @@ let SkyCardEnum = {
         return null;
     },
 
-    getSkyCardByKeyCode:function (keyCode) {
+    getSkyCardByKeyCode (keyCode) {
         for(let pairs of this.values()){
             if(keyCode === pairs.keyCode){
                 return pairs;
@@ -29,7 +29,7 @@ let SkyCardEnum = {
         return null;
     },
 
-    values:function(){
+    values(){
         let list = [];
         for(let k in this){
             if(k !== 'values' && k!== 'getSkyCards' && k!== 'getSkyCardByKeyCode'){

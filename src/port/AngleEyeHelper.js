@@ -3,8 +3,9 @@ import Connector from './Connector';
 import AngleEyeProvider from './provider/impl/AngleEyeProvider';
 import Tm from './provider/impl/type.json';
 import IllegalDataException from "../exception/IllegalDataException";
+import {com, angle} from '../local-storage';
 
-const connect = Symbol(), distributor = Symbol();
+const connect = Symbol(), distributor = Symbol(),getConnector = Symbol();
 /**
  * 天使靴操作助手
  * async open() throw ReOpenException,ModuleException,UnknownException,EmptyPortException,ErrorNameException
@@ -14,12 +15,21 @@ const connect = Symbol(), distributor = Symbol();
  * setHooks(hooks)
  */
 export default class AngleEyeHelper {
-    constructor(config, settings) {
+    constructor() {
         this.hooks = {};
         this.disconnect = (err) => {
         };
 
-		this.connector = this[connect](config, settings);
+		this.connector = null;
+    }
+
+    async [getConnector](){
+        if (this.connector == null){
+            let comConfig = await com.findOne();
+            let angleConfig = await angle.findOne();
+            this.connector = this[connect](comConfig, angleConfig);
+        }
+        return this.connector;
     }
 
     /**
@@ -28,7 +38,8 @@ export default class AngleEyeHelper {
      * @returns {Promise<void>}
      */
     async open() {
-        await this.connector.open();
+        const connector = await this[getConnector]();
+        await connector.open();
     }
 
     // 连接资源
@@ -86,7 +97,8 @@ export default class AngleEyeHelper {
      * @returns {Promise<void>}
      */
     async updateComName(comName) {
-        await this.connector.updateComName(comName);
+        const connector = await this[getConnector]();
+        await connector.updateComName(comName);
     }
 
     /**
@@ -95,7 +107,8 @@ export default class AngleEyeHelper {
      * @returns {Promise<void>}
      */
     async close() {
-        await this.connector.close();
+        const connector = await this[getConnector]();
+        await connector.close();
     }
 
     /**

@@ -18,7 +18,8 @@ export default class AngleEyeHelper {
         this.hooks = {};
         this.disconnect = (err) => {
         };
-        this.connector = this[connect](config, settings);
+
+		this.connector = this[connect](config, settings);;
     }
 
     /**
@@ -33,24 +34,22 @@ export default class AngleEyeHelper {
     // 连接资源
     [connect](comConfig, angleEyeSettings) {
         let provider = new AngleEyeProvider(comConfig, angleEyeSettings);
-        let connector = new Connector(provider);
+		let connector = new Connector(provider);
+		connector.whenData(d => {
+			// 接受到完整的数据...
+			// 数据是否合法
+			if (d.isLegal()) {
+				this[distributor](d);
+			} else {
+				new IllegalDataException('非法的数据', d.getSource());
+			}
+		});
 
-        connector.whenData(d => {
-            // 接受到完整的数据...
-            // 数据是否合法
-            if (d.isLegal()) {
-                this[distributor](d);
-            } else {
-                new IllegalDataException('非法的数据', d.getSource());
-            }
-        });
-
-        connector.whenDisconnect(err => {
-            // 失去连接。。。
-            this.disconnect(err);
-        });
-
-        return connector;
+		connector.whenDisconnect(err => {
+			// 失去连接。。。
+			this.disconnect(err);
+		});
+		return connector;
     }
 
     // 断线处理程序
@@ -87,6 +86,9 @@ export default class AngleEyeHelper {
      * @returns {Promise<void>}
      */
     async updateComName(comName) {
+		if (this.connector == null){
+			this.connector = this[genConnector]();
+		}
         await this.connector.updateComName(comName);
     }
 
@@ -96,6 +98,9 @@ export default class AngleEyeHelper {
      * @returns {Promise<void>}
      */
     async close() {
+		if (this.connector == null){
+			this.connector = this[genConnector]();
+		}
         await this.connector.close();
     }
 

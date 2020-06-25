@@ -7,9 +7,12 @@ import ModuleException from "../exception/ModuleException";
 import EmptyPortException from "../exception/EmptyPortException";
 import {forTheEnd} from "../utils";
 import DataProvider from "./provider/DataProvider";
+import ErrorNameException from "../exception/ErrorNameException";
+import AccessDeniedException from "../exception/AccessDeniedException";
 
 const handleDisconnect = Symbol(), watchEvent = Symbol();
-const watchConnect = Symbol(), timer = Symbol(),isEmptyPort = Symbol;
+const watchConnect = Symbol(), timer = Symbol();
+const error = Symbol(), hasError = Symbol();
 /**
  * 连接器
  * whenData(handler)
@@ -38,16 +41,12 @@ export default class Connector {
         this[handleDisconnect] = () => {
         };
 
-        this[isEmptyPort] = null;
+        this[error] = null;
+        this[hasError] = null;
         // catch异常，如果捕获的异常时EmptyPortException
         // 则将当前Connector实例标记为[没有串口]
-        // 此方法非阻塞，在catch执行完回调之前，this[isEmptyPort]为null
-        this[watchEvent](provider).catch(e=>{
-            if (e instanceof EmptyPortException){
-                // 一旦this[isEmptyPort]==true，那么将无法调用open(),close(),reOpen()
-                this[isEmptyPort] = true;
-            }
-        });
+        // 此方法非阻塞，在catch执行完回调之前，this[hasError]为null
+		this[watchEvent](provider);
 
         // 定时器id
         this[timer] = null;
@@ -55,7 +54,17 @@ export default class Connector {
 
     async [watchEvent](provider) {
         // throw EmptyPortException,ErrorNameException
-        let port  = await provider.getPort();
+        let port;
+        try {
+            port = await provider.getPort();
+			// 一旦成功执行getPort(),说明没有异常。
+			this[hasError] = false;
+			this[error] = null;
+        }catch (e){
+			this[hasError] = true;
+			this[error] = e;
+			throw e;
+        }
         // tip: 当getPort抛出异常时不会执行下面的代码.
         /*
         * 拔掉usb不会触发.
@@ -79,7 +88,7 @@ export default class Connector {
     async [watchConnect]() {
         // throw EmptyPortException,ErrorNameException
         const port = await this.provider.getPort();
-        this[isEmptyPort] = false;
+
         // tip: 当getPort抛出异常时，不会执行下面的代码
         if (this[timer] != null) {
             clearInterval(this[timer]);
@@ -122,9 +131,9 @@ export default class Connector {
      * @returns {Promise<any>}
      */
     async open(isAccident = true) {
-        await forTheEnd(()=>this[isEmptyPort] != null)
-        if (this[isEmptyPort]){
-            throw new Error('没有串口');
+        await forTheEnd(()=>this[hasError] != null)
+        if (this[hasError]){
+            throw this[error];
         }
         // 是否是意外情况导致调用open?
         this.isAccident = isAccident;
@@ -138,7 +147,12 @@ export default class Connector {
             }
             port.open(err => {
                 if (err) {
-                    reject(new ModuleException(err.message));
+                    if (!!~err.message.indexOf('Access denied')){
+                        // 访问被拒绝(可能已经有程序在使用这个port了)
+                        reject(new AccessDeniedException(err.message));
+                    }else{
+						reject(new ModuleException(err.message));
+                    }
                 } else {
                     this[watchConnect]();
                     resolve();
@@ -153,10 +167,10 @@ export default class Connector {
      * @returns {Promise<any>}
      */
     async close() {
-        await forTheEnd(()=>this[isEmptyPort] != null)
-        if (this[isEmptyPort]){
-            throw new Error('没有串口');
-        }
+		await forTheEnd(()=>this[hasError] != null)
+		if (this[hasError]){
+			throw this[error];
+		}
         this.isAccident = false;
         // throw EmptyPortException,ErrorNameException
         const port = await this.provider.getPort();
@@ -167,6 +181,12 @@ export default class Connector {
             }
             port.close(err => {
                 if (err) {
+					if (!!~err.message.indexOf('Access denied')){
+						// 访问被拒绝(可能已经有程序在使用这个port了)
+						reject(new AccessDeniedException(err.message));
+					}else{
+						reject(new ModuleException(err.message));
+					}
                     reject(new ModuleException(err.message));
                 } else {
                     resolve();

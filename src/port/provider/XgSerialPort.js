@@ -1,5 +1,4 @@
 import SerialPort from "serialport";
-import { clone } from "../../utils";
 
 const opened = Symbol();
 
@@ -11,7 +10,6 @@ export default class XgSerialPort {
         this.port = new SerialPort(comName, options, false);
         this[opened] = false;
         this.complete = complete;
-        return clone(this.port , this);
     }
 
     async open(...arg){
@@ -41,6 +39,6 @@ export default class XgSerialPort {
     }
 
     isOpen(){
-        return this.port.isOpen();
+        return this.port.isOpen;
     }
 }

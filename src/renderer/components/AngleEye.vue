@@ -50,13 +50,16 @@
                     if (err instanceof UnknownException) {
                         if (err.code === 500) {
                             // 定时器检查到isOpen状态为false
+                            console.log('失去连接')
                         }
-                    }
+                    }else
                     if (err instanceof ModuleException) {
                         // 模块异常
+                        console.log(err.message)
+                    }else{
+                        // 真.未知异常
+                        console.error(err)
                     }
-                    // 真.未知异常
-                    console.error(err)
                 });
 
             },

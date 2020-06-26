@@ -4,6 +4,7 @@ import AngleEyeProvider from './provider/impl/AngleEyeProvider';
 import Tm from './provider/impl/type.json';
 import IllegalDataException from "../exception/IllegalDataException";
 import {com, angle} from '../local-storage';
+import { runDebug } from '../test/angleEyeData';
 
 const connect = Symbol(), distributor = Symbol(),getConnector = Symbol();
 /**
@@ -119,5 +120,9 @@ export default class AngleEyeHelper {
      */
     setHooks(hooks) {
         this.hooks = hooks;
+    }
+
+    async debug(){
+        await runDebug();
     }
 }

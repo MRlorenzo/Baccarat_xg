@@ -84,7 +84,9 @@ export function tempPath( _path ){
  */
 export async function saveTxtFile(_path , data){
 	_path = withAppPath(_path);
-	log.info('save at:' , _path)
+	if (!isDev){
+		log.info('save at:' , _path)
+	}
 	await safetyURL(_path);
 
 	return new Promise((resolve, reject) => {
@@ -105,7 +107,6 @@ export async function saveTxtFile(_path , data){
  */
 export async function appendTxtFile( _path , data){
 	_path = withAppPath(_path);
-	log.info('save at:' , _path)
 	await safetyURL(_path);
 	return new Promise((resolve, reject) => {
 		fs.appendFile( _path , data , ( err , data ) =>{

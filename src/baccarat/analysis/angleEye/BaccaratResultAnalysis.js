@@ -36,7 +36,7 @@ function getBaccaratResult( datas ) {
 			break;
 	}
 
-	return BaccaratResult.getResult(bResult , [] , ...pairs);
+	return BaccaratResult.getResult(bResult , [] , pairs);
 }
 const init = Symbol();
 export default class BaccaratResultAnalysis extends AngleEyeAnalysis{

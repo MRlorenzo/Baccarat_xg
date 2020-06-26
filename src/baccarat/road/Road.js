@@ -232,7 +232,7 @@ export default class Road extends RoadStatistics{
                     sky = '';
                 }
             }
-            let p = BaccaratResult.getResultByString(`${rs}${pairs.split(' ').join('')}${sky.split(' ').join('')}`);
+            let p = BaccaratResult.getResult(`${rs}${pairs.split(' ').join('')}${sky.split(' ').join('')}`);
             this.push(p);
         }
 

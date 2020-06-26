@@ -30,7 +30,7 @@ export default class CardResult{
         let sum = 0;
         for(let card of this.cards){
             if(card != null){
-                let point = card.point.value;
+                let point = card.getPoint().getValue();
                 sum += (point > 10 ? 0 : point);
             }
         }

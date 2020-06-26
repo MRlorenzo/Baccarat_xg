@@ -148,9 +148,9 @@ export default class BaccaratResult {
 
     toShowString(){
         if(this.pairs == null || this.pairs.length === 0){
-            return this.result.name();
+            return this.result.getName();
         }
-        return this.result.name() + this.pairs.values().toString();
+        return this.result.getName() + this.pairs.values().toString();
     }
 
 

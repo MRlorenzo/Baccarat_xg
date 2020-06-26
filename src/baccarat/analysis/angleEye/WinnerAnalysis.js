@@ -7,7 +7,7 @@ export default class WinnerAnalysis extends BaccaratResultAnalysis{
 	}
 
 	[init](){
-		this.winner = null;
+		this.winner = super.getResult().result;
 	}
 
 	getWinner(){

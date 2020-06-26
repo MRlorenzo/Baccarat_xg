@@ -1,29 +1,49 @@
-
 import Point from './Point'
 import Suit from './Suit'
 
 const CardFactory = {
-    CARD_CACHE : {}
+	CARD_CACHE : {},
+	getKey(point , suit){
+		return ''+point.value + suit.value;
+	},
+    getCard(point , suit){
+		let key = this.getKey(point , suit);
+		return  this.CARD_CACHE[key];
+    }
 };
-CardFactory.getCard = function(point , suit){
-    let key = CardFactory.getKey(point , suit);
-    return  CardFactory.CARD_CACHE[key];
-}
 
-CardFactory.getKey= function(point , suit){
-    return ''+point.value + suit.value;
-}
-
-class Card{
+export default class Card{
 
     constructor(point , suit){
         this.point = point;
         this.suit = suit;
     }
 
-    static getCard(point , suit){
-        return CardFactory.getCard(point, suit);
+	/**
+     * 获取Card实例
+	 * @param point
+	 * @param suit
+	 * @returns {*}
+	 */
+	static getCard(point , suit){
+		return CardFactory.getCard(point , suit);
     }
+
+	/**
+	 * 获取Card实例
+	 * @param json
+	 * @returns {*}
+	 */
+	static getCardByJSONString( json ){
+		let card = null;
+		try{
+			let { point , suit} = JSON.parse(json);
+			let pointObj = Point.getPoint(point);
+			let suitObj = Suit.getSuit(suit);
+			card = new Card( pointObj , suitObj );
+		}catch (e){}
+		return card;
+	}
 
     getPoint(){
         return this.point;
@@ -31,17 +51,6 @@ class Card{
 
     getSuit(){
         return this.suit;
-    }
-
-    static getCardByJSONString( json ){
-        let card = null;
-        try{
-            let { point , suit} = JSON.parse(json);
-            let pointObj = Point.getPoint(point);
-            let suitObj = Suit.getSuit(suit);
-            card = new Card( pointObj , suitObj );
-        }catch (e){}
-        return card;
     }
 
     toJson(){
@@ -55,19 +64,14 @@ class Card{
         return '['+this.point.name + this.suit.icon + ']';
     }
 }
-CardFactory.putCard = function(point , suit){
-    let key = CardFactory.getKey(point , suit);
-    CardFactory.CARD_CACHE[key] = new Card(point , suit);
-}
 
 //一副牌的初始化
 for (let p of Point.values()){
-    for (let s of Suit.values()){
-        //都是特别或者都是普通
-        if(!(p.value > 20)^(s.value > 10)){
-            CardFactory. putCard(p,s);
-        }
-    }
+	for (let s of Suit.values()){
+		//都是特别或者都是普通
+		if(!(p.value > 20)^(s.value > 10)){
+			let key = CardFactory.getKey(p , s);
+			CardFactory.CARD_CACHE[key] = new Card(p , s);
+		}
+	}
 }
-
-export default Card;

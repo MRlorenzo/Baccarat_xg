@@ -2,6 +2,33 @@ export function clone(...target) {
     return Object.assign({}, ...target);
 }
 
+function firstLocaleUpperCase(string){
+	const firstCase = string.substring(0,1).toLocaleUpperCase();
+	const fix = string.substring(1,string.length);
+	return firstCase + fix;
+}
+// 将对象转化为bean(拥有getter,setter)
+export function bean( obj ){
+	const fields = new Set();
+	Object.keys(obj).forEach(k=>{
+		if (typeof obj[k] !== 'function'){
+			fields.add(k);
+		}
+	})
+	const map = {};
+	for (const key of fields){
+		const getter = function(){
+			return this[key];
+		}
+		const setter = function(value){
+			this[key] = value;
+		}
+		map['get'+firstLocaleUpperCase(key)] = getter;
+		map['set'+firstLocaleUpperCase(key)] = setter;
+	}
+	return clone(obj , map);
+}
+
 //做任何事直到成功为止
 export function doAnyThingToEnd(doFunction, checkFunction) {
     let load = false;

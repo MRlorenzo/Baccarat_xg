@@ -103,7 +103,16 @@
 					},
 					/*发牌结果*/
 					dealCardsShow(d) {
+
 						const sis = new DealCardsShowAnalysis(d);
+						// 是不是开新靴的抽牌动作？
+						if (sis.direct() === 'newBoot'){
+
+						}else{
+							// 普通抽牌动作
+							const lot = sis.allot();
+							console.log(`发给${lot.master}的第${lot.index}张牌`);
+						}
 						console.log('发牌结果', sis.getCard());
 					},
                     /*天使靴发送结果*/

@@ -25,6 +25,9 @@ function _allot(datas) {
 	return rs;
 }
 const init = Symbol();
+/**
+ * 解析荷官抽牌数据
+ */
 export default class CardDrawingAnalysis extends CardAnalysis{
 
 	constructor( completeData ){
@@ -44,6 +47,7 @@ export default class CardDrawingAnalysis extends CardAnalysis{
 		let rs = DIRECT.DEFAULT;
 		const lot = this.allot();
 		// 如果发给闲的第0张牌可以解析卡片,则代表此次抽牌为开新靴操作
+		// 注意，发牌顺序没有'第0张'，所有的发牌顺序以1开始。第0张牌不是发给player或者banker的.它用来代表开新靴。
 		if (lot.master === _.player && lot.index === 0){
 			const card = super.getCard();
 			if (card != null){
@@ -60,7 +64,7 @@ export default class CardDrawingAnalysis extends CardAnalysis{
 	}
 
 	/**
-	 * 分配庄/闲
+	 * 获取发牌顺序
 	 */
 	allot(){
 		return this.lot;

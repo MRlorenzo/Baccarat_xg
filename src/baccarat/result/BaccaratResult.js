@@ -24,6 +24,10 @@ export default class BaccaratResult {
         }
     }
 
+    getResult(){
+        return this.result;
+    }
+
     /*设置ID,为了识别它是哪一个结果*/
     setId( id ){
         this.id = id;

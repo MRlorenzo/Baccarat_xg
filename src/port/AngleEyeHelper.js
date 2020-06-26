@@ -122,7 +122,7 @@ export default class AngleEyeHelper {
         this.hooks = hooks;
     }
 
-    async debug(){
-        await runDebug();
+    async debug( comName ){
+        await runDebug(comName);
     }
 }

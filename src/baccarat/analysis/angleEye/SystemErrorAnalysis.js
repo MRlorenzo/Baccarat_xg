@@ -1,15 +1,14 @@
-import CompleteAnalysis from "../CompleteAnalysis";
+import AngleEyeAnalysis from "./AngleEyeAnalysis";
 
-export default class SystemErrorAnalysis extends CompleteAnalysis{
+export default class SystemErrorAnalysis extends AngleEyeAnalysis{
 	constructor(completeData){
 		super(completeData);
 		this.msg = null;
 	}
 
-	analysis(){
+	getMsg(){
 		let msg = 'System err: ';
-		let [arg0 , b , arg1] = this.data.getData();
-		switch (b & 0X3F) {
+		switch (this.getCode()) {
 			case 1:
 				msg+='Can not read';
 				break;
@@ -34,5 +33,10 @@ export default class SystemErrorAnalysis extends CompleteAnalysis{
 		}
 		this.msg = msg;
 		return this.msg;
+	}
+
+	getCode(){
+		let [arg0 , b , arg1] = super.analysis();
+		return b & 0X3F;
 	}
 }

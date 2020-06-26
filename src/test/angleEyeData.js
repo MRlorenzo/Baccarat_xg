@@ -40,7 +40,7 @@ async function write(port , data){
       if (err) {
         reject(err);
       }else{
-        console.log('success...', data)
+        //console.log('success...', data)
         resolve()
       }
     })

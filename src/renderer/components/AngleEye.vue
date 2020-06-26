@@ -9,6 +9,11 @@
     import ErrorNameException from "../../exception/ErrorNameException";
     import ModuleException from "../../exception/ModuleException";
     import AccessDeniedException from "../../exception/AccessDeniedException";
+	import CardDrawingAnalysis from "../../baccarat/analysis/angleEye/CardDrawingAnalysis";
+	import DealCardsShowAnalysis from "../../baccarat/analysis/angleEye/DealCardsShowAnalysis";
+	import SystemErrorAnalysis from "../../baccarat/analysis/angleEye/SystemErrorAnalysis";
+	import CardDrawingRetransmissionAnalysis from "../../baccarat/analysis/angleEye/CardDrawingRetransmissionAnalysis";
+	import GameResultAnalysis from "../../baccarat/analysis/angleEye/GameResultAnalysis";
 
     export default {
         name: "angle-eye",
@@ -71,18 +76,42 @@
                     },
                     /*当荷官抽牌时*/
                     cardDrawing(d) {
-                        console.log('抽牌',d.getData())
+                        const sis = new CardDrawingAnalysis(d);
+                        // 是不是开新靴的抽牌动作？
+                        if (sis.direct() === 'newBoot'){
+
+                        }else{
+                        	// 普通抽牌动作
+                            const lot = sis.allot();
+                            console.log(`发给${lot.master}的第${lot.index}张牌`);
+                        }
+
                     },
+					// 抽多牌了
+					cardDrawingEgig(d) {
+						// ...
+					},
+					// 使用发多的牌
+					cardDrawingRetransmission(d) {
+						console.log('使用发多的牌', d.getData());
+						const sis = new CardDrawingRetransmissionAnalysis(d);
+						// ...
+					},
+					// 撤销发多的牌
+					revokeMultipleCards(d) {
+						console.log('撤销发多的牌', d.getData())
+					},
 					/*发牌结果*/
 					dealCardsShow(d) {
-						console.log('抽牌？', d.getData())
-					},
-					revokeMultipleCards(d) {
-						console.log('取消发多的牌', d.getData())
+						const sis = new DealCardsShowAnalysis(d);
+						console.log('发牌结果', sis.getCard());
 					},
                     /*天使靴发送结果*/
                     gameResult(d) {
-                        console.log('游戏结果', d.getData())
+
+                        const sis = new GameResultAnalysis(d);
+                        console.log('游戏结果:点数:', sis.getResult());
+						console.log('游戏结果:胜者:', sis.getWinner());
                     },
 					cancellationOfError(d) {
 						console.log('取消错误', d.getData())
@@ -91,19 +120,15 @@
 						console.log('待机', d.getData())
 					},
 					systemError(d) {
-						console.log('系统错误', d.getData())
+						console.log('系统错误', d.getData());
+                        const sis = new SystemErrorAnalysis(d);
+						new UnknownException(sis.getMsg() , sis.getCode());
 					},
-                    cardDrawingEgig(d) {
-                        console.log('...' , d.getData());
-                    },
                     lockOperation(d) {
                         console.log('锁定', d.getData())
                     },
                     changeOfPresetValue(d) {
                         console.log('重新设定默认值', d.getData())
-                    },
-                    cardDrawingRetransmission(d) {
-                        console.log('...', d.getData())
                     },
                     default(d) {
                         console.log('默认', d.getData())

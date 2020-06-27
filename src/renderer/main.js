@@ -2,6 +2,10 @@ import Vue from 'vue'
 import App from './App'
 import AngleEye from './plugins/AngleEye';
 import RoadMonitor from './plugins/RoadMonitor';
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+
+Vue.use(ElementUI);
 
 // 路单控制中心。
 Vue.use(RoadMonitor);

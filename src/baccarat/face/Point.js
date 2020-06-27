@@ -1,67 +1,55 @@
-import { bean } from '../../utils';
-let PointEnum = (function(){return{
-    JOKER: bean({
+import { dataBean , enums } from '../../utils';
+let PointEnum = enums({
+	JOKER: dataBean({
 		name:'JOKER',value:21
 	}),
-    K: bean({
+	K: dataBean({
 		name:'K',value:13
 	}),
-    Q: bean({
+	Q: dataBean({
 		name:'Q',value:12
 	}),
-    J: bean({
+	J: dataBean({
 		name:'J',value:11
 	}),
-    TEN: bean({
+	TEN: dataBean({
 		name:'10',value:10
 	}),
-    NINE: bean({
+	NINE: dataBean({
 		name:'9',value:9
 	}),
-    EIGHT: bean({
+	EIGHT: dataBean({
 		name:'8',value:8
 	}),
-    SEVEN: bean({
+	SEVEN: dataBean({
 		name:'7',value:7
 	}),
-    SIX: bean({
+	SIX: dataBean({
 		name:'6',value:6
 	}),
-    FIVE: bean({
+	FIVE: dataBean({
 		name:'5',value:5
 	}),
-    FOUR: bean({
+	FOUR: dataBean({
 		name:'4',value:4
 	}),
-    THREE: bean({
+	THREE: dataBean({
 		name:'3',value:3
 	}),
-    TWO: bean({
+	TWO: dataBean({
 		name:'2',value:2
 	}),
-    ONE: bean({
+	ONE: dataBean({
 		name:'A',value:1
 	}),
-    getPoint(p){
-        for(let point of this.values()){
-            if(p === point.value){
-                return point
-            }
-        }
-        return null;
-    },
-    values(){
-        let list = [];
-        for(let k in this){
-            if(k !== 'values' && k!== 'getPoint'){
-                list.push(this[k]);
-            }
-        }
-        return list;
-    }
-}
-})();
-//不能向对象中新添加属性和方法
-Object.freeze(PointEnum);
+	getPoint(p){
+		for(let point of this.values()){
+			if(p === point.value){
+				return point
+			}
+		}
+		return null;
+	}
+})
 
 export default PointEnum;

@@ -70,6 +70,7 @@
             },
             initHooks() {
                 const helper = this.$angleEye;
+                const road = this.$road;
                 helper.setHooks({
                     boot(d) {
                         console.log('天使靴开机', d.getData());
@@ -120,6 +121,7 @@
 
                         const sis = new GameResultAnalysis(d);
                         console.log('游戏结果:点数:', sis.getResult());
+                        road.push(sis.getResult());
 						console.log('游戏结果:胜者:', sis.getWinner());
                     },
 					cancellationOfError(d) {

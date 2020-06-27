@@ -12,60 +12,64 @@ export default class RoadStatistics{
 
     /**
      * 放入一个结果 统计
-     * @param e
+     * @param e BaccaratResult
      */
     pushRs(e){
-        let that = this;
-        that.games++;
+        this.games++;
         //百家乐结果
-        switch (e.result){
+        switch (e.getResult()){
             case BResultEnum.B:
-                that.bCount++;
+				this.bCount++;
                 break;
             case BResultEnum.P:
-                that.pCount++;
+				this.pCount++;
                 break;
             case BResultEnum.T:
-                that.tCount++;
+				this.tCount++;
                 break;
             default:
                 break;
         }
 
-        e.pairs&&e.pairs.forEach(function (p) {
-            switch (p){
-                case PairsEnum.BP:
-                    that.bPCount++;
-                    break;
-                case PairsEnum.PP:
-                    that.pPCount++;
-                    break;
-                default:
-                    break;
-            }
+        const pairs = e.getPairs();
+
+        // 是否有对子
+		pairs && pairs.forEach( p=>{
+			switch (p){
+				case PairsEnum.BP:
+					this.bPCount++;
+					break;
+				case PairsEnum.PP:
+					this.pPCount++;
+					break;
+				default:
+					break;
+			}
         });
+
+		const skyCards = e.getSkyCards();
 
         //是否有天牌
-        e.skyCards && e.skyCards.forEach(function (e) {
-            switch (e){
-                case SkyCardEnum.B:
-                    that.bSkyCard++;
-                    break;
-                case SkyCardEnum.P:
-                    that.pSkyCard++;
-                    break;
-                default:
-                    break;
-            }
+		skyCards && skyCards.forEach(e => {
+			switch (e){
+				case SkyCardEnum.B:
+					this.bSkyCard++;
+					break;
+				case SkyCardEnum.P:
+					this.pSkyCard++;
+					break;
+				default:
+					break;
+			}
         });
 
-        if (e.skyCards && (e.skyCards.length > 0)){
-            that.skyCard++;
+        if (skyCards && (skyCards.length > 0)){
+            this.skyCard++;
         }
 
         //是否庄6点赢
-        if (e.bSixWin){
-            that.bSixWin ++;
+        if (e.isBankerSixWin()){
+            this.bSixWin ++;
         }
     }
 
@@ -75,58 +79,59 @@ export default class RoadStatistics{
      * @returns {*}
      */
     popRs(e){
-        let that = this;
-        that.games--;
+		this.games--;
         //百家乐结果
-        switch (e.result){
+        switch (e.getResult()){
             case BResultEnum.B:
-                that.bCount--;
+				this.bCount--;
                 break;
             case BResultEnum.P:
-                that.pCount--;
+				this.pCount--;
                 break;
             case BResultEnum.T:
-                that.tCount--;
+				this.tCount--;
                 break;
             default:
                 break;
         }
 
+        const pairs = e.getPairs();
         //是否有对子
-        e.pairs&&e.pairs.forEach(function (p) {
-            switch (p){
-                case PairsEnum.BP:
-                    that.bPCount--;
-                    break;
-                case PairsEnum.PP:
-                    that.pPCount--;
-                    break;
-                default:
-                    break;
-            }
+		pairs && pairs.forEach(p => {
+			switch (p){
+				case PairsEnum.BP:
+					this.bPCount--;
+					break;
+				case PairsEnum.PP:
+					this.pPCount--;
+					break;
+				default:
+					break;
+			}
         });
 
+		const skyCards = e.getSkyCards();
         //是否有天牌
-        e.skyCards && e.skyCards.forEach(function (e) {
-            switch (e){
-                case SkyCardEnum.B:
-                    that.bSkyCard--;
-                    break;
-                case SkyCardEnum.P:
-                    that.pSkyCard--;
-                    break;
-                default:
-                    break;
-            }
+		skyCards && skyCards.forEach(e => {
+			switch (e){
+				case SkyCardEnum.B:
+					this.bSkyCard--;
+					break;
+				case SkyCardEnum.P:
+					this.pSkyCard--;
+					break;
+				default:
+					break;
+			}
         });
 
-        if (e.skyCards && (e.skyCards.length > 0)){
-            that.skyCard--;
+        if (skyCards && (skyCards.length > 0)){
+			this.skyCard--;
         }
 
         //是否庄6点赢
-        if (e.bSixWin){
-            that.bSixWin --;
+        if (e.isBankerSixWin()){
+			this.bSixWin --;
         }
     }
 

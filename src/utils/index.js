@@ -28,6 +28,38 @@ export function bean( obj ){
 	}
 	return clone(obj , map);
 }
+// 数据实体(只读)
+export function dataBean( obj ) {
+	const fields = new Set();
+	Object.keys(obj).forEach(k=>{
+		if (typeof obj[k] !== 'function'){
+			fields.add(k);
+		}
+	});
+	const map = {};
+	for (const key of fields){
+		const getter = function(){
+			return this[key];
+		}
+		map['get'+firstLocaleUpperCase(key)] = getter;
+	}
+	return Object.freeze(clone(obj , map));
+}
+
+// 创建枚举对象
+export function enums( obj ) {
+	const fields = new Set();
+	Object.keys(obj).forEach(k=>{
+		if (typeof obj[k] !== 'function'){
+			fields.add(k);
+		}
+	});
+	const map = {};
+	map.values = function () {
+		return Array.from(fields).map(field => obj[field]);
+	}
+	return Object.freeze(clone(obj , map));
+}
 
 //做任何事直到成功为止
 export function doAnyThingToEnd(doFunction, checkFunction) {

@@ -1,18 +1,18 @@
-import { bean } from "../../utils";
+import { dataBean , enums } from "../../utils";
 
 function toString() {
     return this.name;
 }
 
-const PairsEnum = (function () {return {
+const PairsEnum = enums({
 	/**
 	 * 庄对
 	 */
-	BP: bean({ index: 4 , name:'庄对'  , toString: toString }),
+	BP: dataBean({ index: 4 , name:'庄对'  , toString: toString }),
 	/**
 	 * 闲对
 	 */
-	PP: bean({ index :5 , name:'闲对' , toString: toString}),
+	PP: dataBean({ index :5 , name:'闲对' , toString: toString}),
 
 	getPairs(index){
 		for(let pairs of this.values()){
@@ -21,19 +21,7 @@ const PairsEnum = (function () {return {
 			}
 		}
 		return null;
-	},
-
-	values(){
-		let list = [];
-		for(let k in this){
-			if(k !== 'values' && k!== 'getPairs'){
-				list.push(this[k]);
-			}
-		}
-		return list;
 	}
-}})()
-
-Object.freeze(PairsEnum);
+})
 
 export default PairsEnum;

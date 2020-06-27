@@ -1,18 +1,18 @@
-import { bean } from "../../utils";
+import { dataBean , enums } from "../../utils";
 
 function toString() {
     return this.keyCode;
 }
 
-const SkyCardEnum = (function () {return {
+const SkyCardEnum = enums({
 	/**
 	 * 庄天牌
 	 */
-	B: bean({ index: 7 , name:'庄天牌' , keyCode:'+' , toString:toString }),
+	B: dataBean({ index: 7 , name:'庄天牌' , keyCode:'+' , toString:toString }),
 	/**
 	 * 闲天牌
 	 */
-	P: bean({ index :8 , name:'闲天牌' , keyCode:'-' , toString:toString}),
+	P: dataBean({ index :8 , name:'闲天牌' , keyCode:'-' , toString:toString}),
 
 	getSkyCards:function(index){
 		for(let pairs of this.values()){
@@ -30,19 +30,7 @@ const SkyCardEnum = (function () {return {
 			}
 		}
 		return null;
-	},
-
-	values(){
-		let list = [];
-		for(let k in this){
-			if(k !== 'values' && k!== 'getSkyCards' && k!== 'getSkyCardByKeyCode'){
-				list.push(this[k]);
-			}
-		}
-		return list;
 	}
-}})();
-
-Object.freeze(SkyCardEnum);
+});
 
 export default SkyCardEnum;

@@ -14,7 +14,8 @@ function getResultByString( rs ) {
     }
     rs = rs.trim();
 
-    let bResult = BResult.getBResult(rs.charAt(0));
+    const rsIndex = parseInt(rs.charAt(0));
+    let bResult = BResult.getBResult(rsIndex);
 
     let pairs = BaccaratResult.getPairsByString(rs);
 
@@ -144,7 +145,7 @@ export default class BaccaratResult {
         // 只保留包含在skyCodes中的字符。
         const strList = string.split('').filter(str=> skyCodes.includes(str));
 
-        return strList.map(sky => SkyCard.getSkyCardByKeyCode(sky.getKeyCode()));
+        return strList.map(code => SkyCard.getSkyCardByKeyCode(code));
     }
 
     static getResult(result , skyCards , pairs){

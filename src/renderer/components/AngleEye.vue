@@ -1,5 +1,10 @@
 <template>
-
+    <game-result-view
+            :show-result="showResult"
+            :result="result"
+            :banker-card-list="bankerCardList"
+            :player-card-list="playerCardList"
+    ></game-result-view>
 </template>
 
 <script>
@@ -14,9 +19,24 @@
 	import SystemErrorAnalysis from "../../baccarat/analysis/angleEye/SystemErrorAnalysis";
 	import CardDrawingRetransmissionAnalysis from "../../baccarat/analysis/angleEye/CardDrawingRetransmissionAnalysis";
 	import GameResultAnalysis from "../../baccarat/analysis/angleEye/GameResultAnalysis";
-
+	import GameResultView from './GameResultView';
     export default {
         name: "angle-eye",
+        components: { GameResultView },
+        props: {
+			showResultTime: {
+				type: Number,
+                default: 10
+            }
+        },
+		data(){
+			return {
+				showResult: false,
+                result: null,
+                bankerCardList: [],
+				playerCardList: []
+			}
+		},
         methods: {
             async tryOpen(){
                 const helper = this.$angleEye;
@@ -68,12 +88,35 @@
                 });
 
             },
+			openFullScreen( result ) {
+				this.showResult = true;
+                this.result = result;
+
+				let time = this.showResultTime;
+
+				time = parseFloat(time);
+				if(isNaN(time)){
+					time = 10;
+				}
+
+				this.showOpenFullScreenTimer = setTimeout(()=>{
+					this.showResult = false;
+					this.bankerCardList = [];
+					this.playerCardList = [];
+				}, time * 1000 );
+			},
             initHooks() {
                 const helper = this.$angleEye;
-                const road = this.$road;
+                const that = this;
+
                 helper.setHooks({
                     boot(d) {
                         console.log('天使靴开机', d.getData());
+                        // 清空卡片列表
+                        // 庄家牌
+                        that.bankerCardList = [];
+                        // 玩家牌
+                        that.playerCardList = [];
                     },
                     /*当荷官抽牌时*/
                     cardDrawing(d) {
@@ -112,17 +155,24 @@
 						}else{
 							// 普通抽牌动作
 							const lot = sis.allot();
-							console.log(`发给${lot.master}的第${lot.index}张牌`);
+							// console.log(`发给${lot.master}的第${lot.index}张牌`);
+							if (lot.master === 'banker'){
+								that.bankerCardList.push(sis.getCard());
+                            }else if (lot.master === 'player'){
+								that.playerCardList.push(sis.getCard());
+                            }
 						}
-						console.log('发牌结果', sis.getCard());
+						// console.log('发牌结果', sis.getCard());
 					},
                     /*天使靴发送结果*/
                     gameResult(d) {
 
                         const sis = new GameResultAnalysis(d);
-                        console.log('游戏结果:点数:', sis.getResult());
-                        road.push(sis.getResult());
-						console.log('游戏结果:胜者:', sis.getWinner());
+                        // console.log('游戏结果:点数:', sis.getResult());
+                        that.$emit('result' , sis.getResult());
+                        // 显示扑克牌
+						that.openFullScreen(sis.getResult());
+						// console.log('游戏结果:胜者:', sis.getWinner());
                     },
 					cancellationOfError(d) {
 						console.log('取消错误', d.getData())

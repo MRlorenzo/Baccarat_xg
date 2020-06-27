@@ -100,6 +100,7 @@
 				if (helper != null) {
                     try {
                     	await helper.updateComName(this.comName);
+						this.visible = false;
                     	console.log('打开成功')
                     }catch (e){
                         // UnableCloseException,ModuleException,ReOpenException,UnknownException

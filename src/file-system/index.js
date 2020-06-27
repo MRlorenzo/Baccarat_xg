@@ -18,6 +18,7 @@ function withAppPath( _path ) {
 }
 
 export async function exists( _path ){
+    _path = withAppPath(_path);
 	return new Promise(resolve => {
 		fs.exists(_path, exi=> {
 			resolve(exi);
@@ -52,6 +53,7 @@ async function safetyURL( _path ){
 }
 
 export function stat( _path ){
+	_path = withAppPath(_path)
 	return new Promise((resolve, reject) => {
 		fs.stat(_path , function (err, stats) {
 			if(err){
@@ -192,6 +194,7 @@ export async function saveJsonFile( _path , data){
  * @returns {Promise<any>}
  */
 export function mkdir( dir ){
+	dir = withAppPath(dir)
 	return new Promise( (resolve, reject) => {
 		fs.mkdir(dir, err => {
 			if(err){
@@ -203,7 +206,8 @@ export function mkdir( dir ){
 	});
 }
 
-function files( _path ){
+export function files( _path ){
+    _path = withAppPath(_path);
 	return new Promise((resolve, reject) => {
 		fs.readdir( _path , ( err , files)=>{
 			if(err){

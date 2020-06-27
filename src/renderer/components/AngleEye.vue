@@ -198,9 +198,11 @@
             }
         },
         async created() {
-            this.initEvent();
-            this.initHooks();
-            await this.tryOpen();
+        	if (this.helper != null){
+				this.initEvent();
+				this.initHooks();
+				await this.tryOpen();
+            }
         }
     }
 </script>

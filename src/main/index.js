@@ -17,6 +17,11 @@ unhandled({
     showDialog:true
 });
 
+// 发起关闭程序请求
+ipcMain.on('exitSystem' , ()=>{
+	app.quit();
+});
+
 //当所有窗口都被关闭后退出
 app.on('window-all-closed', () => {
     // 在 macOS 上，除非用户用 Cmd + Q 确定地退出，

@@ -4,6 +4,7 @@ import AngleEye from './plugins/AngleEye';
 import RoadMonitor from './plugins/RoadMonitor';
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import i18n from '../utils/lang';
 
 Vue.use(ElementUI);
 
@@ -19,5 +20,6 @@ Vue.config.productionTip = false
 /* eslint-disable no-new */
 new Vue({
     components: {App},
+    i18n,
     template: '<App/>'
 }).$mount('#app')

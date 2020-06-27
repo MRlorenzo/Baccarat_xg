@@ -1,0 +1,14 @@
+{
+   "angleEye": {
+      "boot": "天使靴开机",
+      "newGame": "开始新局",
+       "drawMoreCard": "抽多牌了",
+       "useDrawMoreCard": "使用抽多的牌",
+       "cancelDrawMoreCard": "取消发多的牌",
+       "cancelError": "取消错误",
+       "standBy": "待机",
+       "systemError": "系统错误",
+       "lock": "锁定",
+       "changeOfPresetValue": "重新设定默认值"
+   }
+}

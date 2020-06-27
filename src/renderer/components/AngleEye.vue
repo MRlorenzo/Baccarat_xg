@@ -112,7 +112,8 @@
 
                 helper.setHooks({
                     boot(d) {
-                        console.log('天使靴开机', d.getData());
+                        // 天使靴开机
+                        this.$notify.info(this.$t('angleEye.boot'));
                         // 清空卡片列表
                         // 庄家牌
                         that.bankerCardList = [];
@@ -124,27 +125,29 @@
                         const sis = new CardDrawingAnalysis(d);
                         // 是不是开新靴的抽牌动作？
                         if (sis.direct() === 'newBoot') {
-
+                            // 开新靴
+                            this.$notify.info(this.$t('angleEye.newGame'));
+                            this.$emit('newGame');
                         } else {
                             // 普通抽牌动作
-                            const lot = sis.allot();
-                            console.log(`发给${lot.master}的第${lot.index}张牌`);
+                            //const lot = sis.allot();
+                            // console.log(`发给${lot.master}的第${lot.index}张牌`);
                         }
 
                     },
                     // 抽多牌了
                     cardDrawingEgig(d) {
-                        // ...
+                        this.$notify.warning(this.$t('angleEye.drawMoreCard'));
                     },
                     // 使用发多的牌
                     cardDrawingRetransmission(d) {
-                        console.log('使用发多的牌', d.getData());
-                        const sis = new CardDrawingRetransmissionAnalysis(d);
+                        this.$notify.info(this.$t('angleEye.useDrawMoreCard'));
+                        // const sis = new CardDrawingRetransmissionAnalysis(d);
                         // ...
                     },
                     // 撤销发多的牌
                     revokeMultipleCards(d) {
-                        console.log('撤销发多的牌', d.getData())
+                        this.$notify.info(this.$t('angleEye.cancelDrawMoreCard'));
                     },
                     /*发牌结果*/
                     dealCardsShow(d) {
@@ -169,28 +172,28 @@
                     gameResult(d) {
 
                         const sis = new GameResultAnalysis(d);
-                        // console.log('游戏结果:点数:', sis.getResult());
+
                         that.$emit('result', sis.getResult());
                         // 显示扑克牌
                         that.openFullScreen(sis.getResult());
                         // console.log('游戏结果:胜者:', sis.getWinner());
                     },
                     cancellationOfError(d) {
-                        console.log('取消错误', d.getData())
+                        this.$notify.info(this.$t('angleEye.cancelError'));
                     },
                     standBy(d) {
-                        console.log('待机', d.getData())
+                        this.$notify.info(this.$t('angleEye.standBy'));
                     },
                     systemError(d) {
-                        console.log('系统错误', d.getData());
+                        this.$notify.info(this.$t('angleEye.systemError'));
                         const sis = new SystemErrorAnalysis(d);
                         new UnknownException(sis.getMsg(), sis.getCode());
                     },
                     lockOperation(d) {
-                        console.log('锁定', d.getData())
+                        this.$notify.info(this.$t('angleEye.lock'));
                     },
                     changeOfPresetValue(d) {
-                        console.log('重新设定默认值', d.getData())
+                        this.$notify.info(this.$t('angleEye.changeOfPresetValue'));
                     },
                     default(d) {
                         console.log('默认', d.getData())

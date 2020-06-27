@@ -67,6 +67,10 @@
 
 <script>
 	import {getComNameList} from "../../port/utils";
+	import ReOpenException from "../../exception/ReOpenException";
+	import UnknownException from "../../exception/UnknownException";
+	import UnableCloseException from "../../exception/UnableCloseException";
+	import ModuleException from "../../exception/ModuleException";
 
 	export default {
 		name: "com-setting-page",
@@ -92,12 +96,25 @@
 			},
 			/*连接*/
 			async submit() {
-				const helper = this.$helper;
+				const helper = this.$angleEye;
 				if (helper != null) {
                     try {
                     	await helper.updateComName(this.comName);
+                    	console.log('打开成功')
                     }catch (e){
-
+                        // UnableCloseException,ModuleException,ReOpenException,UnknownException
+                        if (e instanceof ReOpenException){
+                        	console.log('重复打开')
+                        }
+                        if (e instanceof UnknownException){
+                        	console.log(e.message)
+                        }
+                        if (e instanceof UnableCloseException){
+                        	console.log('无法关闭资源')
+                        }
+                        if (e instanceof ModuleException){
+                        	console.log(e.message);
+                        }
                     }
 				}
 			},

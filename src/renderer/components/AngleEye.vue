@@ -43,6 +43,7 @@
                 // 只有尝试打开资源之后才知道连接是否成功。
                 try {
                     await helper.open();
+					console.log('打开成功')
                 } catch (e) {
                     if (e instanceof ModuleException) {
                         if (e instanceof AccessDeniedException) {
@@ -198,7 +199,7 @@
             }
         },
         async created() {
-        	if (this.helper != null){
+        	if (this.$angleEye != null){
 				this.initEvent();
 				this.initHooks();
 				await this.tryOpen();

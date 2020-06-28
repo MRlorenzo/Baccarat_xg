@@ -1,0 +1,21 @@
+{
+    "currencyIds": [2],
+    "limitList": [
+        {
+            "id": 2,
+            "currencyName": "USD",
+            "betLimit": {
+                "max": 0,
+                "min": 0
+            },
+            "pairLimit": {
+                "max": 0,
+                "min": 0
+            },
+            "tieLimit": {
+                "max": 0,
+                "min": 0
+            }
+        }
+    ]
+}

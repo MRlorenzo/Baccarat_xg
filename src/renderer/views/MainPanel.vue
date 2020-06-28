@@ -70,7 +70,10 @@
 		props: {
 			setting: {
 				type: Object
-			}
+			},
+            limit: {
+			    type: Object
+            }
 		},
 		components: {
 			AngleEye,

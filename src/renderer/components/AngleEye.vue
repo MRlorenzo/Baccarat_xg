@@ -19,7 +19,7 @@
     import SystemErrorAnalysis from "../../baccarat/analysis/angleEye/SystemErrorAnalysis";
     import CardDrawingRetransmissionAnalysis from "../../baccarat/analysis/angleEye/CardDrawingRetransmissionAnalysis";
     import GameResultAnalysis from "../../baccarat/analysis/angleEye/GameResultAnalysis";
-    import GameResultView from './GameResultView';
+    import GameResultView from '../views/GameResultView';
 
     export default {
         name: "angle-eye",

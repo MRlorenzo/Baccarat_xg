@@ -66,7 +66,7 @@
 </template>
 
 <script>
-    import {getComNameList} from "../../port/utils";
+    import {getComNameList} from "../../port/utils/index";
 
     export default {
         name: "com-setting-page",

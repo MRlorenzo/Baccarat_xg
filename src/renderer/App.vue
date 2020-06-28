@@ -1,82 +1,55 @@
 <template>
-  <div id="main-box">
-    首页
-
-    <angle-eye @result="angleEyeResult"></angle-eye>
-
-    <com-setting-page ref="comSetting" @update="connectCom"></com-setting-page>
-  </div>
+    <div>
+        <div v-show="currView === 'loading'">
+            欢迎页面....
+        </div>
+        <main-panel v-show="currView === 'main'" :setting="userSetting"></main-panel>
+    </div>
 </template>
 
 <script>
-    import AngleEye from './components/AngleEye';
-    import ComSettingPage from './components/ComSettingPage';
-    import Mousetrap from 'mousetrap';
+	import Mousetrap from 'mousetrap';
+	import MainPanel from './views/MainPanel';
+	import { setting } from "../local-storage";
+	import defaultSetting from '../utils/setting.json';
 
-    import ReOpenException from "../exception/ReOpenException";
-    import UnknownException from "../exception/UnknownException";
-    import UnableCloseException from "../exception/UnableCloseException";
-    import ModuleException from "../exception/ModuleException";
+	const VIEW = {LOADING: 'loading', MAIN: 'main'}
 
-    export default {
-        name: 'app',
-        components: {AngleEye, ComSettingPage},
-        methods: {
-            angleEyeResult(baccaratResult) {
-                console.log('天使靴解析了百家乐结果:', baccaratResult);
-                this.$road.push(baccaratResult);
-            },
-            openComSetting() {
-                this.$refs.comSetting.open();
-            },
-            closeComSetting(){
-                this.$refs.comSetting.close();
-            },
-            async connectCom( comName ){
-                const helper = this.$angleEye;
-                if (helper != null) {
-                    try {
-                        await helper.updateComName(comName);
-                        this.closeComSetting();
-                        console.log('打开成功')
-                    } catch (e) {
-                        // UnableCloseException,ModuleException,ReOpenException,UnknownException
-                        if (e instanceof ReOpenException) {
-                            console.log('重复打开')
-                        }
-                        if (e instanceof UnknownException) {
-                            console.log(e.message)
-                        }
-                        if (e instanceof UnableCloseException) {
-                            console.log('无法关闭资源')
-                        }
-                        if (e instanceof ModuleException) {
-                            console.log(e.message);
-                        }
-                    }
-                }else {
-                    this.closeComSetting();
-                }
+	export default {
+		name: 'app',
+		components: { MainPanel },
+        data(){
+			return {
+				userSetting: defaultSetting,
+                currView: VIEW.LOADING
             }
         },
-        mounted() {
-            /*Mousetrap.bind(['f12', 'ctrl+shift+i'], ()=>{
-              this.$electron.ipcRenderer.send('openDevTools');
-            });*/
-
-            Mousetrap.bind('0 0 enter', () => {
-                this.$electron.ipcRenderer.send('exitSystem');
-            })
-
-            Mousetrap.bind('. enter', () => {
-                this.openComSetting();
-            })
-
-        }
-    }
+        methods: {
+			async initSetting(){
+				let userSetting = await setting.findOne();
+				if (userSetting == null){
+					userSetting = defaultSetting;
+					await setting.save(userSetting);
+                }
+                this.userSetting = userSetting;
+                return userSetting;
+            }
+        },
+        async created(){
+			// 初始化配置信息
+			await this.initSetting();
+			this.currView = VIEW.MAIN;
+        },
+		mounted() {
+			// 小键盘触发按键关闭程序
+			Mousetrap.bind('0 0 enter', () => {
+				this.$electron.ipcRenderer.send('exitSystem');
+			})
+		}
+	}
 </script>
 
 <style>
-  #main-box {
-  }
+    #main-box {
+    }
 </style>

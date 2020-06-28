@@ -45,6 +45,7 @@
     import Pairs from '../../baccarat/result/Pairs';
 	import BaccaratResult from "../../baccarat/result/BaccaratResult";
     export default {
+    	/*游戏结果(扑克牌)视图*/
         name: "game-result-view",
         props:{
             showResult:{

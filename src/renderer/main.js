@@ -12,7 +12,7 @@ Vue.use(ElementUI);
 Vue.use(RoadMonitor);
 
 // 天使靴操作助手
-// Vue.use(AngleEye);
+Vue.use(AngleEye);
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.config.productionTip = false
 

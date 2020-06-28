@@ -63,7 +63,7 @@
 						case 'T':className+=' bg-t';break;
 					}
 				}
-				console.log(name);
+
 				this.showClassName = className;
             },
             close(){

@@ -1,6 +1,9 @@
 <template>
     <div id="main-box">
         首页
+        <div v-for="b in beadResults">
+            {{ b }}
+        </div>
 
         <angle-eye @result="angleEyeResult"></angle-eye>
 
@@ -10,6 +13,7 @@
             @show="showInputGameResult"
             @confirm="confirmInputGameResult"
             @esc="escInputGame"
+            @cancel="cancelGame"
         ></num-key-code-handler>
 
         <input-game-result-view
@@ -43,13 +47,21 @@
         },
         data(){
 			return {
-
+				beadResults: []
+            }
+        },
+        watch: {
+			beadResults() {
+				const { result , nextTest} = this.$road.updateResult();
+				console.log(result);
+				console.log(nextTest);
             }
         },
 		methods: {
 			angleEyeResult(baccaratResult) {
 				console.log('天使靴解析了百家乐结果:', baccaratResult);
 				this.$road.push(baccaratResult);
+				this.beadResults = this.$road.arr;
 			},
 			openComSetting() {
 				this.$refs.comSetting.open();
@@ -87,12 +99,16 @@
 				this.$refs.inputGame.open(baccaratResult);
             },
 			confirmInputGameResult( baccaratResult ){
-				console.log(baccaratResult);
 				this.$road.push(baccaratResult);
+				this.beadResults = this.$road.arr;
 				this.$refs.inputGame.close();
             },
             escInputGame(){
 				this.$refs.inputGame.close();
+            },
+			cancelGame(){
+				this.$road.pop();
+				this.beadResults = this.$road.arr;
             }
 		},
 		mounted() {
@@ -100,7 +116,7 @@
 			Mousetrap.bind('. enter', () => {
 				this.openComSetting();
 			})
-
+            window.vm = this;
 		}
 	}
 </script>

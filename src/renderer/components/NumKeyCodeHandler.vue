@@ -24,11 +24,15 @@
             },
             addPairsCode( pairsCode ){
 				this.pairs.add(pairsCode);
-				this.$emit('show' , this.getGameResult());
+				if (this.rsTxt != null){
+					this.$emit('show' , this.getGameResult());
+                }
             },
             addSkyCardCode( skyCardCode ){
 				this.skyCards.add(skyCardCode);
-				this.$emit('show' , this.getGameResult());
+				if (this.rsTxt != null){
+					this.$emit('show' , this.getGameResult());
+                }
             },
 			getGameResult(){
                 let pairs = Array.from(this.pairs).join('');
@@ -37,7 +41,9 @@
                 return BaccaratResult.getResult(str);
             },
             confirm(){
-				this.$emit('confirm' , this.getGameResult());
+				if (this.rsTxt != null){
+					this.$emit('confirm' , this.getGameResult());
+				}
 				this.clear();
             },
             clear(){
@@ -74,6 +80,9 @@
 			Mousetrap.bind('esc', ()=> {
 				this.$emit('esc');
 				this.clear();
+            });
+			Mousetrap.bind('7' , ()=> {
+				this.$emit('cancel')
             })
         }
 	}

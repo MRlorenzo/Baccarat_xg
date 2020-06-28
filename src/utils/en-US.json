@@ -1,5 +1,6 @@
 {
     "angleEye": {
+        "connectSuccess": "连接成功",
         "boot": "天使靴开机",
         "newGame": "开始新局",
         "drawMoreCard": "抽多牌了",
@@ -9,6 +10,11 @@
         "standBy": "待机",
         "systemError": "系统错误",
         "lock": "锁定",
-        "changeOfPresetValue": "重新设定默认值"
+        "changeOfPresetValue": "重新设定默认值",
+        "accessDenied": "端口拒绝访问",
+        "moduleError": "模块异常",
+        "errorName": "串口名称不正确",
+        "reOpen": "重复打开资源",
+        "lostConnection": "失去连接"
     }
 }

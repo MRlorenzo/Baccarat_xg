@@ -15,6 +15,18 @@
         "moduleError": "模块异常",
         "errorName": "串口名称不正确",
         "reOpen": "重复打开资源",
-        "lostConnection": "失去连接"
+        "lostConnection": "失去连接",
+        "unableCloseException": "无法关闭资源"
+    },
+    "road": {
+        "B": "庄",
+        "P": "闲",
+        "T": "和",
+        "beadRoad": "珠仔路"
+    },
+    "title": {
+        "minToMax": "最小/最大",
+        "tie": "和",
+        "pairs": "对子"
     }
 }

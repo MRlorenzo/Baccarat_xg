@@ -17,7 +17,7 @@
             	type: BaccaratResult
             },
             shine:{ type:Boolean},
-            lastResult:{ type:Object }
+            lastResult:{ type: BaccaratResult }
         },
         computed:{
             showClassName(){

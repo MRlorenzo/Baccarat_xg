@@ -27,7 +27,7 @@
             	type: BaccaratResult
             },
             shine:{ type: Boolean},
-            lastResult:{ type: Object },
+            lastResult:{ type: BaccaratResult },
             enlarge:{ type: String, default: "1"},
             size:{ type:Array, default: ()=> [0,0,4,20]},
         },

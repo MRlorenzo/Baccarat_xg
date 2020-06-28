@@ -17,5 +17,10 @@
     "reOpen": "重复打开资源",
     "lostConnection": "失去连接",
     "unableCloseException": "无法关闭资源"
+  },
+  "road": {
+    "B": "庄",
+    "P": "闲",
+    "T": "和"
   }
 }

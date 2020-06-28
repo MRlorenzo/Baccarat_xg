@@ -6,7 +6,7 @@ export default class Point {
     constructor(x, y, object) {
         this.x = x; // x坐标
         this.y = y; // y坐标
-        this.object = object; // BaccaratResult
+        this.z = object; // BaccaratResult
         this.location = {x: x, y: y};
         this.tie = []; // Array<Pairs>
     }
@@ -20,7 +20,7 @@ export default class Point {
     }
 
     getObject(){
-        return this.object;
+        return this.z;
     }
 
     getLocation(){

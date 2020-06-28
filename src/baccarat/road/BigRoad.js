@@ -1,7 +1,8 @@
 import Road from "./Road";
 import BResult from "../result/BResult";
-import Point from "../face/Point";
+import Point from "./Point";
 import BaccaratResult from "../result/BaccaratResult";
+import {clone} from "../../utils";
 
 /**
  * 大路
@@ -10,17 +11,17 @@ export default class BigRoad extends Road{
 
     constructor(arr){
         super(arr);
-        let that = this,
+        let
             //有高度柱状
-            rsa = that.rsa = [],
+            rsa = this.rsa = [],
             //每一列的最大高度
-            colHeight = that.colHeight = [],
-            HEIGHT = this.HEIGHT = 6,
-            monitors = that.monitors = [],
-            monitorMap = this.monitorMap = {};
+            colHeight = this.colHeight = [],
+            HEIGHT = this.HEIGHT = 6;
+            this.monitors = [],
+            this.monitorMap = {};
 
         //去除超过高度的 开始
-        that.noHeightWay.forEach(function (p) {
+		this.noHeightWay.forEach(function (p) {
             let x = p.x, y = p.y, height = colHeight[x];
             rsa[y] = rsa[y]||[];
             if (rsa[y][x] && !height){
@@ -145,5 +146,20 @@ export default class BigRoad extends Road{
         that.monitors.forEach(function (e) {
             e[name](that, val);
         })
+    }
+
+    updateResult(){
+        const result = {} , nextTest = {};
+        result.BigRoad = [...this.rsa];
+        Object.keys(this.monitorMap).forEach(name => {
+            const rsa = this.getResults(name);
+            result[name] = [...rsa];
+            nextTest[name] = {
+                banker: this.testPushBanker(name),
+                player: this.testPushPlayer(name)
+            }
+        });
+
+        return { result , nextTest};
     }
 }

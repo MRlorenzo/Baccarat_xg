@@ -3,167 +3,172 @@ import Point from "./Point";
 import BResult from "../result/BResult";
 import BaccaratResult from "../result/BaccaratResult";
 import { uuid } from '../../utils';
-
-function rule( results ) {
-    const r = {
-		noHeightWay: [], // Array<Point>
-		noHeightRs: []   // Array<Array<Point>>
-    };
-    let previous = null, x = 0, y = 0 ;
-
-	results.forEach(bs => {
-		const bResult = bs.getResult();
-	    // 和局
-		if (bResult === BResult.T){
-
-			if (previous == null){
-				// 开头和局(没有上一个'Point')。处在第1行第1列
-				x = 1; y = 1;
-				// Point.object仅记录(庄|闲)
-				previous = new Point(x , y , null);
-				r.noHeightWay.push(previous);
-				r.noHeightRs[y]=[];
-				r.noHeightRs[y][x] = previous;
-			}
-			// 本次迭代的'Point', 就是下次迭代的'上一个Point'
-			// ‘上一个Point’新增一个对子，但是不占位置。
-			previous.addTie(new Point(x, y , bs));
-		} else {
-
-			if (previous == null){
-				// 没有上一个'Point', 并且不是‘和局’。处在第1行第1列
-				x = 1; y = 1;
-			}else {
-				const baccaratResult = previous.getObject();
-
-				if (baccaratResult == null){
-					// 上一个格子‘和局’，保持原来的位置
-				} else {
-
-					if (baccaratResult.getResult() === bResult ){
-						// (与上一局)同庄 | 同闲, 下移一格
-						y++;
-					}else {
-						// 不同庄 | 不同闲, 右移一格，并且处在第1行
-						x++; y = 1;
-					}
-				}
-			}
-
-			// 本次迭代的'Point', 就是下次迭代的'上一个Point'
-			previous = new Point(x, y , bs);
-			r.noHeightWay.push(previous);
-			if (r.noHeightRs[y] == null){
-				r.noHeightRs[y]=[];
-			}
-			r.noHeightRs[y][x] = previous;
-		}
-
-    });
-    return r;
-}
 /**
  * 路基类, 存基本路子信息  无高度限制的路子
  */
 export default class Road extends RoadStatistics{
 
-    constructor(arr = []){
-        super();
-        // Array<BaccaratResult>
-        this.arr = arr.map(bs=>{
-        	bs.setId(uuid(8 , 16));
-        	return bs;
-		});
+	constructor(arr){
+		super();
+		this.arr = arr||[];
+		let that = this,
+			noHeightWay = this.noHeightWay = [],
+			noHeightRs = this.noHeightRs = [],
+			//首次和存放的位置
+			tArr = this.tArr = [], previous, x = 0, y = 0 ;
 
-		const {noHeightWay , noHeightRs} = rule(this.arr);
-		this.noHeightWay = noHeightWay;
-		this.noHeightRs = noHeightRs;
-    }
-
-    /**
-     * 放入一个结果
-     * @param e
-     */
-    push(e){
-        //为每一个结果设置唯一id,请勿使用var定义变量
-        if(!e.getId()){ //如果已经被赋予了id,请不要再设置id (OtherBigWay)
-            let id = uuid(8 , 16);
-            e.setId(id);
-        }
-
-        this.arr.push(e);
-        this.pushRs(e);
-		const {noHeightWay , noHeightRs} = rule(this.arr);
-		this.noHeightWay = noHeightWay;
-		this.noHeightRs = noHeightRs;
-    }
-
-
-    /**
-     * 移除一个结果
-     */
-    pop(){
-        let p;
-        if (this.arr.length > 0){
-        	const bs = this.arr.pop();
-        	this.popRs(bs);
-        	const bResult = bs.getResult();
-        	if ( bResult === BResult.T){
-        		p = this.last();
-        		if (p != null){
-        			p.tie.pop();
-        			if (p.getObject() != null){
-        				this.noHeightWay.pop();
-        				return p;
-					}
+		//noHeightWay 数据初始化
+		this.arr.forEach(function (z) {
+			z.setId(uuid(8 , 16));
+			if (z.result === BResult.T){
+				//开头和局
+				if (!previous){
+					x = 1;
+					y = 1;
+					noHeightWay.push(previous = p = new Point(x,y,null));
 				}
-			} else {
-        		p = this.noHeightWay.pop();
-        		const { x, y} = p.getLocation();
-        		this.noHeightRs[y] && (this.noHeightRs[y][x] = null);
-        		const tie = p.getTie();
-        		if (tie && tie.length > 0 ){
-        			p = new Point(1 , 1 , null);
-        			p.setTie(tie);
-        			this.noHeightWay.push(p);
+				previous.tie.push(new Point(x,y,z));
+			}else{
+				if (previous && !previous.z){//首次出现和局
+					y = 1;
+				}else if (previous && previous.z.result === z.result ){//同类
+					y++;
+				}else {
+					x++;
+					y = 1;
+				}
+				if (previous && !previous.z){
+					noHeightWay[0].z = z;
+				}else{
+					noHeightWay.push(previous = new Point(x,y,z));
+					if (!noHeightRs[y]){
+						noHeightRs[y]=[];
+					}
+					noHeightRs[y][x] = previous;
+				}
+			}
+			that.pushRs(z);
+		});
+	}
+
+	/**
+	 * 放入一个结果
+	 * @param e
+	 */
+	push(e){
+		//为每一个结果设置唯一id,请勿使用var定义变量
+		if(!e.getId()){ //如果已经被赋予了id,请不要再设置id (OtherBigWay)
+			let id = uuid(8 , 16);
+			e.setId(id);
+		}
+
+		this.arr.push(e);
+		this.pushRs(e);
+		let previous = this.last();
+		let p, tArr = this.tArr, noHeightWay = this.noHeightWay, noHeightRs = this.noHeightRs;
+		let x = previous && previous.x||0, y = previous && previous.y||0;
+
+		//放入 珠盘路
+		if (e.result === BResult.T){
+			//（没有上一颗）开头和局
+			if (!previous){
+				x = 1;
+				y = 1;
+				noHeightWay.push(previous = p = new Point(x,y,null));
+				if (!noHeightRs[x]){
+					noHeightRs[x]=[];
+				}
+				noHeightRs[x][y] = previous;
+			}
+			previous.tie.push(new Point(x,y,e));
+		}else{
+
+			if (previous && (!previous.z)){//上一颗出现特殊路子（首局为和）
+				//console.log('case 1');
+				y = 1;
+			}else if (previous && previous.z.result === e.result ){//同类
+				//console.log('case 2');
+				y++;
+			}else {
+				//console.log('case 3');
+				x++;
+				y = 1;
+			}
+
+			if (previous && !previous.z){
+				noHeightWay[0].z = e;
+			}else{
+				noHeightWay.push(p = new Point(x,y,e));
+				if (!noHeightRs[y]){
+					noHeightRs[y]=[];
+				}
+				noHeightRs[y][x] = p;
+			}
+		}
+		return p;
+	}
+
+
+	/**
+	 * 移除一个结果
+	 */
+	pop(){
+		let that = this, z, p;
+		if (that.arr.length > 0){
+			z = that.arr.pop();
+			that.popRs(z);
+			if (z.result === BResult.T){
+				p = that.last();
+				(p?p.t:that.tArr).pop();
+				if (p && !that.tArr.length && !p.z){
+					that.noHeightWay.pop();
+					return p;
+				}
+			}else {
+				p = that.noHeightWay.pop();
+				that.noHeightRs[p.y] && (that.noHeightRs[p.y][p.x] = null);
+				if( p.tie && p.tie.length > 0){
+					that.tArr = p.tie;
+					p = new Point(1, 1, null);
+					p.tie = that.tArr;
+					that.noHeightWay.push(p);
 				}
 				return p;
 			}
 		}
-
-        return null;
-    }
-
-
-    /**
-     * 新开一局
-     */
-    newGame() {
-        this.clear();
-    }
-
-    /**
-     * 清除结果
-     */
-    clear(){
-        this.arr = [];
-        this.noHeightWay = [];
-        this.noHeightRs = [];
-        this.reSet();
-    }
-
-    /**
-     * 获取最后一个点
-     */
-    last(){
-        let arr = this.noHeightWay, index = arr.length;
-        return index > 0 ? arr[index-1] : null;
-    }
+		return null;
+	}
 
 
-    show(){
+	/**
+	 * 新开一局
+	 */
+	newGame() {
+		this.clear();
+	}
 
-    }
+	/**
+	 * 清除结果
+	 */
+	clear(){
+		this.arr = [];
+		this.noHeightWay = [];
+		this.noHeightRs = [];
+		this.reSet();
+	}
+
+	/**
+	 * 获取最后一个点
+	 */
+	last(){
+		let arr = this.noHeightWay, index = arr.length;
+		return index > 0 ? arr[index-1] : null;
+	}
+
+
+	show(){
+
+	}
 
     /**
      * 生成新的随机的一局

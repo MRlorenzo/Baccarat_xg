@@ -58,7 +58,7 @@ export default class OtherBigRoad {
         if (y + x > this.all && x > minx){
             if ( y === 1) {
                 //看看是不是齐脚 齐脚红 不起脚蓝
-                if (OtherBigWay.getNotNullMaxLength(rsa, x - 1 - minx) === OtherBigWay.getNotNullMaxLength(rsa, x - 1)) {
+                if (OtherBigRoad.getNotNullMaxLength(rsa, x - 1 - minx) === OtherBigRoad.getNotNullMaxLength(rsa, x - 1)) {
                     p = new BaccaratResult(BResult.B)
                     //console.log('红')
                 } else {

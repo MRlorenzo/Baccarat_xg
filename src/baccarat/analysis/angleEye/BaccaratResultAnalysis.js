@@ -4,7 +4,7 @@ import Pairs from "../../result/Pairs";
 import BaccaratResult from "../../result/BaccaratResult";
 function getBaccaratResult( datas ) {
 	const [ arg0 , b , arg2] = datas;
-	let bResult = null , pairs = [];
+	let bResult = null , pairs = [], bSixWin = false;
 	switch ((b >> 4) & 7) {
 		case 1:
 			bResult = BResult.P;
@@ -18,6 +18,7 @@ function getBaccaratResult( datas ) {
 		case 5:
 			//庄6点赢
 			bResult = BResult.B;
+			bSixWin = true;
 			break;
 		default:break;
 	}
@@ -36,7 +37,7 @@ function getBaccaratResult( datas ) {
 			break;
 	}
 
-	return BaccaratResult.getResult(bResult , [] , pairs);
+	return BaccaratResult.getResult(bResult , [] , pairs , bSixWin);
 }
 const init = Symbol();
 export default class BaccaratResultAnalysis extends AngleEyeAnalysis{

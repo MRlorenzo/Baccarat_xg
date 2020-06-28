@@ -5,8 +5,8 @@ const isDev = process.env.NODE_ENV === 'development';
 * */
 log.transports.file.level = isDev ? 'debug' : 'info';
 
-log.transports.file.format = '日志级别:[{level}]时间:[{h}:{i}:{s}] 线程:[{processType}] \n 消息:{text}';
-log.transports.console.level = isDev; //false禁用console输出
+log.transports.file.format = '日志级别:[{level}]时间:[{h}:{i}:{s}] 线程:[{processType}] 消息:{text}';
+log.transports.console.level = isDev ? 'debug' : false; //false禁用console输出
 /*
 * 钩子方法.
 * @msg :

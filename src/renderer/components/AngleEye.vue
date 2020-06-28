@@ -25,6 +25,7 @@
     import GameResultView from '../views/GameResultView';
 	import ComSettingPage from '../views/ComSettingPage';
 	import Mousetrap from 'mousetrap';
+	import UnableCloseException from "../../exception/UnableCloseException";
 
     export default {
         name: "angle-eye",
@@ -38,6 +39,7 @@
         data() {
             return {
                 showResult: false,
+				showOpenFullScreenTimer: null,
                 result: null,
                 bankerCardList: [],
                 playerCardList: []
@@ -56,20 +58,20 @@
 					try {
 						await helper.updateComName(comName);
 						this.closeComSetting();
-						console.log('打开成功')
+						this.$notify.success(this.$t('angleEye.connectSuccess'));
 					} catch (e) {
 						// UnableCloseException,ModuleException,ReOpenException,UnknownException
 						if (e instanceof ReOpenException) {
-							console.log('重复打开')
+							this.$notify.warning(this.$t('angleEye.reOpen'));
 						}
 						if (e instanceof UnknownException) {
-							console.log(e.message)
+							this.$notify.error(this.$t('angleEye.moduleError') + ':\n' + e.message);
 						}
 						if (e instanceof UnableCloseException) {
-							console.log('无法关闭资源')
+							this.$notify.warning(this.$t('angleEye.unableCloseException'));
 						}
 						if (e instanceof ModuleException) {
-							console.log(e.message);
+							this.$notify.error(this.$t('angleEye.moduleError') + ':\n' + e.message);
 						}
 					}
 				}else {
@@ -145,6 +147,14 @@
                     this.playerCardList = [];
                 }, time * 1000);
             },
+            closeFullScreen(){
+				if (this.showOpenFullScreenTimer != null){
+					clearTimeout(this.showOpenFullScreenTimer);
+                }
+                this.showResult = false;
+				this.bankerCardList = [];
+				this.playerCardList = [];
+            },
             initHooks() {
                 const helper = this.$angleEye;
                 const that = this;
@@ -169,6 +179,8 @@
 							that.$emit('newGame');
                         } else {
                             // 普通抽牌动作
+							// 抽牌的时候马上关掉上一局的扑克牌结果。
+                            that.closeFullScreen();
                             //const lot = sis.allot();
                             // console.log(`发给${lot.master}的第${lot.index}张牌`);
                         }

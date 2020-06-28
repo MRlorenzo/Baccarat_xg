@@ -44,7 +44,7 @@ async function saveFile( path , data ) {
 async function saveDebug(data){
 	const path = 'logs/debug.log';
 	const size = await fileSize(path);
-	const txt = `${ dataSerial(data) }\r\n`;
+	const txt = ` Buffer.from(${ dataSerial(data) }),\r\n`;
 	try {
 		if (size < logMaxSize){
 			await appendTxtFile(path , txt);

@@ -28,7 +28,7 @@ function getResultByString( rs ) {
 * */
 export default class BaccaratResult {
 
-    constructor(result , pairs , skyCards ){
+    constructor(result , pairs , skyCards , bSixWin = false){
         this.result = result;
         this.pairs = pairs;
         // 是否存在天牌
@@ -36,7 +36,7 @@ export default class BaccaratResult {
         this.skyCards = skyCards;
         this.id = null;
         // 庄是否6点赢
-        this.bSixWin = false;
+        this.bSixWin = bSixWin;
     }
 
     getResult(){
@@ -148,11 +148,11 @@ export default class BaccaratResult {
         return strList.map(code => SkyCard.getSkyCardByKeyCode(code));
     }
 
-    static getResult(result , skyCards , pairs){
+    static getResult(result , skyCards , pairs , bSixWin){
         if(typeof result === 'string'){
             return getResultByString(result);
         }
-        return new BaccaratResult(result ,  pairs , skyCards);
+        return new BaccaratResult(result ,  pairs , skyCards , bSixWin);
     }
 
 }

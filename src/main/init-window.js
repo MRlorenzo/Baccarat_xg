@@ -26,7 +26,7 @@ function createWindow() {
     })
 
     mainWindow.loadURL(mainURL)
-	mainWindow.openDevTools()
+	mainWindow.setMenu(null);
     mainWindow.on('close', event => {
         event.sender.send('stopPort');
     })

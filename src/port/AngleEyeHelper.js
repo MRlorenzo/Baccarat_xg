@@ -43,6 +43,10 @@ export default class AngleEyeHelper {
         await connector.open();
     }
 
+    getComName(){
+        return this.connector.getComName();
+    }
+
     // 连接资源
     [connect](comConfig, angleEyeSettings) {
         let provider = new AngleEyeProvider(comConfig, angleEyeSettings);

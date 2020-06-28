@@ -99,4 +99,8 @@ export default class DataProvider {
         return this;
     }
 
+
+    getComName(){
+        return this.comConfig.comName;
+    }
 }

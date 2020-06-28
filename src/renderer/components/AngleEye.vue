@@ -6,7 +6,7 @@
             :banker-card-list="bankerCardList"
             :player-card-list="playerCardList"
     ></game-result-view>
-    <com-setting-page ref="comSetting" @update="connectCom"></com-setting-page>
+    <com-setting-page ref="comSetting" :com-name="comName" @update="connectCom"></com-setting-page>
   </div>
 </template>
 
@@ -42,7 +42,8 @@
 				showOpenFullScreenTimer: null,
                 result: null,
                 bankerCardList: [],
-                playerCardList: []
+                playerCardList: [],
+                comName: null
             }
         },
         methods: {
@@ -58,6 +59,7 @@
 					try {
 						await helper.updateComName(comName);
 						this.closeComSetting();
+						this.comName = comName;
 						this.$notify.success(this.$t('angleEye.connectSuccess'));
 					} catch (e) {
 						// UnableCloseException,ModuleException,ReOpenException,UnknownException
@@ -83,6 +85,7 @@
                 // 只有尝试打开资源之后才知道连接是否成功。
                 try {
                     await helper.open();
+                    this.comName = helper.getComName();
                     this.$notify.success(this.$t('angleEye.connectSuccess'));
                 } catch (e) {
                     if (e instanceof ModuleException) {

@@ -223,4 +223,8 @@ export default class Connector {
         await this[watchEvent](this.provider);
         await this.open(false);
     }
+
+    getComName(){
+        return this.provider.getComName();
+    }
 }

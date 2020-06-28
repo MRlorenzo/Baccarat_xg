@@ -70,6 +70,7 @@
 
     export default {
         name: "com-setting-page",
+        props: ['comName'],
         data() {
             return {
                 comNames: [],

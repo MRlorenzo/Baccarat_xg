@@ -22,11 +22,23 @@
         "B": "庄",
         "P": "闲",
         "T": "和",
-        "beadRoad": "珠仔路"
+        "beadRoad": "珠仔路",
+        "bigRoad": "大路",
+        "bigEyeRoad": "大眼路",
+        "cockRoad": "曱甴路",
+        "smallRoad": "小路"
     },
     "title": {
         "minToMax": "最小/最大",
         "tie": "和",
         "pairs": "对子"
+    },
+    "game": {
+        "bankerWin": "庄赢",
+        "playerWin": "闲赢",
+        "tieWin": "和局",
+        "bankerPairs": "庄对",
+        "playerPairs": "闲对",
+        "skyCards": "8/9点"
     }
 }

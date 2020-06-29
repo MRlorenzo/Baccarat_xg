@@ -9,6 +9,8 @@
                     :last-result="lastResult"
                     :shine="shine"
                     :size-version="sizeVersion"
+                    :road-next-test="roadNextTest"
+                    :game-count-list="gameCountList"
             ></road-header>
 
             <!--分割-->
@@ -32,63 +34,57 @@
             <div class="split-line"></div>
 
             <!--大眼路-->
-            <!--<el-row>
+            <el-row>
                 <el-card :style="styles.card">
-                    <big-eye-load
+                    <big-eye-road
                             class="big-eye-load"
                             :style="styles.bigEyeLoad"
-                            :state="states.windowSizeVersion"
-                            :resultList="loads.bigEyeResults"
-                            :shine="states.shine"
+                            :point-list="bigEyeRoadResults"
+                            :shine="shine"
                             :last-result="lastResult"
-                            :language="language"
-                            :bg-color="settings.backgroundColor"
+                            :size-version="sizeVersion"
                     >
 
-                    </big-eye-load>
+                    </big-eye-road>
                 </el-card>
-            </el-row>-->
+            </el-row>
 
             <!--分割-->
             <div class="split-line"></div>
 
-            <!--<el-row>
+            <el-row>
                 <el-col :span="12">
 
-                    <el-card :style="styles.card+'width:99%;margin:0 auto;'">
-                        &lt;!&ndash;小路&ndash;&gt;
-                        <small-load
+                    <el-card :style="styles.card + 'width:99%;margin:0 auto;' ">
+                        <!--小路-->
+                        <small-road
                                 class="small-load"
                                 :style="styles.smallLoad"
-                                :state="states.windowSizeVersion"
-                                :resultList="loads.smallResults"
-                                :shine="states.shine"
+                                :point-list="smallRoadResults"
+                                :shine="shine"
                                 :last-result="lastResult"
-                                :language="language"
-                                :bg-color="settings.backgroundColor"
+                                :size-version="sizeVersion"
                         >
 
-                        </small-load>
+                        </small-road>
                     </el-card>
                 </el-col>
                 <el-col :span="12">
-                    <el-card :style="styles.card+'width:99%;margin:0 auto;'">
-                        &lt;!&ndash;蟑螂路&ndash;&gt;
-                        <cock-load
+                    <el-card :style="styles.card + 'width:99%;margin:0 auto;' ">
+                        <!--蟑螂路-->
+                        <cock-road
                                 class="small-load"
                                 :style="styles.smallLoad"
-                                :state="states.windowSizeVersion"
-                                :resultList="loads.cockroachResults"
-                                :shine="states.shine"
+                                :point-list="cockRoadResults"
+                                :shine="shine"
                                 :last-result="lastResult"
-                                :language="language"
-                                :bg-color="settings.backgroundColor"
+                                :size-version="sizeVersion"
                         >
 
-                        </cock-load>
+                        </cock-road>
                     </el-card>
                 </el-col>
-            </el-row>-->
+            </el-row>
 
         </div>
 
@@ -100,6 +96,9 @@
     import BaccaratResult from "../../baccarat/result/BaccaratResult";
     import RoadHeader from './RoadHeader';
     import BigRoad from './road/BigRoad';
+    import BigEyeRoad from './road/BigEyeRoad'
+    import CockRoad from './road/CockRoad';
+    import SmallRoad from './road/SmallRoad';
     export default {
         name: "road-group",
         props: {
@@ -148,9 +147,20 @@
             // 最后一个结果
             lastResult: {
                 type: BaccaratResult
+            },
+            /*游戏统计数据*/
+            gameCountList: {
+                type: Array,
+                required: true
             }
         },
-        components: { RoadHeader , BigRoad },
+        components: {
+            RoadHeader ,
+            BigRoad,
+            BigEyeRoad,
+            CockRoad,
+            SmallRoad
+        },
         data(){
         	return {
         		bigRoadResults: [],

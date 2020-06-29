@@ -17,50 +17,41 @@
         </el-col>
 
         <!--输赢汇总-->
-        <!--<el-col :span="6">
+        <el-col :span="6">
             <el-card :style="styles.card">
-                <win-lose-count
-                        :way="way"
-                        :language="language"
+                <game-count
+                        :game-count-list="gameCountList"
                         :height="styles.height"
-                        :bg-color="settings.backgroundColor"
-                >
 
-                </win-lose-count>
+                ></game-count>
             </el-card>
-        </el-col>-->
+        </el-col>
 
         <!--桌号和下局指示-->
-        <!-- <el-col :span="5">
+         <el-col :span="5">
              <el-card :style="styles.card">
 
-                 <table-panel
-                         :settings="settings"
-                         :game-count="way.games"
-                         :prognosis="loads.nextTest"
-                         :language="language"
-                         :height="styles.height"
-                         :bg-color="settings.backgroundColor"
+                 <next-test
+                     :height="styles.height"
+                     :road-next-test="roadNextTest"
                  >
 
-                 </table-panel>
+                 </next-test>
 
              </el-card>
-         </el-col>-->
+         </el-col>
 
         <!--公司logo-->
-        <!--<el-col :span="3">
+        <el-col :span="3">
             <el-card :style="styles.card">
 
                 <el-image
                         :style="styles.logo"
-                        :src="img.src"
-                        :fit="img.fit"
-                        :alt="img.alt"
+                        :src="imgSrc"
                 ></el-image>
 
             </el-card>
-        </el-col>-->
+        </el-col>
     </el-row>
 
 </template>
@@ -68,9 +59,12 @@
 <script>
     import BaccaratResult from "../../baccarat/result/BaccaratResult";
     import BeadRoad from './road/BeadRoad';
+    import GameCount from '../components/GameCount';
+    import NextTest from '../components/NextTest';
+    import ComLogo from '../../../static/images/com_logo.jpg';
     export default {
         name: "road-header",
-        components: { BeadRoad },
+        components: { BeadRoad , GameCount , NextTest},
         props: {
 			// 是否闪烁
 			shine: {
@@ -91,10 +85,33 @@
 				type: Array,
 				required: true
 			},
+            /**
+             * 下路指示
+             * {
+             *  SmallRoad: { banker: baccaratResult, player: baccaratResult},
+             *  ...
+             * }
+             */
+            roadNextTest: {
+                type: Object,
+                default: {}
+            },
 			// 最后一个结果
 			lastResult: {
 				type: BaccaratResult
-			}
+			},
+            /*游戏统计数据*/
+            gameCountList: {
+                type: Array,
+                required: true
+            }
+        },
+        data(){
+            return {
+                imgSrc: ComLogo,
+                fit: 'contain',
+                alt: '西港国际娱乐城'
+            }
         }
     }
 </script>

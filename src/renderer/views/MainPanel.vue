@@ -35,6 +35,7 @@
                     :bead-results="beadResults"
                     :road-results="roadResults"
                     :road-next-test="roadNextTest"
+                    :game-count-list="gameCountList"
                     :last-result="lastResult"
                     :shine="shine"
                     :size-version="windowSizeVersion"
@@ -69,6 +70,10 @@
     import ProjectTitle from '../components/ProjectTitle';
     import MarqueeShow from '../components/MarqueeShow';
     import { clone } from "../../utils";
+    import Mousetrap from 'mousetrap';
+    import BaccaratResult from "../../baccarat/result/BaccaratResult";
+    import Result from "../../baccarat/result/BResult";
+    import Pairs from "../../baccarat/result/Pairs";
 	const defaultStyles = {
 		bigLoad: '',
 		beadLoad: '',
@@ -79,7 +84,7 @@
 		footer: '',
 		card: 'box-shadow: 10px 2px 12px 0 rgba(0,0,0,0.3);',
 		height: 0
-	}
+	};
 
 	export default {
 		name: "main-panel",
@@ -107,7 +112,8 @@
                 height: 1080,
                 styles: clone(defaultStyles),
                 roadResults: {},
-                roadNextTest: {}
+                roadNextTest: {},
+                gameCountList: []
 			}
 		},
         computed: {
@@ -144,8 +150,7 @@
                  * }
 				 */
 				this.roadNextTest = nextTest;
-				console.log(result);
-				console.log(nextTest);
+				this.gameCountList = this.getGameCountList();
 			}
 		},
 		methods: {
@@ -211,7 +216,57 @@
 					this.shine = false;
 				},2000);
 			},
+            /*随机*/
+            random(){
+                this.$road.random(30);
+                this.beadResults = this.$road.arr;
+                this.showShine();
+            },
+            /*游戏统计数据*/
+            getGameCountList(){
+                let arr = [];
+                arr.push({
+                    item: new BaccaratResult(Result.B),
+                    name: this.$t('game.bankerWin'),
+                    sum: this.$road.bCount
+                });
+
+                arr.push({
+                    item: new BaccaratResult(Result.P),
+                    name: this.$t('game.playerWin'),
+                    sum: this.$road.pCount
+                });
+
+                arr.push({
+                    item: new BaccaratResult(Result.T),
+                    name: this.$t('game.tieWin'),
+                    sum: this.$road.tCount
+                });
+
+                arr.push({
+                    item: new BaccaratResult(Result.B , [Pairs.BP]),
+                    name: this.$t('game.bankerPairs'),
+                    sum: this.$road.bPCount
+                });
+
+                arr.push({
+                    item: new BaccaratResult(Result.P , [Pairs.PP]),
+                    name: this.$t('game.playerPairs'),
+                    sum: this.$road.pPCount
+                });
+
+                arr.push({
+                    item: new BaccaratResult(null),
+                    name: this.$t('game.skyCards'),
+                    sum: this.$road.skyCard
+                });
+
+                return arr;
+            }
 		},
+        created(){
+		    this.gameCountList = this.getGameCountList();
+        },
         mounted(){
 			// 窗口大小发生改变。
 			this.$electron.ipcRenderer.on('resize', (event , [width , height]) => {
@@ -226,6 +281,10 @@
             const [width, height] = currentWindow.getContentSize();
             this.styles = this.styleFromSize(width , height);
 			this.windowSizeVersion ++;
+
+            Mousetrap.bind('9 enter', ()=> {
+                this.random();
+            })
         }
 	}
 </script>

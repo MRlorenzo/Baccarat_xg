@@ -119,7 +119,7 @@ export default class Road extends RoadStatistics{
 			that.popRs(z);
 			if (z.result === BResult.T){
 				p = that.last();
-				(p?p.t:that.tArr).pop();
+				(p?p.tie:that.tArr).pop();
 				if (p && !that.tArr.length && !p.z){
 					that.noHeightWay.pop();
 					return p;

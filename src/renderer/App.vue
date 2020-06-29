@@ -1,7 +1,8 @@
 <template>
     <div>
         <loading-page v-show="currView === 'loading'" @done="done"></loading-page>
-        <main-panel v-show="currView === 'main'"
+        <main-panel ref="main"
+                    v-show="currView === 'main'"
                     :setting="userSetting"
                     :limit="limitSetting"
         ></main-panel>
@@ -35,6 +36,9 @@
 			    this.userSetting = userSetting;
 			    this.limitSetting = limitSetting;
                 this.currView = VIEW.MAIN;
+                // 由于'main'一开始是隐藏的，所以它在计算样式的时候元素高度为0，
+                // 因此需要在它完全显示的时候重新计算一次。
+                this.$refs.main.onShow();
             }
         },
 		mounted() {

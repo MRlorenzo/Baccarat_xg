@@ -53,6 +53,26 @@
 </script>
 
 <style scoped>
+    /*背景闪烁*/
+    .shine-bg-color{
+        animation:shineBgColor 0.5s ease infinite;
+    }
+    @keyframes shineBgColor {
+        0% {opacity: 0}
+        100%{opacity: 1}
+    }
+    /*庄家赢(实心圆)*/
+    .bg-b{
+        background-color: red;
+    }
+    /*玩家赢(实心圆)*/
+    .bg-p{
+        background-color: blue;
+    }
+    /*和(实心圆)*/
+    .bg-t{
+        background-color: green;
+    }
     .small-grid{
         margin: 1px;
         border-radius: 100%;

@@ -33,8 +33,11 @@
             <road-group
                     :styles="styles"
                     :bead-results="beadResults"
+                    :road-results="roadResults"
+                    :road-next-test="roadNextTest"
                     :last-result="lastResult"
                     :shine="shine"
+                    :size-version="windowSizeVersion"
             ></road-group>
 
             <el-footer :style="styles.footer">
@@ -65,6 +68,19 @@
     import RoadGroup from '../components/RoadGroup';
     import ProjectTitle from '../components/ProjectTitle';
     import MarqueeShow from '../components/MarqueeShow';
+    import { clone } from "../../utils";
+	const defaultStyles = {
+		bigLoad: '',
+		beadLoad: '',
+		bigEyeLoad: '',
+		smallLoad: '',
+		head: '',
+		logo: '',
+		footer: '',
+		card: 'box-shadow: 10px 2px 12px 0 rgba(0,0,0,0.3);',
+		height: 0
+	}
+
 	export default {
 		name: "main-panel",
 		props: {
@@ -85,30 +101,49 @@
 		data() {
 			return {
 				beadResults: [],
-                mainStyle: '',
-                shine: false,
-                styles: {
-                    bigLoad: '',
-                    beadLoad: '',
-                    bigEyeLoad: '',
-                    smallLoad: '',
-                    head: '',
-                    logo: '',
-                    footer: '',
-                    card: 'box-shadow: 10px 2px 12px 0 rgba(0,0,0,0.3);',
-                    height: 0
-                },
+                shine: false, // 是否闪烁
+                windowSizeVersion: 0, // 窗口大小变动的次数
+                width: 1920,
+                height: 1080,
+                styles: clone(defaultStyles),
+                roadResults: {},
+                roadNextTest: {}
 			}
 		},
         computed: {
+			mainStyle(){
+				return `width:${~~this.width}px;height:${~~this.height}px;`
+            },
             lastResult() {
                 let len = this.beadResults.length;
                 return this.beadResults[len - 1];
             }
         },
 		watch: {
+			width(){
+				this.styles = this.styleFromSize(this.width , this.height);
+            },
+            height(){
+				this.styles = this.styleFromSize(this.width , this.height);
+            },
 			beadResults() {
 				const {result, nextTest} = this.$road.updateResult();
+				/**
+                 * 路单的pointList
+                 * {
+                 *  BigEyeRoad: [[]],
+                 *  BigRoad: [[]],
+                 *  ...
+                 * }
+				 */
+				this.roadResults = result;
+				/**
+                 * 下路指示
+                 * {
+                 *  SmallRoad: { banker: baccaratResult, player: baccaratResult}
+                 * }
+				 */
+				this.roadNextTest = nextTest;
 				console.log(result);
 				console.log(nextTest);
 			}
@@ -121,6 +156,7 @@
 			angleEyeResult(baccaratResult) {
 				this.$road.push(baccaratResult);
 				this.beadResults = this.$road.arr;
+				this.showShine();
 			},
 
 			/**
@@ -130,6 +166,7 @@
 			confirmInputGameResult(baccaratResult) {
 				this.$road.push(baccaratResult);
 				this.beadResults = this.$road.arr;
+				this.showShine();
 
 			},
 			/**
@@ -138,34 +175,57 @@
 			cancelGame() {
 				this.$road.pop();
 				this.beadResults = this.$road.arr;
-			}
+				this.showShine();
+			},
+
+            // 根据窗口的宽度，高度计算样式
+            styleFromSize( width , height ){
+				let bigHeight = height * (250 / 1080);
+				let smallHeight = height * (150 / 1080);
+				let headHeight = height * (100 / 1080);
+				let footerHeight = height * (40 / 1080);
+
+				//如果用户的分辨率超低,例如1366*768,我不得不为它们做特殊处理.因为此分辨率不足以渲染所有的内容.
+				if (height <= 800) {
+					headHeight = 50;
+				}
+				return {
+					beadLoad: `height:${~~bigHeight}px;`,
+					bigEyeLoad: `height:${~~smallHeight}px;`,
+					bigLoad: `height:${~~bigHeight}px;`,
+					smallLoad: `height:${~~smallHeight}px;`,
+					head: `height:${~~headHeight}px;width:${~~width}px;`,
+					logo: `width:100%;height:${~~bigHeight}px;`,
+					footer: `width:100%;height:${~~footerHeight}px;`,
+                    height: height
+                }
+            },
+            onShow(){
+				this.windowSizeVersion ++;
+            },
+
+			/*闪烁*/
+			showShine(){
+				this.shine = true;
+				setTimeout(()=>{
+					this.shine = false;
+				},2000);
+			},
 		},
         mounted(){
-		    const vm = this;
-            let currentWindow = vm.$electron.remote.getCurrentWindow();
+			// 窗口大小发生改变。
+			this.$electron.ipcRenderer.on('resize', (event , [width , height]) => {
+				this.width = width;
+				this.height = height;
+				this.windowSizeVersion ++;
+			})
 
-            currentWindow.setFullScreen(true);
-            let [width, height] = currentWindow.getContentSize();
-            let bigHeight = height * (250 / 1080);
-            let smallHeight = height * (150 / 1080);
-            let headHeight = height * (100 / 1080);
-            let footerHeight = height * (40 / 1080);
+            const currentWindow = this.$electron.remote.getCurrentWindow();
 
-            //如果用户的分辨率超低,例如1366*768,我不得不为它们做特殊处理.因为此分辨率不足以渲染所有的内容.
-            if (height <= 800) {
-                headHeight = 50;
-            }
-
-            vm.styles.beadLoad = `height:${~~bigHeight}px;`;
-            vm.styles.bigEyeLoad = `height:${~~smallHeight}px;`;
-            vm.styles.bigLoad = `height:${~~bigHeight}px;`;
-            vm.styles.smallLoad = `height:${~~smallHeight}px;`;
-            vm.styles.head = `height:${~~headHeight}px;width:${~~width}px;`;
-            vm.styles.logo = `width:100%;height:${~~bigHeight}px;`;
-            vm.styles.footer = `width:100%;height:${~~footerHeight}px;`;
-
-            vm.mainStyle = `width:${~~width}px;height:${~~height}px;`;
-            vm.styles.height = height;
+            //currentWindow.setFullScreen(true);
+            const [width, height] = currentWindow.getContentSize();
+            this.styles = this.styleFromSize(width , height);
+			this.windowSizeVersion ++;
         }
 	}
 </script>

@@ -115,3 +115,9 @@ export function uuid( len, radix ){
 
 	return uuid.join('');
 }
+
+export function get2DMaxItemLength( list ) {
+	let lens = [];
+	list.forEach(item=>lens.push(item?item.length:0));
+	return Math.max(... lens);
+}

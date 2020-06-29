@@ -1,5 +1,5 @@
 <template>
-    <div :style="itemCss" :class="showClassName" v-show="result != null">
+    <div :style="itemCss" :class="showClassName" v-show="result != null || tie != null">
             {{tieLen}}
         <div class="pair-point pair-point-b" v-show="isBankerPair"></div>
         <div class="pair-point pair-point-p" v-show="isPlayerPair"></div>
@@ -107,8 +107,54 @@
 </script>
 
 <style >
+    /*边框闪烁*/
+    .shine-border{
+        animation:shineBorder 0.5s ease infinite;
+    }
+    @keyframes shineBorder {
+        0% {opacity: 0}
+        100%{opacity: 1}
+    }
+    /*庄家赢(空心圆)*/
+    .border-b{
+        border-color: red;
+    }
 
+    /*玩家赢(空心圆)*/
+    .border-p{
+        border-color: blue;
+    }
 
+    /*和(空心圆)*/
+    .border-t{
+        border-color: green;
+    }
+
+    /*和(不显示空心圆)*/
+    .border-none{
+        border-color: gray;
+    }
+
+    /*对子圆点样式*/
+    .pair-point{
+        width: 10px;
+        height: 10px;
+        border:1px solid #FFF;
+        border-radius: 100%;
+        position: absolute;
+    }
+    /*庄对*/
+    .pair-point-b{
+        background-color: red;
+        top: -10%;
+        left: -10%;
+    }
+    /*闲对*/
+    .pair-point-p{
+        background-color: blue;
+        top: 75%;
+        left: 75%;
+    }
 
     .big-grid{
         margin: 2px;

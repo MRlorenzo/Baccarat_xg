@@ -2,8 +2,6 @@ import Road from "./Road";
 import BResult from "../result/BResult";
 import Point from "./Point";
 import BaccaratResult from "../result/BaccaratResult";
-import {clone} from "../../utils";
-
 /**
  * 大路
  */
@@ -113,7 +111,7 @@ export default class BigRoad extends Road{
         }else{
             let p = super.pop(), colHeight = that.colHeight;
             //that.rsa[p.location.y].splice(p.location.x , 1 , null)
-            p && p.t  && (that.rsa[p.location.y][p.location.x] = p.t.length > 0 ? p : null);
+            p && p.tie  && (that.rsa[p.location.y][p.location.x] = p.tie.length > 0 ? p : null);
             p && colHeight[p.x] === p.y && (colHeight[p.x]=null);//高度限制解除
             this.executeMonitor("pop", p);
             return p;

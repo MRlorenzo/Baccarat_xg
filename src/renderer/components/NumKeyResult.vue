@@ -90,7 +90,7 @@
 			Mousetrap.bind('esc', ()=> {
 				this.clear();
 			});
-			Mousetrap.bind('7' , ()=> {
+			Mousetrap.bind('7 enter' , ()=> {
 				this.cancel();
 			})
 		}

@@ -3,14 +3,14 @@
     <table>
       <tr :style="trCss" v-for="row of rows">
         <td :style="syncTdCss" v-for="col of cols">
-          <bead-load-grid
+          <bead-road-grid
                   :item-css="itemCss"
-                  :item="grid(row , col)"
+                  :result="grid(row , col)"
                   :shine="shine"
                   :last-result="lastResult"
           >
 
-          </bead-load-grid>
+          </bead-road-grid>
         </td>
       </tr>
     </table>
@@ -28,10 +28,25 @@
         name: "bead-road",
         components: { BeadRoadGrid },
         props: {
-            resultList: { type: Array , required: true},
-            state:{ type:Number},
-            shine: { type: Boolean },
-            lastResult: { type: BaccaratResult },
+        	// 结果列表(一维数组)
+            resultList: {
+            	type: Array ,
+                required: true
+            },
+			// 窗口大小的版本
+			sizeVersion: {
+				type: Number,
+				default: 0
+			},
+			// 是否闪烁
+			shine: {
+				type: Boolean
+			},
+			// 最后一个结果
+			lastResult: {
+				type: BaccaratResult
+			},
+            // 背景颜色
             bgColor: { type: String }
         },
         data(){
@@ -44,11 +59,12 @@
             }
         },
         watch:{
-            state(){
+			sizeVersion(){
                 this.autoResize();
             }
         },
         computed:{
+        	// 超过了最大容量(this.rows * this.cols)的偏移量
             offset(){
                 let oset = 0;
                 let num = this.resultList.length - (this.rows * this.cols);
@@ -62,6 +78,7 @@
             }
         },
         methods:{
+        	// 根据坐标获取baccaratResult
             grid( x , y){
                 let len = x  - 1 + (y - 1) * 6 + this.offset;
                 return  this.resultList[len]||null;
@@ -79,7 +96,7 @@
             }
         },
         mounted(){
-            this.autoResize();
+			this.autoResize();
         }
     }
 </script>

@@ -54,6 +54,14 @@
 </script>
 
 <style scoped>
+    /*边框闪烁*/
+    .shine-border{
+        animation:shineBorder 0.5s ease infinite;
+    }
+    @keyframes shineBorder {
+        0% {opacity: 0}
+        100%{opacity: 1}
+    }
     .big-eye-grid{
         margin: 1px;
         border-radius: 100%;

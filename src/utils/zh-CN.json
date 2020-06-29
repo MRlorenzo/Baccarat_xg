@@ -22,7 +22,8 @@
     "B": "庄",
     "P": "闲",
     "T": "和",
-    "beadRoad": "珠仔路"
+    "beadRoad": "珠仔路",
+    "bigRoad": "大路"
   },
   "title": {
     "minToMax": "最小/最大",

@@ -72,8 +72,8 @@
 					const bResult = this.result.getResult();
 					switch (bResult){
 						case BResultEnum.B: txt = this.$t('road.B');break;
-						case BResultEnum.P: txt = this.$t('road.p');break;
-						case BResultEnum.T: txt = this.$t('road.t');break;
+						case BResultEnum.P: txt = this.$t('road.P');break;
+						case BResultEnum.T: txt = this.$t('road.T');break;
 						default : txt = 'N';break;
 					}
 				}
@@ -97,7 +97,14 @@
 </script>
 
 <style scoped>
-
+    /*背景闪烁*/
+    .shine-bg-color{
+        animation:shineBgColor 0.5s ease infinite;
+    }
+    @keyframes shineBgColor {
+        0% {opacity: 0}
+        100%{opacity: 1}
+    }
     .bead{
         border-radius: 100%;
         color: #FFF;
@@ -119,6 +126,15 @@
         position: relative;
     }
 
+    /*对子圆点样式*/
+    .pair-point{
+        width: 10px;
+        height: 10px;
+        border:1px solid #FFF;
+        border-radius: 100%;
+        position: absolute;
+    }
+
     /*庄对*/
     .pair-point-b{
         background-color: red;
@@ -130,6 +146,18 @@
         background-color: blue;
         top: 70%;
         left: 70%;
+    }
+    /*庄家赢(实心圆)*/
+    .bg-b{
+        background-color: red;
+    }
+    /*玩家赢(实心圆)*/
+    .bg-p{
+        background-color: blue;
+    }
+    /*和(实心圆)*/
+    .bg-t{
+        background-color: green;
     }
 
 </style>

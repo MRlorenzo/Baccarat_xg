@@ -15,7 +15,7 @@
 
       <el-form-item label="串口列表">
         <el-select v-model="comName" placeholder="请选择串口" style="width: 90%;float: left;">
-          <el-option v-for="comName in comNames" :label="comName" :value="comName"></el-option>
+          <el-option v-for="name in comNames" :label="name" :value="name"></el-option>
         </el-select>
         <el-button class="el-icon-refresh" @click="refresh" style="float: right"></el-button>
       </el-form-item>
@@ -74,7 +74,6 @@
         data() {
             return {
                 comNames: [],
-                comName: null,
                 comConfig: {
                     baudRate: 4800,
                     dataBits: null,

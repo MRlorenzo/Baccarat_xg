@@ -10,6 +10,7 @@
                            :style="styles.beadLoad"
                            :shine="shine"
                            :last-result="lastResult"
+                           :size-version="sizeVersion"
                 >
                 </bead-road>
             </el-card>
@@ -71,20 +72,29 @@
         name: "road-header",
         components: { BeadRoad },
         props: {
-            shine: {
-                type: Boolean
-            },
-            styles: {
-                type: Object,
-                required: true
-            },
-            beadResults: {
-                type: Array,
-                required: true
-            },
-            lastResult: {
-                type: BaccaratResult
-            }
+			// 是否闪烁
+			shine: {
+				type: Boolean
+			},
+			// 样式
+			styles: {
+				type: Object,
+				required: true
+			},
+			// 窗口大小的版本
+			sizeVersion: {
+				type: Number,
+				default: 0
+			},
+			// 珠子路结果
+			beadResults: {
+				type: Array,
+				required: true
+			},
+			// 最后一个结果
+			lastResult: {
+				type: BaccaratResult
+			}
         }
     }
 </script>

@@ -86,7 +86,14 @@
 </script>
 
 <style scoped>
-
+    /*文本闪烁*/
+    .shine-text{
+        animation:shineText 0.5s ease infinite;
+    }
+    @keyframes shineText {
+        0% {opacity: 0}
+        100%{opacity: 1}
+    }
     .defs {
         width: 0;
         height: 0;
@@ -100,4 +107,20 @@
         transition: none;
     }
 
+    /*蟑螂路用来代替"/"的字体样式*/
+    .game-text{
+        font-size: 21px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    /*庄家赢(字体)*/
+    .text-b .slash{
+        fill:red;
+    }
+
+    /*闲家赢(字体)*/
+    .text-p .slash{
+        fill:blue;
+    }
 </style>

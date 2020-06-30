@@ -271,7 +271,7 @@
         watch:{
             language( lang ){
                 this.$i18n.locale = lang;
-                setLangue('language');
+                setLangue(lang);
             },
 			setting( setting ){
             	this.d = clone(setting);

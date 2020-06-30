@@ -292,7 +292,7 @@
                 await setting.update({} , userSetting);
                 const oldLimit = clone(this.limit);
 
-                await limit.update({} , {limits: oldLimit});
+                await limit.update({} , oldLimit);
             },
             async changeColor( style ){
                 this.userSetting.backgroundColor = style;

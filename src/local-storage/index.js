@@ -6,7 +6,7 @@ export const angle = new DataManager('/angle.db');
 
 export const setting = new DataManager('/setting.db');
 
-export const limit = new DataManager('/limit.db');
+export const limit = new DataManager('/limit.db' , false);
 
 export const auth = new DataManager('auth');
 

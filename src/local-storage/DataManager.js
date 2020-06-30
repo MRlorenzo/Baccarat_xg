@@ -6,17 +6,17 @@ const dataPath = app != null ?
     app.getPath('userData') :
     remote.app.getPath('userData');
 
-function createCollection(filePath) {
+function createCollection(filePath , timestampData = true) {
     return new Datastore({
         autoload: true,
         filename: path.join(dataPath, filePath),
-        timestampData: true, // createdAt，updateAt
+        timestampData: timestampData, // createdAt，updateAt
     })
 }
 
 export default class DataManager {
-    constructor(filePath) {
-        this.db = createCollection(filePath);
+    constructor(filePath, timestampData = true) {
+        this.db = createCollection(filePath, timestampData);
     }
 
     save(doc) {

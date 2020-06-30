@@ -22,15 +22,10 @@
                 return userSetting;
             },
             async initLimit(){
-                let localLimit = await limit.findOne();
-                let limitSetting;
-                if (localLimit == null){
+                let limitSetting = await limit.findOne();
+                if (limitSetting == null){
                     limitSetting = defaultLimit;
-                    await limit.save({
-                        limits: limitSetting
-                    });
-                }else{
-                    limitSetting = localLimit.limits;
+                    await limit.save(limitSetting);
                 }
                 return limitSetting;
             },

@@ -1,21 +1,46 @@
 {
-    "currencyIds": [2],
-    "limitList": [
-        {
-            "id": 2,
-            "currencyName": "USD",
-            "betLimit": {
+    "default": {
+        "USD": {
+            "bet": {
                 "max": 0,
                 "min": 0
             },
-            "pairLimit": {
+            "pairs": {
                 "max": 0,
                 "min": 0
             },
-            "tieLimit": {
+            "tie": {
+                "max": 0,
+                "min": 0
+            }
+        },
+        "RMB": {
+            "bet": {
+                "max": 0,
+                "min": 0
+            },
+            "pairs": {
+                "max": 0,
+                "min": 0
+            },
+            "tie": {
+                "max": 0,
+                "min": 0
+            }
+        },
+        "HKD": {
+            "bet": {
+                "max": 0,
+                "min": 0
+            },
+            "pairs": {
+                "max": 0,
+                "min": 0
+            },
+            "tie": {
                 "max": 0,
                 "min": 0
             }
         }
-    ]
+    }
 }

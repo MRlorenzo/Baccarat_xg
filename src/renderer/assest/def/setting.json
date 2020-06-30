@@ -4,5 +4,7 @@
     "tableName": "name",
     "marqueeText": "滚动文字在此显示",
     "orderMarqueeText": "",
-    "showResultTime": 3
+    "showResultTime": 3,
+    "limitGroup": "default",
+    "currencyNames": ["USD"]
 }

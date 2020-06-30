@@ -35,28 +35,34 @@
 
                     <!--币种-->
                     <el-form-item :label="$t('settings.coin')"  class="limit-input">
-                        <!--<el-select
-                                v-model="d.currencyIds"
+                        <el-select
+                                v-model="d.currencyNames"
                                 :placeholder="$t('settings.selectCoin')"
                                 style="width: 100%"
                                 :multiple-limit="2"
                                 :multiple="true"
                         >
-                            <el-option v-for="c in settings.currencyList" :label="c.txt" :value="c.id"></el-option>
-                        </el-select>-->
+                            <el-option v-for="name of currencyNames"
+                                       :label="name" :value="name">
+
+                            </el-option>
+                        </el-select>
                     </el-form-item>
 
                     <!--语言-->
                     <el-form-item :label="$t('settings.language')" class="limit-input">
-                        <el-select v-model="d.language" :placeholder="$t('settings.selectLanguage')" style="width: 100%">
-                            <!--<el-option v-for="l in languages" :label="l.data.typeName" :value="l.id"></el-option>-->
+                        <el-select v-model="language" :placeholder="$t('settings.selectLanguage')" style="width: 100%">
+                            <el-option v-for="l of languageNames" :label="$t('settings.'+l)" :value="l"></el-option>
                         </el-select>
                     </el-form-item>
 
                     <!--限红组-->
                     <el-form-item :label="$t('settings.limitGroup')" >
                         <el-select v-model="d.limitGroup" :placeholder="$t('settings.selectLimitGroup')" style="width: 70%">
-                            <!--<el-option v-for="name in limitGroupNames" :label="name" :value="name"></el-option>-->
+                            <el-option v-for="name of groupNames"
+                                :label="name" :value="name"
+                            >
+                            </el-option>
                         </el-select>
                         <el-button type="primary" style="width: 20%;float: right" icon="el-icon-edit">
                             {{$t('settings.updateGroup')}}
@@ -64,44 +70,73 @@
                     </el-form-item>
 
                     <!--限红列表-->
-                    <div v-for="l in limitList">
+                    <div v-for="l of limitList">
                         <el-tag class="currencyName">
-                            {{l.currencyName}}
+                            {{l.label}}
                         </el-tag>
                         <br>
                         <!--下注最低值-->
                         <el-form-item :label="$t('settings.bet')" class="limit-input">
-                            <el-input type="number" v-model="l.betLimit.min" autocomplete="off" suffix-icon="el-icon-edit"></el-input>
+                            <el-input type="number"
+                                      v-model="l.v.bet.min"
+                                      autocomplete="off"
+                                      suffix-icon="el-icon-edit">
+
+                            </el-input>
                         </el-form-item>
 
                         <!--下注最高值-->
                         <el-form-item label="" class="limit-input">
-                            <el-input type="number" v-model="l.betLimit.max" autocomplete="off" suffix-icon="el-icon-edit"></el-input>
+                            <el-input type="number"
+                                      v-model="l.v.bet.max"
+                                      autocomplete="off"
+                                      suffix-icon="el-icon-edit">
+
+                            </el-input>
                         </el-form-item>
 
                         <!--和最低值-->
                         <el-form-item :label="$t('settings.tie')" class="limit-input">
-                            <el-input type="number" v-model="l.tieLimit.min" autocomplete="off" suffix-icon="el-icon-edit"></el-input>
+                            <el-input type="number"
+                                      v-model="l.v.tie.min"
+                                      autocomplete="off"
+                                      suffix-icon="el-icon-edit">
+
+                            </el-input>
                         </el-form-item>
 
                         <!--和最高值-->
                         <el-form-item label="" class="limit-input">
-                            <el-input type="number" v-model="l.tieLimit.max" autocomplete="off" suffix-icon="el-icon-edit"></el-input>
+                            <el-input type="number"
+                                      v-model="l.v.tie.max"
+                                      autocomplete="off"
+                                      suffix-icon="el-icon-edit">
+
+                            </el-input>
                         </el-form-item>
 
                         <!--对子最低值-->
                         <el-form-item :label="$t('settings.pairs')" class="limit-input">
-                            <el-input type="number" v-model="l.pairLimit.min" autocomplete="off" suffix-icon="el-icon-edit"></el-input>
+                            <el-input type="number"
+                                      v-model="l.v.pairs.min"
+                                      autocomplete="off"
+                                      suffix-icon="el-icon-edit">
+
+                            </el-input>
                         </el-form-item>
 
                         <!--对子最高值-->
                         <el-form-item label="" class="limit-input">
-                            <el-input type="number" v-model="l.pairLimit.max" autocomplete="off" suffix-icon="el-icon-edit"></el-input>
+                            <el-input type="number"
+                                      v-model="l.v.pairs.max"
+                                      autocomplete="off"
+                                      suffix-icon="el-icon-edit">
+
+                            </el-input>
                         </el-form-item>
                     </div>
 
                 </div>
-
 
                 <!--表单显示区域2-->
                 <div v-show="active === 2">
@@ -159,7 +194,6 @@
 
                 </div>
 
-
             </el-form>
 
             <!--表单控制区-->
@@ -185,19 +219,20 @@
 
 <script>
     import { clone } from "../../utils";
-
-	let defaultLimit = {
-        betLimit: {max: 0,min: 0},
-        pairLimit: {max: 0,min: 0},
-        tieLimit: {max: 0,min: 0}
-    }
+    import { languageNames, getLanguage , setLangue} from "../../utils/lang";
+    import Limit from '../assest/def/limit';
 
     export default {
         name: "setting-page",
         props:{
-            /*表单数据*/
-            settings:{
+            /*用户配置*/
+            setting:{
                 type:Object,
+                required: true
+            },
+            /*限红*/
+            limit: {
+                type: Object,
                 required: true
             }
         },
@@ -205,14 +240,44 @@
             return{
                 /*步数*/
                 active: 1,
-                d: clone(this.settings),
-				limitList: [ defaultLimit ],
-				visible: false
+                d: clone(this.setting),
+				visible: false,
+                languageNames: languageNames,
+                limitList: [],
+                language: getLanguage()
+            }
+        },
+        computed: {
+            currencyNames(){
+                return Object.keys(Limit.default);
+            },
+            groupNames(){
+                return Object.keys(this.limit);
+            },
+            currLimitList(){
+                const groupName = this.d.limitGroup;
+                const group = this.limit[groupName] || clone(Limit.default);
+                const names = this.d.currencyNames || [];
+                return Object.keys(group)
+                    .filter(name => names.includes(name))
+                    .map(currency=>{
+                        return {
+                            label: currency,
+                            v: group[currency]
+                        }
+                    });
             }
         },
         watch:{
-			settings( settings ){
-            	this.d = clone(settings);
+            language( lang ){
+                this.$i18n.locale = lang;
+                setLangue('language');
+            },
+			setting( setting ){
+            	this.d = clone(setting);
+            },
+            currLimitList( list ){
+			    this.limitList = list;
             }
         },
         methods:{
@@ -228,7 +293,16 @@
             },
             /*提交表单*/
             submit(){
-                this.$emit('submit' , this.formData);
+                const limitItem = {};
+                this.limitList.forEach(g=> {
+                    const { label, v } = g;
+                    limitItem[label] = v;
+                });
+
+                this.$emit('submit' , {
+                    userSetting: clone(this.d),
+                    limitItem: clone(limitItem)
+                });
                 this.close();
             },
             /*取消提交表单*/

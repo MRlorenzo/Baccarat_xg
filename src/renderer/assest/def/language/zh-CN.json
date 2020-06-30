@@ -73,6 +73,8 @@
     "cancel": "取消",
     "confirm": "确定",
     "importSetting": "导入配置",
-    "exportSetting": "导出配置"
+    "exportSetting": "导出配置",
+    "zh": "中文",
+    "en": "English"
   }
 }

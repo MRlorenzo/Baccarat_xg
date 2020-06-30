@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
+import { localSet , localGet } from "../local-storage";
 
-import enLocale from '../renderer/assest/def/en-US'
-import zhLocale from '../renderer/assest/def/zh-CN'
+import enLocale from '../renderer/assest/def/language/en-US'
+import zhLocale from '../renderer/assest/def/language/zh-CN'
 
 Vue.use(VueI18n)
 
@@ -15,19 +16,20 @@ const messages = {
     }
 }
 
-export function getLanguage() {
-    /*const chooseLanguage = Cookies.get('language')
-    if (chooseLanguage) return chooseLanguage
+export const languageNames = Object.keys(messages);
 
-    // if has not choose language
-    const language = (navigator.language || navigator.browserLanguage).toLowerCase()
-    const locales = Object.keys(messages)
-    for (const locale of locales) {
-        if (language.indexOf(locale) > -1) {
-            return locale
-        }
-    }*/
-    return 'zh'
+const KEY = 'language';
+export function getLanguage() {
+    let language = localGet(KEY);
+    if (language == null){
+        language = 'zh';
+        localSet(KEY , language);
+    }
+    return language;
+}
+
+export function setLangue( language ) {
+    localSet(KEY , language);
 }
 
 const i18n = new VueI18n({

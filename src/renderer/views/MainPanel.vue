@@ -6,25 +6,7 @@
             <!--头部内容-->
             <el-header :style="styles.head" id="project-title">
                 <project-title
-                        :currency-ids="[2]"
-                        :limit-list="[
-                            {
-                                id:2,
-                                currencyName:'USD',
-                                betLimit: {
-                                    max: 0,
-                                    min: 0
-                                },
-                                pairLimit: {
-                                    max: 0,
-                                    min: 0
-                                },
-                                tieLimit: {
-                                    max: 0,
-                                    min: 0
-                                }
-                            }
-                        ]"
+                        :limit-item="limitItem"
                 ></project-title>
             </el-header>
 
@@ -39,16 +21,12 @@
                     :last-result="lastResult"
                     :shine="shine"
                     :size-version="windowSizeVersion"
-                    :settings="setting"
+                    :settings="userSetting"
                     :game-count="gameCount"
             ></road-group>
 
             <el-footer :style="styles.footer">
-                <marquee-show
-                        text="滚动文字"
-                >
-
-                </marquee-show>
+                <marquee-show :text="marqueeText"></marquee-show>
             </el-footer>
 
         </el-container>
@@ -68,7 +46,10 @@
 
         <setting-page
                 ref="settingPage"
-                :settings="setting"
+                :setting="setting"
+                :limit="limit"
+                @submit="submitSetting"
+                @colorChange="changeColor"
         ></setting-page>
     </div>
 </template>
@@ -79,7 +60,7 @@
     import RoadGroup from '../components/RoadGroup';
     import ProjectTitle from '../components/ProjectTitle';
     import MarqueeShow from '../components/MarqueeShow';
-    import { clone } from "../../utils";
+    import {clone, getLimitItem} from "../../utils";
     import Mousetrap from 'mousetrap';
     import BaccaratResult from "../../baccarat/result/BaccaratResult";
     import Result from "../../baccarat/result/BResult";
@@ -95,8 +76,9 @@
 		footer: '',
 		card: 'box-shadow: 10px 2px 12px 0 rgba(0,0,0,0.3);'
 	};
+	import { setting , limit } from "../../local-storage";
 
-	export default {
+    export default {
 		name: "main-panel",
 		props: {
 			setting: {
@@ -104,7 +86,8 @@
                 required: true
 			},
             limit: {
-			    type: Object
+			    type: Object,
+                required: true
             }
 		},
 		components: {
@@ -116,6 +99,9 @@
 			SettingPage
 		},
 		data() {
+		    const { limitGroup , currencyNames} = this.setting;
+		    const item = getLimitItem(this.limit , limitGroup , currencyNames);
+
 			return {
 				beadResults: [],
                 shine: false, // 是否闪烁
@@ -125,12 +111,14 @@
                 styles: clone(defaultStyles),
                 roadResults: {},
                 roadNextTest: {},
-                gameCountList: []
+                gameCountList: [],
+                limitItem: clone(item),
+                userSetting: clone(this.setting)
 			}
 		},
         computed: {
 			mainStyle(){
-				const backgroundColor = this.setting && this.setting.backgroundColor;
+				const backgroundColor = this.userSetting && this.userSetting.backgroundColor;
 				let css = `width:${~~this.width}px;height:${~~this.height}px;`
 				if (backgroundColor != null){
 					css += `background-color: ${backgroundColor}`;
@@ -143,9 +131,18 @@
             },
             gameCount(){
 				return this.beadResults.length;
+            },
+            marqueeText(){
+			    const lang = this.$i18n.locale;
+			    return lang === 'zh' ?
+                    this.userSetting.marqueeText:
+                    this.userSetting.orderMarqueeText;
             }
         },
 		watch: {
+            setting(){
+                this.userSetting = clone(this.setting);
+            },
 			width(){
 				this.styles = this.styleFromSize(this.width , this.height);
             },
@@ -171,7 +168,11 @@
 				 */
 				this.roadNextTest = nextTest;
 				this.gameCountList = this.getGameCountList();
-			}
+			},
+            limit( limit ){
+                const { limitGroup , currencyNames} = this.setting;
+                this.limitItem = getLimitItem(limit , limitGroup , currencyNames);
+            }
 		},
 		methods: {
 			/**
@@ -282,6 +283,25 @@
                 });
 
                 return arr;
+            },
+
+            async submitSetting({ userSetting, limitItem}){
+                this.userSetting = userSetting;
+                this.limitItem = limitItem;
+                // 更新本地数据库
+                await setting.update({} , userSetting);
+                const oldLimit = clone(this.limit);
+
+                await limit.update({} , {limits: oldLimit});
+            },
+            async changeColor( style ){
+                this.userSetting.backgroundColor = style;
+                // 更新本地数据库
+                await setting.update({} , {
+                    $set: {
+                        backgroundColor: style
+                    }
+                })
             }
 		},
         created(){

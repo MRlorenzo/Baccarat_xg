@@ -8,6 +8,8 @@
     import { setting , limit , auth } from "../../local-storage";
     import defaultSetting from '../assest/def/setting.json';
     import defaultLimit from '../assest/def/limit.json';
+    import { getLanguage } from "../../utils/lang";
+
     export default {
         name: "loading-page",
         methods: {
@@ -20,9 +22,15 @@
                 return userSetting;
             },
             async initLimit(){
-                let limitSetting = await limit.findOne();
-                if (limitSetting == null){
+                let localLimit = await limit.findOne();
+                let limitSetting;
+                if (localLimit == null){
                     limitSetting = defaultLimit;
+                    await limit.save({
+                        limits: limitSetting
+                    });
+                }else{
+                    limitSetting = localLimit.limits;
                 }
                 return limitSetting;
             },
@@ -31,12 +39,16 @@
             }
         },
         async created(){
+            // 初始化国际化
+            this.$i18n.locale = getLanguage();
             // 获取授权码
             const authorizationCode = await this.initAuth();
             // 初始化配置信息
             const userSetting = await this.initSetting();
+
             // 初始化限红配置
             const limitSetting = await this.initLimit();
+
 
             this.$emit('done' , {
                 authorizationCode,

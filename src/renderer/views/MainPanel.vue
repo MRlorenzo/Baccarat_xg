@@ -54,7 +54,10 @@
         </el-container>
 
         <!-- 负责接收天使靴的游戏结果-->
-        <angle-eye @result="angleEyeResult" :body-width="width"></angle-eye>
+        <angle-eye
+                @result="angleEyeResult"
+                :body-width="width"
+        ></angle-eye>
 
         <!-- 负责解析按键游戏结果-->
         <num-key-result
@@ -62,6 +65,11 @@
                 @cancel="cancelGame"
         >
         </num-key-result>
+
+        <setting-page
+                ref="settingPage"
+                :settings="setting"
+        ></setting-page>
     </div>
 </template>
 
@@ -76,6 +84,7 @@
     import BaccaratResult from "../../baccarat/result/BaccaratResult";
     import Result from "../../baccarat/result/BResult";
     import Pairs from "../../baccarat/result/Pairs";
+    import SettingPage from '../views/SettingPage';
 	const defaultStyles = {
 		bigLoad: '',
 		beadLoad: '',
@@ -91,7 +100,8 @@
 		name: "main-panel",
 		props: {
 			setting: {
-				type: Object
+				type: Object,
+                required: true
 			},
             limit: {
 			    type: Object
@@ -102,7 +112,8 @@
 			NumKeyResult,
             RoadGroup,
             ProjectTitle,
-            MarqueeShow
+            MarqueeShow,
+			SettingPage
 		},
 		data() {
 			return {
@@ -291,8 +302,25 @@
             this.styles = this.styleFromSize(width , height);
 			this.windowSizeVersion ++;
 
+			// 开新靴
+			Mousetrap.bind('9 enter', ()=> {
+				this.$message.info('开新靴')
+			});
+			// 随机
             Mousetrap.bind('9 9 enter', ()=> {
                 this.random();
+            });
+            // 显示最后一次扑克牌记录
+            Mousetrap.bind('* enter', ()=> {
+            	this.$message.info('显示最后一次扑克牌记录')
+            });
+            // 打印
+            Mousetrap.bind('* * enter', ()=> {
+            	this.$message.info('打印')
+            });
+            // 保存游戏记录
+            Mousetrap.bind('/ / enter', ()=> {
+            	this.$message.info('保存游戏记录')
             })
         }
 	}

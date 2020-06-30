@@ -264,12 +264,12 @@
 			});
             // 导入配置
             Mousetrap.bind('8 8 enter' , ()=> {
-
+                this.$message.info('导入配置');
             });
 
             // 导出配置
             Mousetrap.bind('7 7 enter', ()=> {
-
+                this.$message.info('导出配置')
             })
         }
     }

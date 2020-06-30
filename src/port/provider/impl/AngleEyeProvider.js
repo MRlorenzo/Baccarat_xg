@@ -1,7 +1,7 @@
 import AutoProvider from './AutoProvider';
 import AngleEyeDataParseChain from '../../parser/chain/AngleEyeDataParserChain';
 import AngleEyeData from '../../data/impl/AngleEyeData';
-import CONFIG from '../../../utils/angleConfig.json';
+import CONFIG from '../../../renderer/assest/def/angleConfig.json';
 import {angle} from "../../../local-storage";
 import { sourceLog , angleLog } from '../../../file-system/angleLog';
 import UnknownException from "../../../exception/UnknownException";

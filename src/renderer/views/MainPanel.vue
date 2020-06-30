@@ -39,6 +39,8 @@
                     :last-result="lastResult"
                     :shine="shine"
                     :size-version="windowSizeVersion"
+                    :settings="setting"
+                    :game-count="gameCount"
             ></road-group>
 
             <el-footer :style="styles.footer">
@@ -52,7 +54,7 @@
         </el-container>
 
         <!-- 负责接收天使靴的游戏结果-->
-        <angle-eye @result="angleEyeResult"></angle-eye>
+        <angle-eye @result="angleEyeResult" :body-width="width"></angle-eye>
 
         <!-- 负责解析按键游戏结果-->
         <num-key-result
@@ -82,8 +84,7 @@
 		head: '',
 		logo: '',
 		footer: '',
-		card: 'box-shadow: 10px 2px 12px 0 rgba(0,0,0,0.3);',
-		height: 0
+		card: 'box-shadow: 10px 2px 12px 0 rgba(0,0,0,0.3);'
 	};
 
 	export default {
@@ -118,11 +119,19 @@
 		},
         computed: {
 			mainStyle(){
-				return `width:${~~this.width}px;height:${~~this.height}px;`
+				const backgroundColor = this.setting && this.setting.backgroundColor;
+				let css = `width:${~~this.width}px;height:${~~this.height}px;`
+				if (backgroundColor != null){
+					css += `background-color: ${backgroundColor}`;
+                }
+				return css;
             },
             lastResult() {
                 let len = this.beadResults.length;
                 return this.beadResults[len - 1];
+            },
+            gameCount(){
+				return this.beadResults.length;
             }
         },
 		watch: {
@@ -200,7 +209,7 @@
 					bigLoad: `height:${~~bigHeight}px;`,
 					smallLoad: `height:${~~smallHeight}px;`,
 					head: `height:${~~headHeight}px;width:${~~width}px;`,
-					logo: `width:100%;height:${~~bigHeight}px;`,
+					logo: `width:100%;height:${~~(bigHeight - 6)}px;`,
 					footer: `width:100%;height:${~~footerHeight}px;`,
                     height: height
                 }
@@ -282,7 +291,7 @@
             this.styles = this.styleFromSize(width , height);
 			this.windowSizeVersion ++;
 
-            Mousetrap.bind('9 enter', ()=> {
+            Mousetrap.bind('9 9 enter', ()=> {
                 this.random();
             })
         }

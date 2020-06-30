@@ -21,18 +21,18 @@
 
                     </bead-road-grid>
 
-                    <small-road-grid v-if="scope.row.type==='small'" v-show="scope.row.banker"
+                    <small-road-grid v-if="scope.row.type==='SmallRoad'" v-show="scope.row.banker"
                                      :result="scope.row.banker"
                                      :item-css="itemCss">
 
                     </small-road-grid>
 
-                    <big-eye-road-grid v-if="scope.row.type==='bigEye'" v-show="scope.row.banker"
+                    <big-eye-road-grid v-if="scope.row.type==='BigEyeRoad'" v-show="scope.row.banker"
                                        :result="scope.row.banker"
                                        :item-css="itemCss">
                     </big-eye-road-grid>
 
-                    <cock-road-grid v-if="scope.row.type==='cockroach'" v-show="scope.row.banker"
+                    <cock-road-grid v-if="scope.row.type==='CockroachRoad'" v-show="scope.row.banker"
                                     :result="scope.row.banker"
                                     :item-css="itemCss"
                                     enlarge="1.5">
@@ -55,21 +55,19 @@
 
                     </bead-road-grid>
 
+                    <span v-if="scope.row.type ==='text'" class="banker-and-player">{{scope.row.player}}</span>
 
-                    <big-eye-road-grid v-if="scope.row.type==='bigEye'" v-show="scope.row.banker"
+                    <small-road-grid v-if="scope.row.type ==='SmallRoad'" v-show="scope.row.banker"
+                                     :result="scope.row.player"
+                                     :item-css="itemCss">
+                    </small-road-grid>
+
+                    <big-eye-road-grid v-if="scope.row.type==='BigEyeRoad'" v-show="scope.row.banker"
                                        :result="scope.row.player"
                                        :item-css="itemCss">
                     </big-eye-road-grid>
 
-                    <span v-if="scope.row.type ==='text'" class="banker-and-player">{{scope.row.player}}</span>
-
-                    <small-road-grid v-if="scope.row.type ==='small'" v-show="scope.row.banker"
-                                     :result="scope.row.player"
-                                     :item-css="itemCss">
-
-                    </small-road-grid>
-
-                    <cock-road-grid v-if="scope.row.type ==='cockroach'" v-show="scope.row.banker"
+                    <cock-road-grid v-if="scope.row.type ==='CockroachRoad'" v-show="scope.row.banker"
                                     :result="scope.row.player"
                                     :item-css="itemCss"
                                     enlarge="1.5">
@@ -91,10 +89,17 @@
     import CockRoadGrid from './road/grid/CockRoadGrid';
     import BaccaratResult from "../../baccarat/result/BaccaratResult";
     import BResult from "../../baccarat/result/BResult";
+	import {clone} from "../../utils";
     export default {
         /*下路指示*/
         name: "next-test",
         props: {
+        	// 桌号
+        	tableName: { type: String },
+            // 靴号
+            bootNo: { type: String },
+            // 游戏局数
+            gameCount: { type: Number },
             /**
              * 下路指示
              * {
@@ -106,9 +111,6 @@
                 type: Object,
                 default: {}
             },
-            height:{
-                type:Number
-            },
             bgColor:{type:String}
         },
         components: {
@@ -119,18 +121,14 @@
         },
         data(){
             return {
-                tableStyle:'',
-                bgStyle:'background-color: rgba(255,255,255,0);'
+                tableStyle: `width: 200px;height:10.5vw;margin:0 auto;`,
+                bgStyles: { backgroundColor: 'rgba(255,255,255,0)'},
+				itemCss: `width:2vw;height:2vw;margin: 0 auto;font-size:1.5vw;line-height:2vw;font-family: "Microsoft YaHei"`
             }
         },
         computed:{
-            tableName(){
-                // return this.settings.tableName;
-                return '###'
-            },
             number(){
-                // return `#${this.settings.bootNo}-${this.gameCount}`;
-                return '###'
+				return `#${this.bootNo}-${this.gameCount}`;
             },
             list(){
 
@@ -142,69 +140,81 @@
                     player: BaccaratResult.getResult( BResult.P )
                 }];
 
-                if (Object.keys(d).length === 3){
-                    results.push({
-                        type:'bigEye',
-                        banker: d.BigEyeRoad.banker,
-                        player: d.BigEyeRoad.player
-                    });
-
-                    results.push({
-                        type:'small',
-                        banker: d.SmallRoad.banker,
-                        player: d.SmallRoad.player
-                    });
-
-                    results.push({
-                        type:'cockroach',
-                        banker: d.CockroachRoad.banker,
-                        player: d.CockroachRoad.player
-                    });
-                }
+				Object.keys(d).forEach(k => {
+					const v = d[k];
+					const {banker , player} = v;
+					results.push({
+						type: k,
+						banker,
+						player
+					})
+				})
 
                 return results ;
-            },
-            itemCss(){
-                /*let el = document.getElementById('main-box');
-                let height = el? el.offsetHeight * (30 / 1080): (30 / 1080) * 768;*/
-                return `width:2vw;height:2vw;margin: 0 auto;font-size:1.5vw;line-height:2vw;font-family: "Microsoft YaHei"`;
             },
             hrStyle(){
                 return `'border-color: ${this.bgColor};'`
             }
         },
-        watch:{
-            height(){
-                this.initTableStyle();
-            }
-        },
         methods:{
             cellStyle({row, column, rowIndex, columnIndex}){
-                return 'border:hidden;';
+                return { border: 'hidden'};
             },
             rowStyle({row, rowIndex}){
-                let el = document.getElementById('main-box');
-                let height = el? el.offsetHeight * (45 / 1080): (45 / 1080) * 768;
-                if(el && el.offsetHeight <= 800){
-                    height = 25;
-                }
-                return `height:2.6vw;${this.bgStyle}`;
-            },
-            initTableStyle(){
-                let elHeight = this.height;
-                //最佳展示高度为175px,但是如果用户的分辨率不是1080的话就按比例获取.
-                let height = elHeight * ( 175/1080 );
-
-                //如果用户的分辨率超低,例如1366*768,我不得不为它们做特殊处理.因为此分辨率不足以渲染所有的内容.
-                if(elHeight <= 800){
-                    height = 108;
-                }
-                this.tableStyle = `width: 200px;height:10.5vw;margin:0 auto;`;
+                return clone({ height: '2.6vw'} , this.bgStyles);
             }
         }
     }
 </script>
+<style>
 
+</style>
 <style scoped>
+
+    span{
+        width: 100%;
+        text-align: center;
+        display: block;
+    }
+
+    .banker-and-player{
+        font-size: 30px;
+        line-height: 30px;
+    }
+
+    .table-name-text{
+        display: inline-block;
+        width: 35%;
+        color: black;
+        /*color:darkviolet;*/
+        font-size: 2.2vw;
+        line-height: 1.4vw;
+        font-weight:bold;
+        /*animation:shine 3s ease infinite;*/
+    }
+
+    @keyframes shine {
+        0% {opacity: 0}
+        10% {opacity: 0.15}
+        20% {opacity: 0.3}
+        30% {opacity: 0.45}
+        40% {opacity: 0.6}
+        50% {opacity: 0.8}
+        75% {opacity: 0.9}
+        100%{opacity: 1}
+    }
+
+    .text{
+        display: inline-block;
+        width: 63%;
+        font-size: 2.2vw;
+        line-height: 1.4vw;
+        color: black;
+        text-align: right;
+    }
+
+    hr{
+        margin: 4px 0;
+    }
 
 </style>

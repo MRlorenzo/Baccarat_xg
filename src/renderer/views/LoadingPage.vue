@@ -6,8 +6,8 @@
 
 <script>
     import { setting , limit , auth } from "../../local-storage";
-    import defaultSetting from '../../utils/setting.json';
-    import defaultLimit from '../../utils/limit.json';
+    import defaultSetting from '../assest/def/setting.json';
+    import defaultLimit from '../assest/def/limit.json';
     export default {
         name: "loading-page",
         methods: {

@@ -5,6 +5,8 @@
             :result="result"
             :banker-card-list="bankerCardList"
             :player-card-list="playerCardList"
+            :body-width="bodyWidth"
+            :bg-color="backgroundColor"
     ></game-result-view>
     <com-setting-page ref="comSetting" :com-name="comName" @update="connectCom"></com-setting-page>
   </div>
@@ -34,6 +36,13 @@
             showResultTime: {
                 type: Number,
                 default: 10
+            },
+			bodyWidth: {
+				type: Number,
+				default: 0
+			},
+            backgroundColor: {
+            	type: String
             }
         },
         data() {

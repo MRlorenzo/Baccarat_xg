@@ -1,4 +1,4 @@
-import CONFIG from '../../utils/comConfig.json';
+import CONFIG from '../../renderer/assest/def/comConfig.json';
 import {com} from "../../local-storage";
 import UnableCloseException from "../../exception/UnableCloseException";
 import XgSerialPort from './XgSerialPort';

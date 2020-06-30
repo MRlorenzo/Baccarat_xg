@@ -13,6 +13,9 @@
 	import Mousetrap from 'mousetrap';
 	import MainPanel from './views/MainPanel';
 	import LoadingPage from './views/LoadingPage';
+	import defaultSetting from './assest/def/setting.json';
+	import defaultLimit from './assest/def/limit.json';
+	import { clone } from "../utils";
 
 	const VIEW = {LOADING: 'loading', MAIN: 'main'}
 
@@ -21,8 +24,8 @@
 		components: { MainPanel , LoadingPage},
         data(){
 			return {
-				userSetting: null,
-                limitSetting: null,
+				userSetting: clone(defaultSetting),
+                limitSetting: clone(defaultLimit),
                 currView: VIEW.LOADING
             }
         },

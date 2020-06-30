@@ -3,9 +3,9 @@
 
         <div class="game-result">
 
-            <div class="banker-card-box" :style="'background-color:'+bgColor">
+            <div class="banker-card-box" :style="boxCss">
                 <span class="card-text" style="left: 12vw">
-                    庄
+                    {{ $t('road.B') }}
                 </span>
 
                 <div v-for="c in bankerStyles" class="card" :style="c.style">
@@ -24,9 +24,9 @@
                 <div class="pair-point pair-point-p" v-show="isPlayerPair"></div>
             </div>
 
-            <div class="player-card-box" :style="'background-color:'+bgColor">
+            <div class="player-card-box" :style="boxCss">
                 <span class="card-text" style="right: 12vw">
-                    闲
+                    {{ $t('road.P') }}
                 </span>
 
                 <div v-for="c in playerStyles" class="card" :style="c.style">
@@ -61,9 +61,16 @@
             playerCardList: {
             	type: Array
             },
-            bgColor:''
+            bgColor:'',
+			bodyWidth: {
+            	type: Number,
+                default: 0
+            }
         },
         computed:{
+        	boxCss(){
+        		return 'background-color: '+this.bgColor
+            },
             showClassName(){
                 let className = 'zocial result-bull';
                 if (this.result){
@@ -187,9 +194,7 @@
 
             let timer = setInterval(()=>{
                 count++;
-                let mainBox = document.getElementById('main-box');
-
-                let bodyWidth = mainBox.offsetWidth;
+                let bodyWidth = this.bodyWidth;
 
                 let boxWidth = bodyWidth * 0.8 * 0.2;
                 let bankerBoxWidth = bodyWidth *0.8 * 0.4;
@@ -391,6 +396,19 @@
         background-color: blue;
         top: 72%;
         left: 70%;
+    }
+
+    /*庄家赢(实心圆)*/
+    .bg-b{
+        background-color: red;
+    }
+    /*玩家赢(实心圆)*/
+    .bg-p{
+        background-color: blue;
+    }
+    /*和(实心圆)*/
+    .bg-t{
+        background-color: green;
     }
 
 </style>

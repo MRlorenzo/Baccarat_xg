@@ -4,7 +4,6 @@
                 :data="gameCountList"
                 :show-header="false"
                 size="medium"
-                :row-style="rowStyle"
                 :style="bgStyle"
                 :cell-style="cellStyle"
         >
@@ -36,35 +35,34 @@
                 type: Array,
                 required: true
             },
-            height:{
-                type:Number,
-                default: 200
-            },
             bgColor:{type:String}
         },
         components: {BeadRoadGrid},
         data(){
             return {
-                bgStyle:'background-color: rgba(255,255,255,0);'
-            }
-        },
-        computed: {
-            style(){
-                return `width:3vh;height:3vh;font-size:2vh;line-height:3vh;`;
+                bgStyle:'background-color: rgba(255,255,255,0);',
+                style: `width:3vh;height:3vh;font-size:2vh;line-height:3vh;`
             }
         },
         methods:{
-            rowStyle({row, rowIndex}){
-                let height = this.height * (41 / 1080);
-                return `height:${height}px;${this.bgStyle}`;
-            },
             cellStyle(){
-                return `border-color:${this.bgColor};`
+            	return { borderColor: this.bgColor };
             }
         }
     }
 </script>
 
-<style scoped>
+<style >
 
+    .el-table .cell{
+        max-height: 50px !important;
+        overflow: hidden !important;
+        font-size: 2.5vh;
+        line-height: initial;
+        font-family: 'Microsoft YaHei';
+        color: black;
+    }
+    .el-table td{
+        padding: 0;
+    }
 </style>

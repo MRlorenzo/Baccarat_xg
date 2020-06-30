@@ -11,6 +11,7 @@
                            :shine="shine"
                            :last-result="lastResult"
                            :size-version="sizeVersion"
+                           :bg-color="bgColor"
                 >
                 </bead-road>
             </el-card>
@@ -21,8 +22,7 @@
             <el-card :style="styles.card">
                 <game-count
                         :game-count-list="gameCountList"
-                        :height="styles.height"
-
+                        :style="styles.beadLoad"
                 ></game-count>
             </el-card>
         </el-col>
@@ -32,7 +32,10 @@
              <el-card :style="styles.card">
 
                  <next-test
-                     :height="styles.height"
+                     :style="styles.beadLoad"
+                     :table-name="tableName"
+                     :game-count="gameCount"
+                     :boot-no="bootNo"
                      :road-next-test="roadNextTest"
                  >
 
@@ -48,6 +51,8 @@
                 <el-image
                         :style="styles.logo"
                         :src="imgSrc"
+                        :fit="fit"
+                        :alt="alt"
                 ></el-image>
 
             </el-card>
@@ -104,18 +109,43 @@
             gameCountList: {
                 type: Array,
                 required: true
+            },
+            /*用户配置*/
+            settings: {
+            	type: Object,
+                required: true
+            },
+            // 游戏局数
+            gameCount: {
+            	type: Number,
+                default: 0
+            }
+        },
+        computed: {
+        	bgColor(){
+        		return this.settings && this.settings.backgroundColor;
             }
         },
         data(){
+        	const {tableName , bootNo } = this.settings;
             return {
                 imgSrc: ComLogo,
                 fit: 'contain',
-                alt: '西港国际娱乐城'
+                alt: '西港国际娱乐城',
+                tableName: tableName,
+                bootNo: bootNo
+            }
+        },
+        watch: {
+        	settings( settings ){
+				const {tableName , bootNo } = settings;
+				this.tableName = tableName;
+				this.bootNo = bootNo;
             }
         }
     }
 </script>
 
-<style scoped>
+<style >
 
 </style>

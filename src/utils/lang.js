@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 
-import enLocale from './en-US'
-import zhLocale from './zh-CN'
+import enLocale from '../renderer/assest/def/en-US'
+import zhLocale from '../renderer/assest/def/zh-CN'
 
 Vue.use(VueI18n)
 

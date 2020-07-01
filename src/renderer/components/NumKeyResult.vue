@@ -1,7 +1,9 @@
 <template>
-    <input-game-result-view
-            ref="inputGame"
-    ></input-game-result-view>
+    <div ref="box" tabindex="1">
+        <input-game-result-view
+                ref="inputGame"
+        ></input-game-result-view>
+    </div>
 </template>
 
 <script>
@@ -21,6 +23,7 @@
 		methods: {
 			show( baccaratResult ){
 				this.$refs.inputGame.open(baccaratResult);
+				this.$refs.box.focus();
             },
 			setRsTxt( rsTxt ){
 				this.rsTxt = rsTxt;
@@ -63,36 +66,45 @@
 			}
 		},
 		mounted(){
-			Mousetrap.bind('1' , ()=>{
+			/*全局按键绑定*/
+			this.$fnKeyMap.keyIn('1' , ()=>{
 				this.setRsTxt('1');
-			});
-			Mousetrap.bind('2' , ()=>{
+            });
+
+			this.$fnKeyMap.keyIn('2' , ()=>{
 				this.setRsTxt('2');
 			});
-			Mousetrap.bind('3' , ()=>{
+
+			this.$fnKeyMap.keyIn('3' , ()=>{
 				this.setRsTxt('3');
 			});
-			Mousetrap.bind('4', ()=>{
-				this.addPairsCode('4');
-			});
-			Mousetrap.bind('5', ()=>{
-				this.addPairsCode('5');
-			});
-			Mousetrap.bind('+', ()=>{
-				this.addSkyCardCode('+');
-			});
-			Mousetrap.bind('-', ()=>{
-				this.addSkyCardCode('-');
-			});
-			Mousetrap.bind('enter', ()=>{
-				this.confirm();
-			});
-			Mousetrap.bind('esc', ()=> {
+
+			/*全局的按键绑定(支持重复按键)*/
+			this.$fnKeyMap.addHooks('7' , ()=>{
+				this.cancel();
+            });
+
+            /*在结果视图有效*/
+			const box = new Mousetrap(this.$refs.box);
+			box.bind('esc', ()=> {
 				this.clear();
 			});
-			Mousetrap.bind('7 enter' , ()=> {
-				this.cancel();
-			})
+
+			box.bind('4', ()=>{
+				this.addPairsCode('4');
+			});
+			box.bind('5', ()=>{
+				this.addPairsCode('5');
+			});
+			box.bind('+', ()=>{
+				this.addSkyCardCode('+');
+			});
+			box.bind('-', ()=>{
+				this.addSkyCardCode('-');
+			});
+			box.bind('enter', ()=>{
+				this.confirm();
+			});
 		}
 	}
 </script>

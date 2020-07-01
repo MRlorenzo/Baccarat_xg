@@ -283,9 +283,12 @@
         methods:{
         	open(){
         		this.visible = true;
+				// 配置期间不要响应按键
+				this.$fnKeyMap.stop();
             },
             close(){
         		this.visible = false;
+        		this.$fnKeyMap.start();
             },
         	/*切换颜色*/
             change(val){
@@ -333,18 +336,18 @@
             }
         },
         mounted(){
-			Mousetrap.bind('8 enter' , ()=> {
+        	this.$fnKeyMap.addHooks('8', ()=> {
 				this.open();
-			});
+            });
             // 导入配置
-            Mousetrap.bind('8 8 enter' , ()=> {
-                this.$message.info('导入配置');
+            this.$fnKeyMap.addHooks('8 8',()=>{
+				this.$message.info('导入配置');
             });
 
             // 导出配置
-            Mousetrap.bind('7 7 enter', ()=> {
-                this.$message.info('导出配置')
-            })
+            this.$fnKeyMap.addHooks('7 7',()=>{
+				this.$message.info('导出配置')
+            });
         }
     }
 </script>

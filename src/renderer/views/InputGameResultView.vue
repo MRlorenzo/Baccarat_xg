@@ -22,6 +22,16 @@
     import Pairs from '../../baccarat/result/Pairs';
     export default {
         name: "input-game-result-view",
+        props: {
+        	bodyWidth: {
+        		type: Number,
+                default: 1920
+            },
+			bodyHeight: {
+        		type: Number,
+                default: 1080
+            }
+        },
         data(){
             return {
                 style:'',
@@ -32,6 +42,20 @@
 				isBankerPair: false,
 				isPlayerPair: false,
                 name: null
+            }
+        },
+        watch: {
+			bodyWidth(){
+				let bodyWidth = this.bodyWidth;
+				let bodyHeight = this.bodyHeight;
+
+				this.setStyleForSize(bodyWidth , bodyHeight);
+            },
+			bodyHeight(){
+				let bodyWidth = this.bodyWidth;
+				let bodyHeight = this.bodyHeight;
+
+				this.setStyleForSize(bodyWidth , bodyHeight);
             }
         },
         methods: {
@@ -68,36 +92,28 @@
             },
             close(){
         		this.showResult = false;
+            },
+            setStyleForSize( bodyWidth , bodyHeight){
+				let boxWidth = bodyWidth * 0.8 * 0.2;
+				let warpHeight = bodyHeight * 0.5;
+
+				let offset = 10;
+
+				let fontSize = boxWidth ;
+
+				this.pairB = `left:${offset}px;top:${offset}px;`;
+				/*之所以右下的这颗圆点要-3是因为右下有偏差*/
+				let top = boxWidth - 50 - offset -3;
+				this.pairP = `left:${boxWidth - 50 - offset -3}px;top:${top}px;`;
+				let margetTop = (warpHeight - boxWidth) / 2;
+				this.style = `height:${boxWidth}px;margin-top:${margetTop}px;font-size:${fontSize}px;line-height:${fontSize}px`;
             }
         },
         mounted(){
+			let bodyWidth = this.bodyWidth;
+			let bodyHeight = this.bodyHeight;
 
-            let count = 0;
-
-            let timer = setInterval(()=>{
-                let el = document.getElementById('main-box');
-                let bodyWidth = el.offsetWidth;
-
-                let boxWidth = el.offsetWidth * 0.8 * 0.2;
-                let warpHeight = el.offsetHeight*0.5;
-
-                let offset = 10;
-
-                let fontSize = boxWidth ;
-
-                this.pairB = `left:${offset}px;top:${offset}px;`;
-                /*之所以右下的这颗圆点要-3是因为右下有偏差*/
-                let top = boxWidth - 50 - offset -3;
-                this.pairP = `left:${boxWidth - 50 - offset -3}px;top:${top}px;`;
-                let margetTop = (warpHeight - boxWidth) / 2;
-                this.style = `height:${boxWidth}px;margin-top:${margetTop}px;font-size:${fontSize}px;line-height:${fontSize}px`;
-
-                if(bodyWidth > 1000 || count> 20){
-                    clearInterval(timer);
-                }
-            } , 500);
-
-
+			this.setStyleForSize(bodyWidth , bodyHeight);
         }
     }
 </script>

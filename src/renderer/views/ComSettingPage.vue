@@ -86,9 +86,12 @@
         methods: {
             open() {
                 this.visible = true;
+                // 配置期间不要响应按键
+                this.$fnKeyMap.stop();
             },
             close() {
                 this.visible = false;
+				this.$fnKeyMap.start();
             },
             /*连接*/
             async submit() {

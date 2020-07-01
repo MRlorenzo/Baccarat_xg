@@ -41,6 +41,8 @@
         <num-key-result
                 @confirm="confirmInputGameResult"
                 @cancel="cancelGame"
+                :body-width="width"
+                :body-height="height"
         >
         </num-key-result>
 
@@ -323,25 +325,26 @@
 			this.windowSizeVersion ++;
 
 			// 开新靴
-			Mousetrap.bind('9 enter', ()=> {
-				this.$message.info('开新靴')
-			});
-			// 随机
-            Mousetrap.bind('9 9 enter', ()=> {
-                this.random();
+            this.$fnKeyMap.addHooks('9', ()=>{
+				this.$message.info('开新靴');
             });
+			// 随机
+            this.$fnKeyMap.addHooks('9 9', ()=> {
+				this.random();
+            });
+
             // 显示最后一次扑克牌记录
-            Mousetrap.bind('* enter', ()=> {
-            	this.$message.info('显示最后一次扑克牌记录')
+            this.$fnKeyMap.addHooks('*' ,()=>{
+				this.$message.info('显示最后一次扑克牌记录')
             });
             // 打印
-            Mousetrap.bind('* * enter', ()=> {
-            	this.$message.info('打印')
+            this.$fnKeyMap.addHooks('* *', ()=>{
+				this.$message.info('打印');
             });
             // 保存游戏记录
-            Mousetrap.bind('/ / enter', ()=> {
-            	this.$message.info('保存游戏记录')
-            })
+            this.$fnKeyMap.addHooks('/ /',()=>{
+				this.$message.info('保存游戏记录')
+            });
         }
 	}
 </script>

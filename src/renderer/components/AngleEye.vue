@@ -152,11 +152,11 @@
                 if (isNaN(time)) {
                     time = 10;
                 }
+                // 扑克牌展示的时候不要响应全局按键
+                this.$fnKeyMap.stop();
 
                 this.showOpenFullScreenTimer = setTimeout(() => {
-                    this.showResult = false;
-                    this.bankerCardList = [];
-                    this.playerCardList = [];
+                    this.closeFullScreen();
                 }, time * 1000);
             },
             closeFullScreen(){
@@ -166,6 +166,7 @@
                 this.showResult = false;
 				this.bankerCardList = [];
 				this.playerCardList = [];
+				this.$fnKeyMap.start();
             },
             initHooks() {
                 const helper = this.$angleEye;

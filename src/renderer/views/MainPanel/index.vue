@@ -48,8 +48,8 @@
 
         <setting-page
                 ref="settingPage"
-                :setting="setting"
-                :limit="limit"
+                :setting="userSetting"
+                :limit="userLimit"
                 @submit="submitSetting"
                 @colorChange="changeColor"
         ></setting-page>
@@ -117,9 +117,6 @@
 			SettingPage
 		},
 		data() {
-		    const { limitGroup , currencyNames} = this.setting;
-		    const item = getLimitItem(this.limit , limitGroup , currencyNames);
-
 			return {
 				beadResults: [],
                 shine: false, // 是否闪烁
@@ -130,8 +127,8 @@
                 roadResults: {},
                 roadNextTest: {},
                 gameCountList: [],
-                limitItem: clone(item),
-                userSetting: clone(this.setting)
+                userSetting: clone(this.setting),
+                userLimit: clone(this.limit)
 			}
 		},
         computed: {
@@ -155,11 +152,18 @@
 			    return lang === 'zh' ?
                     this.userSetting.marqueeText:
                     this.userSetting.orderMarqueeText;
-            }
+            },
+			limitItem(){
+				const { limitGroup } = this.userSetting;
+				return clone(this.userLimit[limitGroup]);
+			}
         },
 		watch: {
             setting(){
                 this.userSetting = clone(this.setting);
+            },
+			limit(){
+                this.userLimit = clone(this.limit);
             },
 			beadResults() {
 				const {result, nextTest} = this.$road.updateResult();
@@ -180,11 +184,7 @@
 				 */
 				this.roadNextTest = nextTest;
 				this.gameCountList = this.getGameCountList();
-			},
-            limit( limit ){
-                const { limitGroup , currencyNames} = this.setting;
-                this.limitItem = getLimitItem(limit , limitGroup , currencyNames);
-            }
+			}
 		},
 		methods: {
 

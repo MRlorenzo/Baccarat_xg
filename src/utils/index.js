@@ -122,13 +122,6 @@ export function get2DMaxItemLength( list ) {
 	return Math.max(... lens);
 }
 import Limit from '../renderer/assest/def/limit.json';
-export function getLimitItem(limit , limitGroup , currencyNames) {
-    const group = limit[limitGroup] || Limit.default;
-    const item = {};
-    Object.keys(group).forEach(name=>{
-    	if (currencyNames.includes(name)){
-    		item[name] = group[name];
-		}
-	})
-    return item;
+export function getLimitItem(limit , limitGroup ) {
+    return limit[limitGroup] || Limit.default;
 }

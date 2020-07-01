@@ -36,7 +36,7 @@
                     <!--币种-->
                     <el-form-item :label="$t('settings.coin')"  class="limit-input">
                         <el-select
-                                v-model="d.currencyNames"
+                                v-model="item.currencyNames"
                                 :placeholder="$t('settings.selectCoin')"
                                 style="width: 100%"
                                 :multiple-limit="2"
@@ -64,7 +64,7 @@
                             >
                             </el-option>
                         </el-select>
-                        <el-button type="primary" style="width: 20%;float: right" icon="el-icon-edit">
+                        <el-button type="primary" @click="openLimitGroup" style="width: 20%;float: right" icon="el-icon-edit">
                             {{$t('settings.updateGroup')}}
                         </el-button>
                     </el-form-item>
@@ -214,23 +214,52 @@
             </div>
         </el-dialog>
 
+        <limit-group
+            ref="limitGroup"
+            @submit="limitChange"
+        ></limit-group>
+
     </div>
 </template>
 
 <script>
     import { clone } from "../../utils";
-    import { languageNames, getLanguage , setLangue} from "../../utils/lang";
+    import { languageNames, getLanguage , setLanguage} from "../../utils/lang";
     import Limit from '../assest/def/limit';
+    import LimitGroup from '../components/LimitGroup';
+    const blackList = ['currencyNames'];
+    const defaultLimitItem = {
+		currencyNames: ['USD'],
+        USD: {
+			bet: {max:0, min:0},
+            tie: {max:0, min:0}
+        },
+        RMB: {
+			bet: {max:0, min:0},
+			tie: {max:0, min:0}
+        },
+        HKD: {
+			bet: {max:0, min:0},
+			tie: {max:0, min:0}
+        }
+    }
 
     export default {
         name: "setting-page",
+        components: {LimitGroup},
         props:{
             /*用户配置*/
             setting:{
                 type:Object,
                 required: true
             },
-            /*限红*/
+            /*
+            限红
+            {
+                'groupName': limitItem,
+                ...
+            }
+            */
             limit: {
                 type: Object,
                 required: true
@@ -238,47 +267,41 @@
         },
         data(){
             return{
+				visible: false,
                 /*步数*/
                 active: 1,
                 d: clone(this.setting),
-				visible: false,
-                languageNames: languageNames,
+                item: clone(defaultLimitItem),
                 limitList: [],
-                language: getLanguage()
+                language: getLanguage(),
+				languageNames: languageNames,
+				currencyNames: Object.keys(Limit.default).filter(k=> !blackList.includes(k))
             }
         },
         computed: {
-            currencyNames(){
-                return Object.keys(Limit.default);
+        	limitItem(){
+				const { limitGroup } = this.d;
+				return clone(this.limit[limitGroup]);
             },
             groupNames(){
-                return Object.keys(this.limit);
-            },
-            currLimitList(){
-                const groupName = this.d.limitGroup;
-                const group = this.limit[groupName] || clone(Limit.default);
-                const names = this.d.currencyNames || [];
-                return Object.keys(group)
-                    .filter(name => names.includes(name))
-                    .map(currency=>{
-                        return {
-                            label: currency,
-                            v: group[currency]
-                        }
-                    });
+                return Object.keys(this.limit).filter(k=>k!=='_id');
             }
         },
         watch:{
             language( lang ){
                 this.$i18n.locale = lang;
-                setLangue(lang);
+				setLanguage(lang);
             },
 			setting( setting ){
             	this.d = clone(setting);
             },
-            currLimitList( list ){
-			    this.limitList = list;
-            }
+			limitItem(item){
+            	this.item = item;
+				this.limitList = this.item2List(item);
+            },
+            'item.currencyNames': function () {
+				this.limitList = this.item2List(this.item);
+			}
         },
         methods:{
         	open(){
@@ -296,21 +319,46 @@
             },
             /*提交表单*/
             submit(){
-                const limitItem = {};
-                this.limitList.forEach(g=> {
-                    const { label, v } = g;
-                    limitItem[label] = v;
-                });
-
+            	const oldLimit = clone(this.limit);
+            	const {limitGroup } = this.d;
+            	oldLimit[limitGroup] = clone(this.item);
                 this.$emit('submit' , {
                     userSetting: clone(this.d),
-                    limitItem: clone(limitItem)
+                    userLimit: clone(oldLimit)
                 });
                 this.close();
             },
             /*取消提交表单*/
             cancel(){
 				this.close();
+            },
+            // 限红转列表
+            item2List(item){
+				const names = item.currencyNames || [];
+
+				return Object.keys(item)
+					.filter(name => names.includes(name))
+					.map(currency=>{
+						return {
+							label: currency,
+							v: item[currency]
+						}
+					});
+            },
+            openLimitGroup(){
+            	this.$refs.limitGroup.open();
+            },
+            /*(新增/修改)限红组*/
+            limitChange({groupName , limitItem}){
+				const oldLimit = clone(this.limit);
+				oldLimit[groupName] = limitItem;
+				const userSetting = clone(this.d);
+				userSetting.limitGroup = groupName;
+
+				this.$emit('submit' , {
+					userSetting: userSetting,
+					userLimit: oldLimit
+				});
             },
             /*打开导出提示框*/
             openSaveDialog(){

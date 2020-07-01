@@ -76,5 +76,13 @@
     "exportSetting": "导出配置",
     "zh": "中文",
     "en": "English"
+  },
+  "limit": {
+    "setting": "限红组设置",
+    "groupName": "组名称",
+    "cancel": "取消",
+    "new": "新增",
+    "coin": "币种",
+    "selectCoin": "请选择币种"
   }
 }

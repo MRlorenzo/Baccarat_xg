@@ -1,6 +1,7 @@
 import BaccaratResult from "../../../../baccarat/result/BaccaratResult";
 import Result from "../../../../baccarat/result/BResult";
 import Pairs from "../../../../baccarat/result/Pairs";
+import { onChangeLanguage } from "../../../../utils/lang";
 
 export default {
 	methods: {
@@ -45,5 +46,10 @@ export default {
 
 			return arr;
 		}
+	},
+	created(){
+		onChangeLanguage(()=>{
+			this.gameCountList = this.getGameCountList();
+		})
 	}
 }

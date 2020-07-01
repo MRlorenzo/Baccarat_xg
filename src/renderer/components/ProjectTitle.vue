@@ -43,7 +43,7 @@
         },
         computed: {
             currencyNames(){
-                return Object.keys(this.limitItem);
+                return this.limitItem.currencyNames;
             },
             model(){
                 return this.currencyNames.length === 1 ? 'single' : 'multiple';
@@ -59,12 +59,7 @@
                     'font-size:1.3vw;line-height:1.4vw;text-align: left;'
             },
             limitList(){
-                return this.currencyNames.map(name => {
-                    return {
-                        label: name,
-                        v: this.limitItem[name]
-                    }
-                })
+                return this.item2List(this.limitItem);
             }
         },
         methods:{
@@ -76,7 +71,20 @@
                     }
                 }
                 return number.toLocaleString('en');
-            }
+            },
+			// 限红转列表
+			item2List(item){
+				const names = item.currencyNames || [];
+
+				return Object.keys(item)
+					.filter(name => names.includes(name))
+					.map(currency=>{
+						return {
+							label: currency,
+							v: item[currency]
+						}
+					});
+			}
         }
     }
 </script>

@@ -27,9 +27,18 @@ export function getLanguage() {
     }
     return language;
 }
-
-export function setLangue( language ) {
+const callbacks = [];
+export function setLanguage( language ) {
     localSet(KEY , language);
+	callbacks.forEach(cb=>{
+	    cb();
+    })
+}
+
+export function onChangeLanguage( cb ) {
+    if (typeof cb === 'function'){
+        callbacks.push(cb);
+    }
 }
 
 const i18n = new VueI18n({

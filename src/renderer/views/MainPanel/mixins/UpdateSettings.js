@@ -1,15 +1,14 @@
 import { setting , limit } from "../../../../local-storage";
+import { clone } from "../../../../utils";
 
 export default {
 	methods: {
-		async submitSetting({ userSetting, limitItem}){
+		async submitSetting({ userSetting, userLimit}){
 			this.userSetting = userSetting;
-			this.limitItem = limitItem;
+			this.userLimit = userLimit;
 			// 更新本地数据库
 			await setting.update({} , userSetting);
-			const oldLimit = clone(this.limit);
-
-			await limit.update({} , oldLimit);
+			await limit.update({} , userLimit);
 		},
 		async changeColor( style ){
 			this.userSetting.backgroundColor = style;

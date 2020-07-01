@@ -14,7 +14,7 @@ Vue.use(ElementUI);
 Vue.use(RoadMonitor);
 
 // 天使靴操作助手
-Vue.use(AngleEye);
+// Vue.use(AngleEye);
 // 全局按键映射
 Vue.use(GlobalFnKeyMap);
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))

@@ -71,6 +71,7 @@
     import AngleEyeResult from './mixins/AngleEyeResult';
     import InputResult from './mixins/InputResult';
     import RandomGame from './mixins/RandomGame';
+    import ResultStore from './mixins/ResultStore';
 
 	const defaultStyles = {
 		bigLoad: '',
@@ -97,7 +98,9 @@
             /*处理键盘输入结果*/
 			InputResult,
             /*随机游戏*/
-			RandomGame
+			RandomGame,
+            /*记录游戏结果*/
+			ResultStore
         ],
 		props: {
 			setting: {
@@ -167,7 +170,7 @@
 			limit(){
                 this.userLimit = clone(this.limit);
             },
-			beadResults() {
+			beadResults( list ) {
 				const {result, nextTest} = this.$road.updateResult();
 				/**
                  * 路单的pointList
@@ -186,6 +189,7 @@
 				 */
 				this.roadNextTest = nextTest;
 				this.gameCountList = this.getGameCountList();
+				this.rememberGameResults(list);
 			}
 		},
 		methods: {

@@ -1,11 +1,5 @@
 import Mousetrap from 'mousetrap';
-const NAME = {
-	Seven: '7',
-	Eight: '8',
-	NINE: '9',
-	Slash: '/',
-	Star: '*'
-};
+
 const init = Symbol(), exec = Symbol(), runAction = Symbol();
 class KeyCodeHandler {
 	constructor( target = document){
@@ -58,6 +52,12 @@ class KeyCodeHandler {
 				this.fnKeys.push('*');
 			}
 		});
+
+		c.bind('.', ()=> {
+			if(this.active){
+				this.fnKeys.push('.');
+			}
+		})
 
 		c.bind('enter', ()=> {
 			if (this.active){

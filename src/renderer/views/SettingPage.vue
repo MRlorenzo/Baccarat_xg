@@ -336,6 +336,7 @@
             }
         },
         mounted(){
+        	// 打开配置
         	this.$fnKeyMap.addHooks('8', ()=> {
 				this.open();
             });

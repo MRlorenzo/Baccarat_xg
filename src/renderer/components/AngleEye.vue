@@ -273,9 +273,13 @@
             }
         },
         mounted(){
-			Mousetrap.bind('. enter', () => {
+        	this.$fnKeyMap.addHooks('.', ()=> {
 				this.openComSetting();
-			})
+            });
+			// 显示最后一次扑克牌记录
+			this.$fnKeyMap.addHooks('*' ,()=>{
+				this.$message.info('显示最后一次扑克牌记录')
+			});
         }
     }
 </script>

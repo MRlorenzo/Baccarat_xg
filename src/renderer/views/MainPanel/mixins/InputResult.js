@@ -6,9 +6,9 @@ export default {
 		 */
 		confirmInputGameResult(baccaratResult) {
 			this.$road.push(baccaratResult);
-			this.beadResults = this.$road.arr;
-			this.showShine();
-		},
+this.beadResults = this.$road.arr;
+this.showShine();
+},
 		/**
 		 * 取消一局
 		 */

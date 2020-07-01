@@ -26,7 +26,8 @@
             ></road-group>
 
             <el-footer :style="styles.footer">
-                <marquee-show :text="marqueeText"></marquee-show>
+                <!--当页面可见时才开始滚动-->
+                <marquee-show :text="marqueeText" :showed="showed"></marquee-show>
             </el-footer>
 
         </el-container>
@@ -128,7 +129,8 @@
                 roadNextTest: {},
                 gameCountList: [],
                 userSetting: clone(this.setting),
-                userLimit: clone(this.limit)
+                userLimit: clone(this.limit),
+                showed: false
 			}
 		},
         computed: {
@@ -190,6 +192,7 @@
 
             onShow(){
 				this.windowSizeVersion ++;
+				this.showed = true;
             },
 
 			/*闪烁*/

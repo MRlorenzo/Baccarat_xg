@@ -1,6 +1,6 @@
 <template>
     <div class="el-carousel__container">
-        <marquee>{{text2}}</marquee>
+        <marquee ref="el" onmouseover="this.stop();" onmouseout="this.start();">{{text2}}</marquee>
     </div>
 </template>
 
@@ -10,19 +10,23 @@
         props:{
             text:{
                 type: String
+            },
+            showed: {
+            	type: Boolean,
+                default: false
             }
         },
-        data(){
-            return {}
+        watch: {
+        	showed(bl){
+        		if(bl){
+					this.$refs.el.start()
+                }
+            }
         },
         computed:{
             text2(){
               return this.text;
             }
-        },
-        methods:{
-        },
-        created(){
         }
     }
 </script>

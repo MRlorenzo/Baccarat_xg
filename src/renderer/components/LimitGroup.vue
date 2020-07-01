@@ -186,7 +186,6 @@
         },
         created(){
 			this.limitList = this.item2List(this.item);
-			console.log(this.limitList)
         }
 	}
 </script>

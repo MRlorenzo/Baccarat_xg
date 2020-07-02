@@ -3,6 +3,9 @@ import unhandled from 'electron-unhandled';
 import log from '../utils/log';
 import "./init-window";
 
+// 取消警告
+process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
+
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html

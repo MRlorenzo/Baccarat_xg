@@ -43,7 +43,7 @@
                                 :multiple="true"
                         >
                             <el-option v-for="name of currencyNames"
-                                       :label="name" :value="name">
+                                   :key="name" :label="name" :value="name">
 
                             </el-option>
                         </el-select>
@@ -52,7 +52,7 @@
                     <!--语言-->
                     <el-form-item :label="$t('settings.language')" class="limit-input">
                         <el-select v-model="language" :placeholder="$t('settings.selectLanguage')" style="width: 100%">
-                            <el-option v-for="l of languageNames" :label="$t('settings.'+l)" :value="l"></el-option>
+                            <el-option v-for="l of languageNames" :key="l" :label="$t('settings.'+l)" :value="l"></el-option>
                         </el-select>
                     </el-form-item>
 
@@ -60,7 +60,7 @@
                     <el-form-item :label="$t('settings.limitGroup')" >
                         <el-select v-model="d.limitGroup" :placeholder="$t('settings.selectLimitGroup')" style="width: 70%">
                             <el-option v-for="name of groupNames"
-                                :label="name" :value="name"
+                               :key="name" :label="name" :value="name"
                             >
                             </el-option>
                         </el-select>
@@ -70,7 +70,7 @@
                     </el-form-item>
 
                     <!--限红列表-->
-                    <div v-for="l of limitList">
+                    <div v-for="l of limitList" :key="l.label">
                         <el-tag class="currencyName">
                             {{l.label}}
                         </el-tag>

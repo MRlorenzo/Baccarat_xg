@@ -25,14 +25,14 @@
                         :multiple="true"
                 >
                     <el-option v-for="name of currencyNames"
-                               :label="name" :value="name">
+                             :key="name" :label="name" :value="name">
 
                     </el-option>
                 </el-select>
             </el-form-item>
 
             <!--限红列表-->
-            <div v-for="l of limitList">
+            <div v-for="l of limitList" :key="l.label">
                 <el-tag class="currencyName">
                     {{l.label}}
                 </el-tag>

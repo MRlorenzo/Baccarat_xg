@@ -52,6 +52,34 @@ async function getNewestNoFolder( folderPath ) {
 }
 
 /**
+ * 获取游戏记录数据列表
+ * @returns {Promise<Array>}
+ */
+export async function gameResultDatas() {
+    const folderNames = await files(gameResultPath);
+    const folders = [];
+    for (const folder of folderNames){
+        const folderPath = path.join(gameResultPath , folder);
+        if ((await stat(folderPath)).isDirectory()){
+            const filenames = await files(folderPath);
+            let children = [];
+            for(const name of filenames){
+                const filePath = path.join(folderPath , name);
+                children.push({
+                    name: name,
+                    data: await readTxtFile(filePath)
+                })
+            }
+            folders.push({
+                name: folder,
+                children: children
+            })
+        }
+    }
+    return folders;
+}
+
+/**
  * 最后一局游戏记录
  * @returns {Promise<*>}
  */
@@ -59,7 +87,7 @@ export async function lastOneHistory(){
     let rsTxt = null;
 
     if (!(await exists(gameResultPath)) || (await stat(gameResultPath)).isFile()){
-        // throw new Error('找不到存放游戏结果的文件夹[game-results]或者该目标不是文件夹!');
+        throw new Error('找不到存放游戏结果的文件夹[game-results]或者该目标不是文件夹!');
     }
 
     let toDay = moment().format('YYYY-MM-DD');

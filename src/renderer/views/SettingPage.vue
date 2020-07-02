@@ -162,10 +162,10 @@
 
 
                     <el-form-item :label="$t('settings.history')">
-                        <el-button  type="primary">
+                        <el-button  type="primary" @click="openResultHistory">
                             {{ $t('settings.showHistory') }}
                         </el-button>
-                        <el-button type="primary" >
+                        <el-button type="primary" @click="openLastOneResultView">
                             {{ $t('settings.prevHistory')}}
                         </el-button>
                     </el-form-item>
@@ -219,6 +219,15 @@
             @submit="limitChange"
         ></limit-group>
 
+        <result-history-view
+            ref="last"
+            :result="textResult"
+            @submit=""
+        ></result-history-view>
+
+        <result-history ref="history">
+
+        </result-history>
     </div>
 </template>
 
@@ -227,6 +236,10 @@
     import { languageNames, getLanguage , setLanguage} from "../../utils/lang";
     import Limit from '../assest/def/limit';
     import LimitGroup from '../components/LimitGroup';
+    import ResultHistoryView from '../components/ResultHistoryView';
+    import ResultHistory from '../views/ResultHistory';
+    import { lastOneHistory } from "../../file-system/result";
+
     const blackList = ['currencyNames'];
     const defaultLimitItem = {
 		currencyNames: ['USD'],
@@ -246,7 +259,7 @@
 
     export default {
         name: "setting-page",
-        components: {LimitGroup},
+        components: {LimitGroup , ResultHistoryView , ResultHistory},
         props:{
             /*用户配置*/
             setting:{
@@ -275,7 +288,8 @@
                 limitList: [],
                 language: getLanguage(),
 				languageNames: languageNames,
-				currencyNames: Object.keys(Limit.default).filter(k=> !blackList.includes(k))
+				currencyNames: Object.keys(Limit.default).filter(k=> !blackList.includes(k)),
+                textResult: ''
             }
         },
         computed: {
@@ -345,6 +359,7 @@
 						}
 					});
             },
+            /*打开限红组编辑页面*/
             openLimitGroup(){
             	this.$refs.limitGroup.open();
             },
@@ -359,6 +374,27 @@
 					userSetting: userSetting,
 					userLimit: oldLimit
 				});
+            },
+            /*展示游戏记录*/
+            openResultView( result ){
+                this.textResult = result;
+                this.$refs.last.open();
+            },
+            /*打开最后一局历史记录*/
+            async openLastOneResultView(){
+
+                try {
+                    this.openResultView(await lastOneHistory())
+                }catch (e){
+                    this.$message.error(e.message);
+                }
+            },
+            /*打开游戏记录历史页面*/
+            openResultHistory(){
+                this.$refs.history.open();
+            },
+            showLastHistory(){
+
             },
             /*打开导出提示框*/
             openSaveDialog(){

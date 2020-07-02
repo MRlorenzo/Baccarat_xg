@@ -58,7 +58,7 @@
     "tie": "和",
     "pairs": "对子",
     "bgColor": "背景颜色",
-    "fileio": "导入或导出配置文件",
+    "fileio": "配置文件",
     "import": "导入",
     "export": "导出",
     "history": "历史记录",
@@ -75,7 +75,8 @@
     "importSetting": "导入配置",
     "exportSetting": "导出配置",
     "zh": "中文",
-    "en": "English"
+    "en": "English",
+    "show": "查看"
   },
   "limit": {
     "setting": "限红组设置",

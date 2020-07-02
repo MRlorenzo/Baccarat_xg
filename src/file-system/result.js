@@ -17,12 +17,12 @@ export async function appendResultFile( string , bootNumber = 'x'){
     let toDay = moment().format('YYYY-MM-DD');
     let folderPath = path.join( gameResultPath , toDay);
 
-    /*先检查是否存在以今天日期命名的文件夹*/
-    if (!(await exists(folderPath))){
+    //先检查一下保存游戏结果的主目录有没有
+    if (!(await exists(gameResultPath))){
         await mkdir(gameResultPath);
     }
 
-    //再检查一下保存游戏结果的主目录有没有
+    /*再检查是否存在以今天日期命名的文件夹*/
     if (!(await exists(folderPath))){
         await mkdir(folderPath);
     }

@@ -1,5 +1,4 @@
 import { setting , limit } from "../../../../local-storage";
-import { clone } from "../../../../utils";
 
 export default {
 	methods: {
@@ -16,6 +15,17 @@ export default {
 			await setting.update({} , {
 				$set: {
 					backgroundColor: style
+				}
+			})
+		},
+		/*更新靴号(自动递增)*/
+		async updateBootNo(){
+			let {bootNo} = this.userSetting;
+			bootNo = parseInt(bootNo);
+			bootNo++;
+			await setting.update({}, {
+				$set: {
+					bootNo: bootNo
 				}
 			})
 		}

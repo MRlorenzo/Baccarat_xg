@@ -5,9 +5,8 @@ export default {
 		 * @param baccaratResult
 		 */
 		angleEyeResult(baccaratResult) {
-			this.$road.push(baccaratResult);
-			this.beadResults = this.$road.arr;
-			this.showShine();
+			// 将解析的结果添加到路单
+			this.addResult(baccaratResult);
 		}
 	}
 }

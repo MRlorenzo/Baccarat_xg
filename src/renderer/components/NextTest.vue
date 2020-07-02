@@ -97,7 +97,7 @@
         	// 桌号
         	tableName: { type: String },
             // 靴号
-            bootNo: { type: String },
+            bootNo: { type: Number },
             // 游戏局数
             gameCount: { type: Number },
             /**

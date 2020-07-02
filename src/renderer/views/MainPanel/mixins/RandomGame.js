@@ -8,7 +8,7 @@ export default {
 		}
 	},
 	mounted(){
-		// 随机
+		// 触发随机的指令：9 9 enter
 		this.$fnKeyMap.addHooks('9 9', ()=> {
 			this.random();
 		});

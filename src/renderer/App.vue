@@ -41,7 +41,7 @@
                 this.currView = VIEW.MAIN;
                 // 由于'main'一开始是隐藏的，所以它在计算样式的时候元素高度为0，
                 // 因此需要在它完全显示的时候重新计算一次。
-                this.$refs.main.onShow();
+                this.$refs.main.onShow( userSetting );
             }
         },
 		mounted() {

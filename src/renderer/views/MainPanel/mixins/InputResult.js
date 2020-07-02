@@ -5,10 +5,9 @@ export default {
 		 * @param baccaratResult
 		 */
 		confirmInputGameResult(baccaratResult) {
-			this.$road.push(baccaratResult);
-this.beadResults = this.$road.arr;
-this.showShine();
-},
+			// 将解析的结果添加到路单中
+			this.addResult(baccaratResult);
+		},
 		/**
 		 * 取消一局
 		 */

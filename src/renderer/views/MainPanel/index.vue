@@ -63,7 +63,7 @@
     import RoadGroup from '../../components/RoadGroup';
     import ProjectTitle from '../../components/ProjectTitle';
     import MarqueeShow from '../../components/MarqueeShow';
-    import {clone, getLimitItem} from "../../../utils/index";
+    import {clone} from "../../../utils/index";
     import SettingPage from '../SettingPage';
     import SizeStyle from './mixins/SizeStyle';
     import GameCount from './mixins/GameCount';
@@ -189,14 +189,22 @@
 				 */
 				this.roadNextTest = nextTest;
 				this.gameCountList = this.getGameCountList();
-				this.rememberGameResults(list);
+				/*记住这一靴的游戏结果
+				* 利用本地数据库记录当前游戏记录
+				* */
+				this.rememberGameResults(list , this.userSetting.bootNo);
 			}
 		},
 		methods: {
 
-            onShow(){
+		    /*
+		    * 当主页面(初始化完成)显示的时候，做一些事情。
+		    * */
+            async onShow( settings ){
 				this.windowSizeVersion ++;
 				this.showed = true;
+                // 从本地数据库里面获取游戏记录,如果找不到任何记录，则根据bootNo生成一份空的记录
+                await this.restoreGameResultsFormDb(settings.bootNo);
             },
 
 			/*闪烁*/
@@ -205,16 +213,41 @@
 				setTimeout(()=>{
 					this.shine = false;
 				},2000);
-			}
+			},
+
+            /*添加一个/一列游戏结果到路单*/
+            addResult( baccaratResult ){
+                if (Array.isArray(baccaratResult)){
+                    baccaratResult.forEach(result=> {
+                        this.$road.push(result);
+                    })
+                }else{
+                    this.$road.push(baccaratResult);
+                }
+                this.beadResults = this.$road.arr;
+                this.showShine();
+            },
+
+            /*新开一靴*/
+            async newBoot(){
+                // 先保存当前游戏记录到文件
+                await this.saveGameResultsToFile();
+                // 更新靴号(自动递增)
+                await this.updateBootNo();
+                // 清空当前路单
+                this.$road.newGame();
+                this.beadResults = this.$road.arr;
+            }
 		},
         created(){
 		    this.gameCountList = this.getGameCountList();
         },
         mounted(){
-
+            window.vm = this;
 			// 开新靴
             this.$fnKeyMap.addHooks('9', ()=>{
 				this.$message.info('开新靴');
+				this.newBoot();
             });
 
             // 打印
@@ -223,7 +256,8 @@
             });
             // 保存游戏记录
             this.$fnKeyMap.addHooks('/ /',()=>{
-				this.$message.info('保存游戏记录')
+				this.$message.info('保存当前游戏记录');
+				this.saveGameResultsToFile();
             });
         }
 	}

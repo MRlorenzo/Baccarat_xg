@@ -1,6 +1,6 @@
 {
     "backgroundColor": "#ED8A20",
-    "bootNo": "1",
+    "bootNo": 1,
     "tableName": "name",
     "marqueeText": "滚动文字在此显示",
     "orderMarqueeText": "",

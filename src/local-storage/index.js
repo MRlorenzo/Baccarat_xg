@@ -10,6 +10,8 @@ export const limit = new DataManager('/limit.db' , false);
 
 export const auth = new DataManager('auth');
 
+export const boot = new DataManager('boot.db');
+
 const storage = window.localStorage;
 export function localSet( key , value) {
     storage.setItem(key , value);

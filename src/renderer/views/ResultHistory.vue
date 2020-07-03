@@ -12,7 +12,7 @@
                 :visible.sync="visible"
         >
 
-            <el-collapse v-model="activeName" accordion >
+            <el-collapse v-model="activeName" accordion v-loading="loading" style="min-height: 200px">
                 <el-collapse-item v-for="res of results"
                                   :key="res.name"
                                   :title="res.name"
@@ -63,13 +63,16 @@
                 visible: false,
                 activeName: '1',
                 textResult: '',
-                results: []
+                results: [],
+				loading: true
             }
         },
         methods:{
             async open(){
                 this.visible = true;
+                this.loading = true;
                 this.results = this.format(await gameResultDatas());
+                this.loading = false;
                 if( this.results.length> 0){
                     const [first] = this.results;
                     this.activeName = first.name;

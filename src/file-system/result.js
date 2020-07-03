@@ -53,29 +53,43 @@ async function getNewestNoFolder( folderPath ) {
 
 /**
  * 获取游戏记录数据列表
+ * @param max
  * @returns {Promise<Array>}
  */
-export async function gameResultDatas() {
+export async function gameResultDatas( max = 3) {
     const folderNames = await files(gameResultPath);
-    const folders = [];
+    let folders = [];
+    // 统计game-results文件夹下的所有目录
     for (const folder of folderNames){
-        const folderPath = path.join(gameResultPath , folder);
-        if ((await stat(folderPath)).isDirectory()){
-            const filenames = await files(folderPath);
-            let children = [];
-            for(const name of filenames){
-                const filePath = path.join(folderPath , name);
-                children.push({
-                    name: name,
-                    data: await readTxtFile(filePath)
-                })
-            }
+		const folderPath = path.join(gameResultPath , folder);
+		const fi = await stat(folderPath);
+        if (fi.isDirectory()){
             folders.push({
+				folderPath: folderPath,
                 name: folder,
-                children: children
+				createTime: fi.birthtime
             })
         }
     }
+
+    /*为了减轻页面渲染压力，最多读取${max}个目录下的文件。*/
+	folders = folders.sort((a,b)=> b.createTime - a.createTime).filter((_,i)=>i< max);
+
+	/*读取每个目录下的文件*/
+    for (const folder of folders){
+        const {folderPath} = folder;
+        const children = [];
+		const filenames = await files(folderPath);
+		for(const name of filenames){
+			const filePath = path.join(folderPath , name);
+			children.push({
+				name: name,
+				data: await readTxtFile(filePath)
+			})
+		}
+		folder.children = children;
+    }
+
     return folders;
 }
 

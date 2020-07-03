@@ -9,8 +9,9 @@
     import defaultSetting from '../assest/def/setting.json';
     import defaultLimit from '../assest/def/limit.json';
     import { getLanguage } from "../../utils/lang";
+    import { mac , md5 , decrypt} from "../../utils/auth";
 
-    export default {
+	export default {
         name: "loading-page",
         methods: {
             async initSetting(){
@@ -30,23 +31,43 @@
                 return limitSetting;
             },
             async initAuth(){
-                return await auth.findOne();
+            	const data = await auth.findOne();
+            	if (data == null){
+            		auth.save({code: ''});
+            		return null;
+                }
+                return data.code;
+            },
+            // 序列号
+            async initSerialNumber(){
+            	const macAddress = await mac();
+            	return await md5(macAddress);
+            },
+            async doAuth(serialNumber , authorizationCode){
+            	try {
+					return serialNumber === await decrypt(authorizationCode);
+                }catch (e){
+            		return false;
+                }
             }
         },
         async created(){
             // 初始化国际化
             this.$i18n.locale = getLanguage();
-            // 获取授权码
-            const authorizationCode = await this.initAuth();
             // 初始化配置信息
             const userSetting = await this.initSetting();
-
             // 初始化限红配置
             const limitSetting = await this.initLimit();
-
+			// 获取授权码
+			const authorizationCode = await this.initAuth();
+			// 获取序列号
+			const serialNumber = await this.initSerialNumber();
+			// 检查是否正确
+            const auth = await this.doAuth(serialNumber , authorizationCode);
 
             this.$emit('done' , {
-                authorizationCode,
+                auth,
+				serialNumber,
                 userSetting,
                 limitSetting
             })

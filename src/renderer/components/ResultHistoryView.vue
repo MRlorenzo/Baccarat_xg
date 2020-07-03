@@ -7,15 +7,18 @@
             top="50px"
             :center="true"
             :visible.sync="visible"
-            @opened="sizeVersion ++"
     >
 
-            <bead-road :result-list="resultList" :size-version="sizeVersion">
+            <bead-road
+                    :height="200"
+                    :width="800"
+                    :result-list="resultList"
+            >
             </bead-road>
 
         <div slot="footer" class="dialog-footer">
             <el-button @click="visible = false">{{ $t('settings.cancel') }}</el-button>
-            <el-button type="primary" @click="submit">{{ $t('settings.confirm') }}</el-button>
+            <el-button type="primary" @click="submit">{{ $t('settings.restoreResult') }}</el-button>
         </div>
 
     </el-dialog>
@@ -32,8 +35,7 @@
         data(){
             return {
                 resultList:[],
-                visible: false,
-                sizeVersion: 1
+                visible: false
             }
         },
         watch:{
@@ -59,9 +61,22 @@
             open(){
                 this.visible = true;
             },
-            submit(){
-                this.$emit('submit' , this.resultList);
-                this.visible = false;
+            async submit(){
+				try {
+					await this.$confirm(
+						this.$t('settings.confirmRestore'),
+						this.$t('settings.restoreGameResult'),
+						{
+							confirmButtonText: this.$t('settings.confirm'),
+							cancelButtonText: this.$t('settings.cancel'),
+							type: 'warning'
+						});
+					this.$emit('submit' , this.resultList);
+					this.visible = false;
+				}catch (e){
+					this.$message.info(this.$t('settings.canceled'))
+				}
+
             }
         }
     }

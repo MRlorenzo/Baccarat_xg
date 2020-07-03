@@ -35,6 +35,7 @@
         <!-- 负责接收天使靴的游戏结果-->
         <angle-eye
                 @result="angleEyeResult"
+                @newGame="newBoot"
                 :body-width="width"
         ></angle-eye>
 
@@ -52,6 +53,7 @@
                 :setting="userSetting"
                 :limit="userLimit"
                 @submit="submitSetting"
+                @restore="restore"
                 @colorChange="changeColor"
         ></setting-page>
     </div>
@@ -233,10 +235,18 @@
                 // 先保存当前游戏记录到文件
                 await this.saveGameResultsToFile();
                 // 更新靴号(自动递增)
-                await this.updateBootNo();
+                const bootNo = await this.updateBootNo();
                 // 清空当前路单
                 this.$road.newGame();
                 this.beadResults = this.$road.arr;
+            },
+
+            /*从历史记录中还原游戏记录*/
+            async restore(baccaratResults){
+				// 先保存当前游戏记录到文件,并清空当前路单
+				await this.newBoot();
+				// 将数据添加到路单中。
+				this.addResult(baccaratResults);
             }
 		},
         created(){
@@ -246,7 +256,7 @@
             window.vm = this;
 			// 开新靴
             this.$fnKeyMap.addHooks('9', ()=>{
-				this.$message.info('开新靴');
+				this.$notify.info(this.$t('game.newGame'));
 				this.newBoot();
             });
 
@@ -255,9 +265,9 @@
 				this.$message.info('打印');
             });
             // 保存游戏记录
-            this.$fnKeyMap.addHooks('/ /',()=>{
-				this.$message.info('保存当前游戏记录');
-				this.saveGameResultsToFile();
+            this.$fnKeyMap.addHooks('/ /',async ()=>{
+				this.$message.info(this.$t('game.saveCurrentResult'));
+				await this.saveGameResultsToFile();
             });
         }
 	}

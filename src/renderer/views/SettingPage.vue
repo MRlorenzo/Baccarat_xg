@@ -56,6 +56,28 @@
                         </el-select>
                     </el-form-item>
 
+                    <!--历史记录-->
+                    <el-form-item :label="$t('settings.history')" class="limit-input">
+                        <el-button  type="primary" @click="openResultHistory">
+                            {{ $t('settings.showHistory') }}
+                        </el-button>
+                        <el-button type="primary" @click="openLastOneResultView">
+                            {{ $t('settings.prevHistory')}}
+                        </el-button>
+                    </el-form-item>
+
+                    <!--导入、导出配置-->
+                    <el-form-item :label="$t('settings.fileio')" class="limit-input">
+                        <el-button  type="primary">
+                            {{ $t('settings.import')}}
+                        </el-button>
+
+                        <el-button  type="primary">
+                            {{$t('settings.export')}}
+                        </el-button>
+
+                    </el-form-item>
+
                     <!--限红组-->
                     <el-form-item :label="$t('settings.limitGroup')" >
                         <el-select v-model="d.limitGroup" :placeholder="$t('settings.selectLimitGroup')" style="width: 70%">
@@ -149,27 +171,6 @@
                     </el-form-item>
 
 
-                    <el-form-item :label="$t('settings.fileio')">
-                        <el-button  type="primary">
-                            {{ $t('settings.import')}}
-                        </el-button>
-
-                        <el-button  type="primary">
-                            {{$t('settings.export')}}
-                        </el-button>
-
-                    </el-form-item>
-
-
-                    <el-form-item :label="$t('settings.history')">
-                        <el-button  type="primary" @click="openResultHistory">
-                            {{ $t('settings.showHistory') }}
-                        </el-button>
-                        <el-button type="primary" @click="openLastOneResultView">
-                            {{ $t('settings.prevHistory')}}
-                        </el-button>
-                    </el-form-item>
-
                     <el-form-item :label="$t('settings.showResultTime')">
                         <el-input type="number" v-model="d.showResultTime" autocomplete="off" suffix-icon="el-icon-edit"></el-input>
                     </el-form-item>
@@ -222,10 +223,10 @@
         <result-history-view
             ref="last"
             :result="textResult"
-            @submit=""
+            @submit="restoreResult"
         ></result-history-view>
 
-        <result-history ref="history">
+        <result-history ref="history" @submit="restoreResult">
 
         </result-history>
     </div>
@@ -388,6 +389,11 @@
                 }catch (e){
                     this.$message.error(e.message);
                 }
+            },
+            /*还原游戏记录*/
+            restoreResult( baccaratResults ){
+            	this.$emit('restore' , baccaratResults);
+            	this.close();
             },
             /*打开游戏记录历史页面*/
             openResultHistory(){

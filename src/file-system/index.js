@@ -96,7 +96,7 @@ export async function saveTxtFile(_path , data){
 			if ( err ){
 				reject(err);
 			}else{
-				resolve( data );
+				resolve( _path );
 			}
 		});
 	})

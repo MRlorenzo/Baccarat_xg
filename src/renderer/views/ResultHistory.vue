@@ -10,10 +10,9 @@
                 top="50px"
                 :center="true"
                 :visible.sync="visible"
-                @opened="sizeVersion++"
         >
 
-            <el-collapse v-model="activeName" accordion  @change="sizeVersion++">
+            <el-collapse v-model="activeName" accordion >
                 <el-collapse-item v-for="res of results"
                                   :key="res.name"
                                   :title="res.name"
@@ -26,8 +25,12 @@
                                 :timestamp="c.name"
                                 placement="top"
                         >
-                            <el-card>
-                                <bead-road :result-list="c.dataList" :size-version="sizeVersion">
+                            <el-card @dblclick.native="submit(c.dataList)">
+                                <bead-road
+                                        :height="200"
+                                        :width="800"
+                                        :result-list="c.dataList"
+                                >
 
                                 </bead-road>
                             </el-card>
@@ -39,8 +42,7 @@
 
 
             <div slot="footer" class="dialog-footer">
-                <el-button @click="visible = false"> {{ $t('settings.cancel') }} </el-button>
-                <el-button type="primary" @click="submit"> {{ $t('settings.confirm') }} </el-button>
+                <el-button @click="visible = false"> {{ $t('settings.close') }} </el-button>
             </div>
 
         </el-dialog>
@@ -61,8 +63,7 @@
                 visible: false,
                 activeName: '1',
                 textResult: '',
-                results: [],
-                sizeVersion: 1
+                results: []
             }
         },
         methods:{
@@ -91,9 +92,21 @@
                 const textList = text.split('\r\n');
                 return textList.map(BaccaratResult.getResult)
             },
-            submit(){
-                /*this.$emit('submit' , this.resultList);*/
-                this.visible = false;
+            async submit( baccaratResults ){
+            	try {
+            		await this.$confirm(
+            			this.$t('settings.confirmRestore'),
+                        this.$t('settings.restoreGameResult'),
+                        {
+                            confirmButtonText: this.$t('settings.confirm'),
+                            cancelButtonText: this.$t('settings.cancel'),
+                            type: 'warning'
+                        });
+					this.$emit('submit' , baccaratResults);
+					this.visible = false;
+                }catch (e){
+                    this.$message.info(this.$t('settings.canceled'))
+                }
             }
 
         }

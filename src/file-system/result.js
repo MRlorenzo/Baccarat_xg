@@ -27,7 +27,7 @@ export async function appendResultFile( string , bootNumber = 'x'){
         await mkdir(folderPath);
     }
 
-    await saveTxtFile(path.join(folderPath , fileName) , string);
+    return await saveTxtFile(path.join(folderPath , fileName) , string);
 }
 
 /**

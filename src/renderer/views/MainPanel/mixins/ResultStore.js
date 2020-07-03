@@ -30,7 +30,8 @@ export default {
 				const { bootNo , results} = bootHistory;
                 const fileData = this.textForList(results);
                 // 写入文件
-                await appendResultFile(fileData , bootNo);
+                const filePath = await appendResultFile(fileData , bootNo);
+				this.$message.success(`saved at: ${filePath}`);
 			}
 		},
 		/*还原百家乐结果*/

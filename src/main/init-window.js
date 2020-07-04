@@ -10,13 +10,13 @@ function createWindow() {
      * Initial window options
      */
     mainWindow = new BrowserWindow({
-        width: 1920,
+        width: 600,
         minWidth: 600,
         maxWidth: 1920,
         minHeight: 400,
         maxHeight: 1080,
-        height: 1080,
-        //frame:false,    //无边框
+        height: 400,
+        frame:false,    //无边框
         titleBarStyle: 'hiddenInset',
         useContentSize: true,
         webPreferences: {
@@ -24,7 +24,7 @@ function createWindow() {
             webSecurity: false,
             nodeIntegration: true
         }
-    })
+    });
 
     mainWindow.loadURL(mainURL)
 	mainWindow.setMenu(null);

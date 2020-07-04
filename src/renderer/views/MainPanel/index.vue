@@ -203,8 +203,12 @@
 		    * 当主页面(初始化完成)显示的时候，做一些事情。
 		    * */
             async onShow( settings ){
-				this.windowSizeVersion ++;
-				this.showed = true;
+                // 全屏显示。
+                const currentWindow = this.$electron.remote.getCurrentWindow();
+                currentWindow.setFullScreen(true);
+
+                this.windowSizeVersion ++;
+                this.showed = true;
                 // 从本地数据库里面获取游戏记录,如果找不到任何记录，则根据bootNo生成一份空的记录
                 await this.restoreGameResultsFormDb(settings.bootNo);
             },

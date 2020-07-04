@@ -38,12 +38,5 @@ export default {
 			this.height = height;
 			this.windowSizeVersion ++;
 		});
-
-		const currentWindow = this.$electron.remote.getCurrentWindow();
-
-		//currentWindow.setFullScreen(true);
-		const [width, height] = currentWindow.getContentSize();
-		this.styles = this.styleFromSize(width , height);
-		this.windowSizeVersion ++;
 	}
 }

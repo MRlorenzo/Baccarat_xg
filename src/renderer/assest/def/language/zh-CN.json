@@ -92,5 +92,11 @@
     "new": "新增",
     "coin": "币种",
     "selectCoin": "请选择币种"
+  },
+  "loading": {
+    "language": "初始化语言包",
+    "userSetting": "加载配置信息",
+    "limitSetting": "加载限红配置",
+    "auth": "授权"
   }
 }

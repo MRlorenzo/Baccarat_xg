@@ -22,7 +22,7 @@
       "createDesktopShortcut": true,
       "runAfterFinish": true
     },
-    "productName": "baccarat",
+    "productName": "baccarat2.0",
     "appId": "xigangbaccarat",
     "directories": {
       "output": "build"

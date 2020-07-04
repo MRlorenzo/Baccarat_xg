@@ -15,7 +15,15 @@
                     v-show="currView === 'main'"
                     :setting="userSetting"
                     :limit="limitSetting"
+                    @preView="printPreView"
         ></main-panel>
+
+        <print-pre-view
+                ref="preView"
+                v-show="currView === 'preView'"
+                :settings="userSetting">
+
+        </print-pre-view>
     </div>
 </template>
 
@@ -28,12 +36,13 @@
 	import defaultLimit from './assest/def/limit.json';
 	import { clone } from "../utils";
 	import { auth } from "../local-storage";
+	import PrintPreView from './views/PrintPreView/index';
 
-	const VIEW = {LOADING: 'loading', MAIN: 'main', AUTH: 'auth'}
+	const VIEW = {LOADING: 'loading', MAIN: 'main', AUTH: 'auth', PRE_VIEW: 'preView'}
 
 	export default {
 		name: 'app',
-		components: { MainPanel , LoadingPage , AuthPage},
+		components: { MainPanel , LoadingPage , AuthPage , PrintPreView },
         data(){
 			return {
 				userSetting: clone(defaultSetting),
@@ -71,6 +80,13 @@
 				// 由于'main'一开始是隐藏的，所以它在计算样式的时候元素高度为0，
 				// 因此需要在它完全显示的时候重新计算一次。
 				this.$refs.main.onShow( clone(this.userSetting) );
+            },
+            showPreView(){
+			    this.currView = VIEW.PRE_VIEW;
+            },
+            printPreView( data ){
+			    this.$refs.preView.change(data);
+                this.showPreView();
             }
         },
 		mounted() {

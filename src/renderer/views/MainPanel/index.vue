@@ -266,7 +266,11 @@
 
             // 打印
             this.$fnKeyMap.addHooks('* *', ()=>{
-				this.$message.info('打印');
+				this.$emit('preView' , {
+                    beadResults: this.beadResults,
+                    roadResults: this.roadResults,
+                    settings: this.userSetting
+                })
             });
             // 保存游戏记录
             this.$fnKeyMap.addHooks('/ /',async ()=>{

@@ -1,5 +1,5 @@
 <template>
-    <div ref="bigLoad" class="load">
+    <div ref="bigLoad" class="load" :style="roadStyle">
         <table>
             <tr :style="trCss" v-for="row of rows">
                 <td :style="syncTdCss" v-for="col of cols">
@@ -48,7 +48,13 @@
 				type: BaccaratResult
 			},
 			// 背景颜色
-			bgColor: { type: String }
+			bgColor: { type: String },
+            width: {
+                type: Number
+            },
+            height: {
+                type: Number
+            }
         },
         components:{ BigRoadGrid },
         data(){
@@ -74,6 +80,16 @@
             },
             syncTdCss(){
                 return this.tdCss + `border-color:${this.bgColor};`;
+            },
+            roadStyle(){
+                let css = '';
+                if (this.height != null){
+                    css += `height: ${this.height}px;`
+                }
+                if (this.width != null){
+                    css += `width: ${this.width}px;`
+                }
+                return css;
             }
         },
         methods:{
@@ -93,10 +109,12 @@
             autoResize(){
                 //自适应表格,根据组件的总宽度,总高度算出合适的值
                 let el = this.$refs.bigLoad;
+                const offsetHeight = this.height == null ? el.offsetHeight : this.height;
+                const offsetWidth = this.width == null ? el.offsetWidth : this.width;
                 //去掉上下边框
-                let px = Math.floor(el.offsetHeight / this.rows) || 1;
+                let px = Math.floor(offsetHeight / this.rows) || 1;
 
-                this.cols = Math.floor(el.offsetWidth / px);
+                this.cols = Math.floor(offsetWidth / px);
                 this.itemCss = `width:${px-12}px;height:${px-12}px;line-height:${px-12}px;`;
                 this.tdCss = `width:${px-1}px;max-width:${px-1}px;max-height:${px-1}px;height:${px-1}px;`;
                 this.trCss = `height:${px}px;`;

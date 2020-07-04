@@ -45,7 +45,13 @@
                 type: BaccaratResult
             },
             // 背景颜色
-            bgColor: { type: String }
+            bgColor: { type: String },
+            width: {
+                type: Number
+            },
+            height: {
+                type: Number
+            }
         },
         components:{ CockRoadGrid },
         data(){
@@ -67,6 +73,16 @@
                 let oset = get2DMaxItemLength(this.pointList) -1 - this.cols;
                 oset = oset < 0 ? 0 : oset;
                 return oset;
+            },
+            roadStyle(){
+                let css = '';
+                if (this.height != null){
+                    css += `height: ${this.height}px;`
+                }
+                if (this.width != null){
+                    css += `width: ${this.width}px;`
+                }
+                return css;
             }
         },
         methods:{
@@ -90,8 +106,10 @@
                 //自适应表格,根据组件的总宽度,总高度算出合适的值
                 let el = this.$refs.cockLoad;
                 //去掉上下边框
-                let px = Math.floor(el.offsetHeight / this.rows) || 1;
-                this.cols = Math.floor(el.offsetWidth / px);
+                const offsetHeight = this.height == null ? el.offsetHeight : this.height;
+                const offsetWidth = this.width == null ? el.offsetWidth : this.width;
+                let px = Math.floor(offsetHeight / this.rows) || 1;
+                this.cols = Math.floor(offsetWidth / px);
                 if(this.cols % 2 === 1){
                     this.cols -= 1;
                 }

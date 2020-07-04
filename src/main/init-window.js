@@ -21,7 +21,8 @@ function createWindow() {
         useContentSize: true,
         webPreferences: {
             /*允许读写本地文件*/
-            webSecurity: false
+            webSecurity: false,
+            nodeIntegration: true
         }
     })
 

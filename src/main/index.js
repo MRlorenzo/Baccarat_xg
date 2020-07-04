@@ -1,4 +1,4 @@
-import {app, ipcMain} from 'electron'
+import {app, ipcMain , dialog} from 'electron'
 import unhandled from 'electron-unhandled';
 import log from '../utils/log';
 import "./init-window";
@@ -18,6 +18,33 @@ if (process.env.NODE_ENV !== 'development') {
 unhandled({
     logger:log.error,
     showDialog:true
+});
+
+// 导入配置请求
+ipcMain.on('openJsonFile' , (event , msg)=>{
+    const options = {
+        title: msg,
+        filters: [
+            {  name: "Json",  extensions: ['json']}
+        ]
+    };
+
+    dialog.showOpenDialog( options , function (filePaths) {
+        event.sender.send('jsonFilePath' , filePaths);
+    })
+});
+
+ipcMain.on('saveJsonFile' , (event , msg)=>{
+    const options = {
+        title: msg,
+        filters: [
+            {  name: "Json",  extensions: ['json']}
+        ]
+    };
+
+    dialog.showSaveDialog( options , function (filePaths) {
+        event.sender.send('jsonFilePath' , filePaths);
+    })
 });
 
 // 发起关闭程序请求

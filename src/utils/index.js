@@ -121,3 +121,14 @@ export function get2DMaxItemLength( list ) {
 	list.forEach(item=>lens.push(item?item.length:0));
 	return Math.max(... lens);
 }
+
+export function mergeSetting(source , target) {
+	Object.keys(target).forEach(k=>{
+		const v = target[k];
+		if (v == null){
+			delete target[k];
+		}
+	});
+
+	return clone(source , target);
+}

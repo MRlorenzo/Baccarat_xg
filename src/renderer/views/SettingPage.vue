@@ -68,11 +68,11 @@
 
                     <!--导入、导出配置-->
                     <el-form-item :label="$t('settings.fileio')" class="limit-input">
-                        <el-button  type="primary">
+                        <el-button  type="primary" @click="importSettings">
                             {{ $t('settings.import')}}
                         </el-button>
 
-                        <el-button  type="primary">
+                        <el-button  type="primary" @click="exportSettings">
                             {{$t('settings.export')}}
                         </el-button>
 
@@ -233,13 +233,14 @@
 </template>
 
 <script>
-    import { clone } from "../../utils";
+    import { clone , mergeSetting } from "../../utils";
     import { languageNames, getLanguage , setLanguage} from "../../utils/lang";
     import Limit from '../assest/def/limit';
     import LimitGroup from '../components/LimitGroup';
     import ResultHistoryView from '../components/ResultHistoryView';
     import ResultHistory from '../views/ResultHistory';
     import { lastOneHistory } from "../../file-system/result";
+    import {exportSettingsFile, loadSettingsFile} from "../../file-system/conf";
 
     const blackList = ['currencyNames'];
     const defaultLimitItem = {
@@ -399,16 +400,33 @@
             openResultHistory(){
                 this.$refs.history.open();
             },
-            showLastHistory(){
-
+            /*导入配置*/
+            async importSettings(){
+                const msg = '导入配置';
+                try {
+                    const data = await loadSettingsFile( msg );
+                    const { userSettings , limitSettings} = data;
+                    this.$emit('submit' , {
+                        userSetting: userSettings,
+                        userLimit: limitSettings
+                    });
+                    this.close();
+                }catch (e){
+                    this.$message.error(e.message);
+                }
             },
-            /*打开导出提示框*/
-            openSaveDialog(){
-
-            },
-            /*打开导入提示框*/
-            openImportDialog(){
-
+            /*导出配置*/
+            async exportSettings(){
+                const msg = '导出配置';
+                const userSetting = clone(this.d);
+                const userLimit = clone(this.limit);
+                userLimit[userSetting.limitGroup] = clone(this.item);
+                try {
+                    const filePath = await exportSettingsFile(msg , userSetting , userLimit);
+                    this.$message.success(`saved at: ${filePath}`);
+                }catch (e){
+                    this.$message.error(e.message);
+                }
             },
             /*进度条下*/
             next() {

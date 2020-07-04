@@ -148,9 +148,6 @@ export async function readTxtFile( _path ){
  * @returns {Promise<any>}
  */
 export async function readJsonFile(_path){
-	if (!~_path.indexOf('.json')){
-		throw new Error('文件不是json类型');
-	}
 	const jsonData = await readTxtFile(_path);
 	if (typeof jsonData === 'string'){
 		try {
@@ -183,10 +180,7 @@ export async function saveJsonFile( _path , data){
 	}else{
 		txt = JSON.stringify(data ,"" ,"\t")
 	}
-	if (!~_path.indexOf('.json')){
-		throw new Error('文件不是json类型');
-	}
-	await saveTxtFile(_path , data);
+	return await saveTxtFile(_path , txt);
 }
 /**
  * 创建文件夹

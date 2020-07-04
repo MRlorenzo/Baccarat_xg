@@ -74,8 +74,9 @@
     import InputResult from './mixins/InputResult';
     import RandomGame from './mixins/RandomGame';
     import ResultStore from './mixins/ResultStore';
+    import { setFullScreen } from "../../../utils/for-window";
 
-	const defaultStyles = {
+    const defaultStyles = {
 		bigLoad: '',
 		beadLoad: '',
 		bigEyeLoad: '',
@@ -204,8 +205,7 @@
 		    * */
             async onShow( settings ){
                 // 全屏显示。
-                const currentWindow = this.$electron.remote.getCurrentWindow();
-                currentWindow.setFullScreen(true);
+                await setFullScreen();
 
                 this.windowSizeVersion ++;
                 this.showed = true;
@@ -251,6 +251,15 @@
 				await this.newBoot();
 				// 将数据添加到路单中。
 				this.addResult(baccaratResults);
+            },
+
+            /*打开打印预览*/
+            openPrintPreView(){
+                this.$emit('preView' , {
+                    beadResults: this.beadResults,
+                    roadResults: this.roadResults,
+                    settings: this.userSetting
+                })
             }
 		},
         created(){
@@ -264,19 +273,16 @@
 				this.newBoot();
             });
 
-            // 打印
+            // 打印预览
             this.$fnKeyMap.addHooks('* *', ()=>{
-				this.$emit('preView' , {
-                    beadResults: this.beadResults,
-                    roadResults: this.roadResults,
-                    settings: this.userSetting
-                })
+				this.openPrintPreView();
             });
+
             // 保存游戏记录
-            this.$fnKeyMap.addHooks('/ /',async ()=>{
+            /*this.$fnKeyMap.addHooks('/ /',async ()=>{
 				this.$message.info(this.$t('game.saveCurrentResult'));
 				await this.saveGameResultsToFile();
-            });
+            });*/
         }
 	}
 </script>

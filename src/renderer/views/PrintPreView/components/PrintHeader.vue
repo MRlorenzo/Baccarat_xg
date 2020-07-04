@@ -1,6 +1,6 @@
 <template>
-    <!--头部内容-->
-    <el-header height="200px" >
+
+    <div>
         <!-- 标题 -->
         <el-row class="print-title-row">
             <!-- 百家乐 -->
@@ -18,7 +18,7 @@
                     <span class="txt">Printed at</span>
                 </span>
 
-                <span class="time"> {{createTimeTxt}} </span>
+                    <span class="time"> {{createTimeTxt}} </span>
                 </div>
             </el-col>
         </el-row>
@@ -108,7 +108,7 @@
                 <span class="txt">闲对子 Player Pair</span>
             </span>
         </el-row>
-    </el-header>
+    </div>
 </template>
 
 <script>
@@ -136,5 +136,126 @@
 </script>
 
 <style scoped>
+    .print-title-row{
+        height: 66px;
+        margin-top: 5px;
+    }
 
+    .pt-left{
+        font-size: 45px;
+        float: left;
+    }
+    .pt-right{
+        float: right;
+    }
+
+    .print-at{
+        margin-right: 50px;
+    }
+
+    .limit .txt{
+        font-size: 20px;
+        line-height: 18px;
+    }
+
+    .txt{
+        font-size: 25px;
+        line-height: 18px;
+    }
+
+    .time{
+        font-size: 25px;
+        line-height: 18px;
+    }
+
+    .limit{
+        height: 66px;
+        overflow: hidden;
+    }
+
+    .big-val{
+        font-size: 30px;
+        margin-left: 20px;
+        font-weight: bold;
+    }
+
+    .bp-demo{
+        display: inline-block;
+        height: 50px;
+        text-align: center;
+        line-height: 50px;
+        font-size: 30px;
+        margin-right: 60px;
+    }
+
+    .bp-demo .txt{
+        line-height: 50px;
+    }
+
+    .d-grid{
+        width: 37px;
+        height: 37px;
+        border: 1px solid;
+        margin-right: 10px;
+    }
+    .d-grid ,.d-grid+.txt{
+        float: left;
+    }
+    .d-grid-box{
+        width: 26px;
+        height: 26px;
+        line-height: 26px;
+    }
+    .c-name{
+        display: inline-block;
+        width: 250px;
+        margin-left: 50px;
+        height: 50px;
+    }
+    .c-name .txt{
+        font-size: 20px;
+    }
+    .c-name+.big-val{
+        font-size: 40px;
+    }
+    .rs-count{
+        margin-top: 20px;
+        height: 240px;
+    }
+
+    /*庄家赢(空心圆)*/
+    .border-b{
+        border-color: red;
+    }
+
+    /*玩家赢(空心圆)*/
+    .border-p{
+        border-color: blue;
+    }
+
+    /*和(不显示空心圆)*/
+    .border-none{
+        border-color: gray;
+    }
+
+    /*对子圆点样式*/
+    .pair-point{
+        width: 10px;
+        height: 10px;
+        border:1px solid #FFF;
+        border-radius: 100%;
+        position: absolute;
+    }
+    /*庄对*/
+    .pair-point-b{
+        background-color: red;
+        top: -10%;
+        left: -10%;
+    }
+    /*闲对*/
+    .pair-point-p{
+        background-color: blue;
+        top: 75%;
+        left: 75%;
+    }
 </style>

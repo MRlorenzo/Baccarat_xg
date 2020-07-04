@@ -1,7 +1,8 @@
-import {app, ipcMain , dialog} from 'electron'
+import {app, ipcMain , dialog , BrowserWindow} from 'electron'
 import unhandled from 'electron-unhandled';
 import log from '../utils/log';
 import "./init-window";
+import UnknownException from "../exception/UnknownException";
 
 // 取消警告
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
@@ -18,6 +19,16 @@ if (process.env.NODE_ENV !== 'development') {
 unhandled({
     logger:log.error,
     showDialog:true
+});
+
+// 设置全屏
+ipcMain.on('fullScreen', event => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (window == null){
+        throw new UnknownException('找不到窗口' , 500);
+    }
+    window.setFullScreen(true);
+    event.sender.send('fullScreened');
 });
 
 // 导入配置请求

@@ -4,8 +4,7 @@
             <!-- 大路 -->
             <big-road class="big-load"
                       :point-list="bigRoadResults"
-                      :height="230"
-                      :width="1638"
+                      :size-version="sizeVersion"
             ></big-road>
             <!--分割-->
             <div class="split"></div>
@@ -13,8 +12,7 @@
             <big-eye-road
                     class="big-eye-load"
                     :point-list="bigEyeRoadResults"
-                    :height="120"
-                    :width="1638"
+                    :size-version="sizeVersion"
             >
 
             </big-eye-road>
@@ -23,8 +21,7 @@
             <small-road
                     class="small-load"
                     :point-list="smallRoadResults"
-                    :height="120"
-                    :width="819"
+                    :size-version="sizeVersion"
             >
 
             </small-road>
@@ -33,8 +30,7 @@
             <cock-road
                     class="small-load"
                     :point-list="cockRoadResults"
-                    :height="120"
-                    :width="819"
+                    :size-version="sizeVersion"
             >
 
             </cock-road>
@@ -66,6 +62,10 @@
              */
             roadResults: {
                 type: Object
+            },
+            sizeVersion: {
+                type: Number,
+                default: 0
             }
         },
         data(){
@@ -95,5 +95,38 @@
 </script>
 
 <style scoped>
+    .load-table , .load-table .el-card__body{
+        height: 500px;
+    }
 
+    .big-load,
+    .small-load,
+    .big-eye-load,
+    .bead-load{
+        width: 100%;
+        position: relative;
+    }
+
+    .big-load{
+        min-height: 100px;
+        height: 230px;
+    }
+
+    /*分隔*/
+    .split{
+        margin-bottom: 10px;width: 100%
+    }
+
+    .big-eye-load{
+        min-height: 100px;
+        height: 120px;
+    }
+
+    .small-load{
+        min-height: 100px;
+        height: 120px;
+        width: 50%;
+        margin: 0;
+        float: left;
+    }
 </style>

@@ -19,9 +19,9 @@
         <el-col :span="8">
             <div class="rs-count">
                 <!--庄-->
-                <div>
+                <div class="count-item">
                     <span class="c-name">
-                        <span class="txt">庄</span> <br>
+                        <span class="txt">庄</span>
                         <span class="txt">Banker</span>
                     </span>
                     <span class="big-val">
@@ -29,9 +29,9 @@
                     </span>
                 </div>
                 <!--闲-->
-                <div>
+                <div class="count-item">
                     <span class="c-name">
-                        <span class="txt">闲</span><br>
+                        <span class="txt">闲</span>
                         <span class="txt">Player</span>
                     </span>
                     <span class="big-val">
@@ -39,9 +39,9 @@
                     </span>
                 </div>
                 <!--和-->
-                <div>
+                <div class="count-item">
                     <span class="c-name">
-                        <span class="txt">和</span> <br>
+                        <span class="txt">和</span>
                         <span class="txt">Tie</span>
                     </span>
                     <span class="big-val">
@@ -49,9 +49,9 @@
                     </span>
                 </div>
                 <!--庄对-->
-                <div>
+                <div class="count-item">
                     <span class="c-name">
-                        <span class="txt">庄对</span> <br>
+                        <span class="txt">庄对</span>
                         <span class="txt">Banker Pair</span>
                     </span>
                     <span class="big-val">
@@ -59,9 +59,9 @@
                     </span>
                 </div>
                 <!--闲对-->
-                <div>
+                <div class="count-item">
                     <span class="c-name">
-                        <span class="txt">闲对</span> <br>
+                        <span class="txt">闲对</span>
                         <span class="txt">Player Pair</span>
                     </span>
                     <span class="big-val">
@@ -94,6 +94,9 @@
         props: {
             beadResults: {
                 type: Array
+            },
+            gameCount: {
+                type: Object
             }
         },
         data(){
@@ -104,23 +107,43 @@
                     alt:'西港国际娱乐城'
                 }
             }
-        },
-        computed: {
-            gameCount() {
-                const road = this.$road;
-                return {
-                    bCount: 0,
-                    pCount: 0,
-                    tCount: 0,
-                    bPCount: 0,
-                    pPCount: 0,
-                    games: 0
-                };
-            }
-        },
+        }
     }
 </script>
 
 <style scoped>
+    .bead-table{
+        padding: 5px;
+    }
 
+    .bead-load{
+        width: 100%;
+        position: relative;
+    }
+
+    .bead-load{
+        min-height: 100px;
+        height: 250px;
+    }
+
+    .rs-count{
+        margin-top: 20px;
+        height: 240px;
+    }
+
+    .count-item{
+        max-height: 50px;
+    }
+
+    .c-name .txt{
+        font-size: 20px;
+    }
+    .c-name+.big-val{
+        font-size: 40px;
+    }
+
+    .logo-img{
+        width:100%;
+        height: 250px;
+    }
 </style>

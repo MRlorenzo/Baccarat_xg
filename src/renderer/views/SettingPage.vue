@@ -450,12 +450,12 @@
             });
             // 导入配置
             this.$fnKeyMap.addHooks('8 8',()=>{
-				this.$message.info('导入配置');
+				this.importSettings();
             });
 
             // 导出配置
             this.$fnKeyMap.addHooks('7 7',()=>{
-				this.$message.info('导出配置')
+				this.exportSettings();
             });
         }
     }

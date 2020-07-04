@@ -1,16 +1,18 @@
 <template>
-    <div id="print" >
-        <div id="main-box" :style="printOffset">
+    <div >
+        <div :style="printOffset">
 
             <el-container>
 
                 <!--头部内容-->
-                <print-header
-                        :create-time-txt="createTimeTxt"
-                        :table-name="settings.tableName"
-                        :boot-no="settings.bootNo"
-                        :games="games"
-                ></print-header>
+                <el-header height="200px" >
+                    <print-header
+                            :create-time-txt="createTimeTxt"
+                            :table-name="settings.tableName"
+                            :boot-no="settings.bootNo"
+                            :games="games"
+                    ></print-header>
+                </el-header>
 
 
                 <!--主体-->
@@ -19,6 +21,7 @@
 
                         <print-big-road
                             :road-results="roadResults"
+                            :size-version="sizeVersion"
                         ></print-big-road>
 
                         <!--分割-->
@@ -26,16 +29,19 @@
 
                         <print-game-count
                             :bead-results="beadResults"
+                            :game-count="gameCount"
                         ></print-game-count>
 
                     </div>
 
                 </el-main>
 
-                <print-footer
-                    :marquee-text="settings.marqueeText"
-                    :order-marquee-text="settings.orderMarqueeText"
-                ></print-footer>
+                <el-footer>
+                    <print-footer
+                            :marquee-text="settings.marqueeText"
+                            :order-marquee-text="settings.orderMarqueeText"
+                    ></print-footer>
+                </el-footer>
 
             </el-container>
         </div>
@@ -66,6 +72,15 @@
                     bootNo: 1,
                     marqueeText: '',
                     orderMarqueeText: ''
+                },
+                sizeVersion: 0,
+                gameCount: {
+                    bCount: 0,
+                    pCount: 0,
+                    tCount: 0,
+                    bPCount: 0,
+                    pPCount: 0,
+                    games: 0
                 }
             }
         },
@@ -79,6 +94,21 @@
                 this.beadResults = beadResults;
                 this.roadResults = roadResults;
                 this.settings = settings;
+                this.gameCount = this.getGameCount();
+                if (this.sizeVersion === 0){
+                    this.sizeVersion ++;
+                }
+            },
+            getGameCount(){
+                const road = this.$road;
+                return {
+                    bCount: road.bCount,
+                    pCount: road.pCount,
+                    tCount: road.tCount,
+                    bPCount: road.bPCount,
+                    pPCount: road.pPCount,
+                    games: road.games
+                }
             },
             pageCut(){
                 const screenSize = this.$electron.screen.getPrimaryDisplay().workAreaSize;
@@ -139,263 +169,10 @@
 </script>
 
 <style scoped>
-    .logo-img{
-        width:100%;
-        height: 250px;
-    }
+
     /*分隔*/
     .split{
         margin-bottom: 10px;width: 100%
     }
 
-    .print-title-row{
-        height: 66px;
-        margin-top: 5px;
-    }
-
-    .load-table , .load-table .el-card__body{
-        height: 500px;
-    }
-
-    .el-card,
-    .bead-table .el-card__body,
-    .load-table .el-card__body{
-        padding: 5px;
-    }
-
-    /*对子圆点样式*/
-    .pair-point{
-        width: 10px;
-        height: 10px;
-        border:1px solid #FFF;
-        border-radius: 100%;
-        position: absolute;
-    }
-    /*庄对*/
-    .pair-point-b{
-        background-color: red;
-        top: -10%;
-        left: -10%;
-    }
-    /*闲对*/
-    .pair-point-p{
-        background-color: blue;
-        top: 75%;
-        left: 75%;
-    }
-
-
-    /*庄家赢(实心圆)*/
-    .bg-b{
-        background-color: red;
-    }
-    /*玩家赢(实心圆)*/
-    .bg-p{
-        background-color: blue;
-    }
-    /*和(实心圆)*/
-    .bg-t{
-        background-color: green;
-    }
-
-    /*庄家赢(空心圆)*/
-    .border-b{
-        border-color: red;
-    }
-
-    /*玩家赢(空心圆)*/
-    .border-p{
-        border-color: blue;
-    }
-
-    /*和(空心圆)*/
-    .border-t{
-        border-color: green;
-    }
-
-    /*和(不显示空心圆)*/
-    .border-none{
-        border-color: gray;
-    }
-    .text-b .slash{
-        fill:red;
-    }
-
-    /*闲家赢(字体)*/
-    .text-p .slash{
-        fill:blue;
-    }
-
-    .load-name{
-        position: absolute;
-        right: 20px;
-        bottom: 0px;
-        color: #CDB79E;
-        font-size: 40px;
-    }
-
-    .big-load,
-    .small-load,
-    .big-eye-load,
-    .bead-load{
-        width: 100%;
-        position: relative;
-    }
-
-    .big-load{
-        min-height: 100px;
-        height: 230px;
-    }
-
-    .small-load{
-        min-height: 100px;
-        height: 120px;
-        width: 50%;
-        margin: 0;
-        float: left;
-    }
-
-    .big-eye-load{
-        min-height: 100px;
-        height: 120px;
-    }
-
-    .bead-load{
-        min-height: 100px;
-        height: 250px;
-    }
-
-    .load table{
-        border-collapse: collapse;
-        margin: 0;
-        position: relative;
-        z-index: 2;
-        width: 100%;
-    }
-    .load table tr{
-        overflow: hidden;
-        padding: 0;
-        margin: 0;
-        border-spacing: 0;
-    }
-    .load table tr td{
-        border: #000 1px solid ;
-        border-spacing: 0px;
-        padding: 0;
-        margin: 0;
-        /*border-color:#8B668B;*/
-    }
-
-
-    .zocial:before {
-        font-family: 'zocial', sans-serif;
-    }
-
-    .zocial {
-        *zoom: 1;
-        filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF000000', endColorstr='#FF000000');
-        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 100%);
-        box-shadow: inset 0 0.3rem 0.2rem rgba(255, 255, 255, 0.2), inset 0 -0.3rem 0.2rem rgba(0, 0, 0, 0.2), 0 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
-        cursor: pointer;
-        text-align: center;
-        text-shadow: 0 0.05rem rgba(0, 0, 0, 0.8), 0 0.3rem 0.4rem rgba(0, 0, 0, 0.2), 0 -0.2rem 0.4rem rgba(255, 255, 255, 0.2);
-    }
-    .zocial:active {
-        -moz-transform: scale(0.98);
-        -ms-transform: scale(0.98);
-        -webkit-transform: scale(0.98);
-        transform: scale(0.98);
-    }
-
-    .zocial:hover {
-        *zoom: 1;
-        filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF000000', endColorstr='#FF000000');
-        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 100%);
-    }
-
-    .zocial-shadow{
-        /*box-shadow: 2px 2px 3px #226*/
-    }
-
-    .pt-left{
-        font-size: 45px;
-        float: left;
-    }
-
-    .pt-right{
-        float: right;
-    }
-
-    .big-val{
-        font-size: 30px;
-        margin-left: 20px;
-        font-weight: bold;
-    }
-
-    .bp-demo{
-        display: inline-block;
-        height: 50px;
-        text-align: center;
-        line-height: 50px;
-        font-size: 30px;
-        margin-right: 60px;
-    }
-
-    .bp-demo .txt{
-        line-height: 50px;
-    }
-
-    .d-grid{
-        width: 37px;
-        height: 37px;
-        border: 1px solid;
-        margin-right: 10px;
-    }
-     .d-grid ,.d-grid+.txt{
-        float: left;
-    }
-    .d-grid-box{
-        width: 26px;
-        height: 26px;
-        line-height: 26px;
-    }
-    .c-name{
-        display: inline-block;
-        width: 250px;
-        margin-left: 50px;
-        height: 50px;
-    }
-    .c-name .txt{
-        font-size: 20px;
-    }
-    .c-name+.big-val{
-        font-size: 40px;
-    }
-    .rs-count{
-        margin-top: 20px;
-        height: 240px;
-    }
-    .print-at{
-        margin-right: 50px;
-    }
-
-    .limit .txt{
-        font-size: 20px;
-        line-height: 18px;
-    }
-
-    .txt{
-        font-size: 25px;
-        line-height: 18px;
-    }
-
-    .time{
-        font-size: 25px;
-        line-height: 18px;
-    }
-
-    .limit{
-        height: 66px;
-        overflow: hidden;
-    }
 </style>

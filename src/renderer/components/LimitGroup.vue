@@ -147,6 +147,11 @@
 				limitList: []
             }
         },
+        watch: {
+			'item.currencyNames': function () {
+				this.limitList = this.item2List(this.item);
+			}
+        },
         methods: {
 			cancel(){
 				this.clear();

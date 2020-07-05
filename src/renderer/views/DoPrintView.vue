@@ -70,5 +70,6 @@
     img{
         /*适合打印机的宽度*/
         width: 1800px;
+        background-repeat: no-repeat
     }
 </style>

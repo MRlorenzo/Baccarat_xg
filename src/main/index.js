@@ -36,7 +36,6 @@ ipcMain.on('fullScreen', event => {
 		width += 100;
 		height += 100;
 		window.setPosition(x , y);
-		console.log(window.getPosition());
 		if (width >= maxWidth || height>= maxHeight){
 			window.setFullScreen(true);
 			event.sender.send('fullScreened');

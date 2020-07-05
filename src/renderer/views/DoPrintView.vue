@@ -7,32 +7,35 @@
 </template>
 
 <script>
-    export default {
+    import { printPage } from "../../utils/for-window";
+
+	export default {
         name: "do-print-view.vue",
         data(){
             return {
                 imgSrc: ''
             }
         },
-        methods:{},
-        watch:{
-            imgSrc(){
-
-                let img = this.$refs.printImg;
-                /*确保img加载完毕，后执行print*/
-                let timer = setInterval(()=>{
-                    if(img.complete){
-                        /*window.print();*/
-                        this.$electron.ipcRenderer.send('print');
-                        clearInterval(timer);
-                    }
-                } , 200);
+        methods: {
+            ready( base64 ){
+            	this.imgSrc = base64;
+				let img = this.$refs.printImg;
+				/*确保img加载完毕，后执行print*/
+				let timer = setInterval(()=>{
+					if(img.complete){
+						this.print();
+						clearInterval(timer);
+					}
+				} , 200);
+            },
+            async print(){
+            	try{
+            		await printPage();
+					this.$emit('printSuccess');
+                }catch (e){
+					this.$emit('printError' , e);
+                }
             }
-        },
-        mounted(){
-            this.$electron.ipcRenderer.on('imageBase64Ready', (event , data)=>{
-                this.imgSrc = data;
-            });
         }
     }
 </script>

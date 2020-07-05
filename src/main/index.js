@@ -27,9 +27,41 @@ ipcMain.on('fullScreen', event => {
     if (window == null){
         throw new UnknownException('找不到窗口' , 500);
     }
-    window.setFullScreen(true);
-    event.sender.send('fullScreened');
+    const { maxWidth , maxHeight} = event.sender.browserWindowOptions;
+    const timer = setInterval(()=> {
+		let [width , height] = window.getSize();
+		let [x, y] = window.getPosition();
+		x -= 100;
+		y -= 50;
+		width += 100;
+		height += 100;
+		window.setPosition(x , y);
+		console.log(window.getPosition());
+		if (width >= maxWidth || height>= maxHeight){
+			window.setFullScreen(true);
+			event.sender.send('fullScreened');
+			clearInterval(timer);
+        }else{
+			window.setSize(width , height);
+        }
+    }, 100);
 });
+
+ipcMain.on('printPage' , event=> {
+    const options = {
+		silent: true,
+		printBackground: false,
+		deviceName: ''
+	};
+	event.sender.print(options , (success, errorType) => {
+		if (success){
+		    event.sender.send('printSuccess');
+        }else{
+			log.error(errorType);
+			event.sender.send('printError' , errorType);
+		}
+	});
+})
 
 // 导入配置请求
 ipcMain.on('openJsonFile' , (event , msg)=>{

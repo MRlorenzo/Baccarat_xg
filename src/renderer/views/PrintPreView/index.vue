@@ -100,6 +100,10 @@
                 if (this.sizeVersion === 0){
                     this.sizeVersion ++;
                 }
+                // 2秒后截屏
+                setTimeout(()=> {
+                	this.pageCut();
+                } , 2000)
             },
             getGameCount(){
                 const road = this.$road;
@@ -114,7 +118,7 @@
             },
             async pageCut(){
                 const dataURL= await cutFullScreen();
-                console.log(dataURL);
+                this.$emit('cut' , dataURL);
             }
         },
         created(){

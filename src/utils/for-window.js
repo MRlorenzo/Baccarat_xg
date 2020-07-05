@@ -1,9 +1,32 @@
 import { ipcRenderer , screen, desktopCapturer} from 'electron';
+
+/**
+ * 设置窗口全屏
+ * @returns {Promise<any>}
+ */
 export async function setFullScreen() {
     return new Promise((resolve) => {
         ipcRenderer.send('fullScreen');
         ipcRenderer.once('fullScreened', event=> {
             resolve();
+        })
+    })
+}
+
+/**
+ * 打印页面
+ * @returns {Promise<any>}
+ */
+export async function printPage() {
+    return new Promise((resolve, reject) => {
+        ipcRenderer.send('printPage');
+        ipcRenderer.once('printSuccess' , event=> {
+            resolve();
+			ipcRenderer.removeListener('printError');
+        });
+        ipcRenderer.once('printError', (event , err)=> {
+            reject(err);
+			ipcRenderer.removeListener('printSuccess');
         })
     })
 }

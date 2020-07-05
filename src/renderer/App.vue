@@ -21,9 +21,16 @@
         <print-pre-view
                 ref="preView"
                 v-show="currView === 'preView'"
-                :settings="userSetting">
+                :settings="userSetting"
+                @cut="pageCut"
+        >
 
         </print-pre-view>
+
+        <do-print ref="dp"
+            @printSuccess="printSuccess"
+            @printError="printError"
+        ></do-print>
     </div>
 </template>
 
@@ -37,12 +44,13 @@
 	import { clone } from "../utils";
 	import { auth } from "../local-storage";
 	import PrintPreView from './views/PrintPreView/index';
+	import DoPrint from './views/DoPrintView';
 
-	const VIEW = {LOADING: 'loading', MAIN: 'main', AUTH: 'auth', PRE_VIEW: 'preView'}
+	const VIEW = {LOADING: 'loading', MAIN: 'main', AUTH: 'auth', PRE_VIEW: 'preView' , PRINT: 'print'}
 
 	export default {
 		name: 'app',
-		components: { MainPanel , LoadingPage , AuthPage , PrintPreView },
+		components: { MainPanel , LoadingPage , AuthPage , PrintPreView , DoPrint},
         data(){
 			return {
 				userSetting: clone(defaultSetting),
@@ -87,6 +95,17 @@
             printPreView( data ){
 			    this.$refs.preView.change(data);
                 this.showPreView();
+            },
+            pageCut( dataURL ){
+				this.currView = VIEW.PRINT;
+				this.$refs.dp.ready(dataURL);
+            },
+			printSuccess(){
+				this.currView = VIEW.MAIN;
+            },
+            printError(e){
+				this.currView = VIEW.MAIN;
+
             }
         },
 		mounted() {

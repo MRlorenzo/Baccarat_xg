@@ -109,7 +109,7 @@
 
     .big-load{
         min-height: 100px;
-        height: 230px;
+        height: 215px;
     }
 
     /*分隔*/

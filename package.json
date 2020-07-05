@@ -56,19 +56,19 @@
     }
   },
   "dependencies": {
+    "getmac": "^1.4.6",
+    "nedb": "^1.8.0",
+    "serialport": "^7.1.5"
+  },
+  "devDependencies": {
     "electron-log": "^3.0.6",
     "electron-unhandled": "^2.2.0",
     "element-ui": "^2.13.2",
-    "getmac": "^1.4.6",
     "moment": "^2.27.0",
     "mousetrap": "^1.6.5",
-    "nedb": "^1.8.0",
-    "serialport": "^7.1.5",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",
-    "vue-i18n": "^8.18.2"
-  },
-  "devDependencies": {
+    "vue-i18n": "^8.18.2",
     "ajv": "^6.5.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",

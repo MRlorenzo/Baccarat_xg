@@ -1,6 +1,7 @@
 import {app, ipcMain , dialog , BrowserWindow} from 'electron'
 import unhandled from 'electron-unhandled';
 import log from '../utils/log';
+import { autoStart } from "./auto-start";
 import "./init-window";
 import UnknownException from "../exception/UnknownException";
 
@@ -13,6 +14,13 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
  */
 if (process.env.NODE_ENV !== 'development') {
     global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
+}
+
+// 开机自启(windows)
+if (process.platform === 'darwin' && process.env.NODE_ENV !== 'development'){
+    autoStart().catch(e=>{
+        log.error(e);
+    });
 }
 
 // 捕获所有未处理的异常
@@ -46,6 +54,7 @@ ipcMain.on('fullScreen', event => {
     }, 100);
 });
 
+// 打印页面
 ipcMain.on('printPage' , event=> {
     const options = {
 		silent: true,
@@ -62,7 +71,7 @@ ipcMain.on('printPage' , event=> {
 	});
 })
 
-// 导入配置请求
+// 打开Json文件
 ipcMain.on('openJsonFile' , (event , msg)=>{
     const options = {
         title: msg,
@@ -76,6 +85,7 @@ ipcMain.on('openJsonFile' , (event , msg)=>{
     })
 });
 
+// 保存Json文件
 ipcMain.on('saveJsonFile' , (event , msg)=>{
     const options = {
         title: msg,

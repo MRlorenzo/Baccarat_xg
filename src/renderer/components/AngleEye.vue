@@ -281,9 +281,9 @@
             }
         },
         async created() {
+            this.initEvent();
+            this.initHooks();
             if (this.$angleEye != null) {
-                this.initEvent();
-                this.initHooks();
                 await this.tryOpen();
             }
         },
@@ -291,10 +291,10 @@
         	this.$fnKeyMap.addHooks('.', ()=> {
 				this.openComSetting();
             });
-			// 显示最后一次扑克牌记录
-			this.$fnKeyMap.addHooks('*' ,()=>{
+			// 显示最后一次扑克牌记录(放弃)
+			/*this.$fnKeyMap.addHooks('*' ,()=>{
 				this.$message.info('显示最后一次扑克牌记录')
-			});
+			});*/
         }
     }
 </script>

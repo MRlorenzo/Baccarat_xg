@@ -193,7 +193,7 @@
                         // 是不是开新靴的抽牌动作？
                         if (sis.direct() === 'newBoot') {
                             // 开新靴
-							_.info('angleEye.newGame');
+							_.msg('angleEye.newGame');
 							that.$emit('newGame');
                         } else {
                             // 普通抽牌动作
@@ -210,13 +210,13 @@
                     },
                     // 使用发多的牌
                     cardDrawingRetransmission(d) {
-						_.info('angleEye.useDrawMoreCard');
+						_.msg('angleEye.useDrawMoreCard');
                         // const sis = new CardDrawingRetransmissionAnalysis(d);
                         // ...
                     },
                     // 撤销发多的牌
                     revokeMultipleCards(d) {
-						_.info('angleEye.cancelDrawMoreCard');
+						_.msg('angleEye.cancelDrawMoreCard');
                     },
                     /*发牌结果*/
                     dealCardsShow(d) {
@@ -247,26 +247,29 @@
                         _.info('angleEye.gameResult');
                     },
                     cancellationOfError(d) {
-						_.info('angleEye.cancelError');
+						_.msg('angleEye.cancelError');
                     },
                     standBy(d) {
 						_.info('angleEye.standBy');
                     },
                     systemError(d) {
-						_.info('angleEye.systemError');
+						_.msg('angleEye.systemError');
                         const sis = new SystemErrorAnalysis(d);
                         new UnknownException(sis.getMsg(), sis.getCode());
                     },
                     lockOperation(d) {
-						_.info('angleEye.lock');
+						_.msg('angleEye.lock');
                     },
                     changeOfPresetValue(d) {
-						_.info('angleEye.changeOfPresetValue');
+						_.msg('angleEye.changeOfPresetValue');
                     },
                     default(d) {
                         console.log('默认', d.getData())
                     }
                 });
+            },
+            msg(code){
+				this.$notify.info(this.$t(code));
             },
             info( code ){
 				if (this.debug){

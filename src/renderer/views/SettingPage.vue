@@ -175,7 +175,7 @@
                         <el-input type="number" v-model="d.showResultTime" autocomplete="off" suffix-icon="el-icon-edit"></el-input>
                     </el-form-item>
 
-                    <el-form-item label="debug">
+                    <el-form-item label="announce">
                         <el-switch
                                 v-model="d.debug"
                                 active-color="#13ce66"

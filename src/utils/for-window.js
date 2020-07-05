@@ -22,11 +22,9 @@ export async function printPage() {
         ipcRenderer.send('printPage');
         ipcRenderer.once('printSuccess' , event=> {
             resolve();
-			ipcRenderer.removeListener('printError');
         });
         ipcRenderer.once('printError', (event , err)=> {
             reject(err);
-			ipcRenderer.removeListener('printSuccess');
         })
     })
 }

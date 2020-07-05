@@ -102,10 +102,11 @@
             },
 			printSuccess(){
 				this.currView = VIEW.MAIN;
+				this.$refs.main.windowSizeVersion++
             },
             printError(e){
 				this.currView = VIEW.MAIN;
-
+				this.$refs.main.windowSizeVersion++
             }
         },
 		mounted() {

@@ -255,6 +255,7 @@
                     systemError(d) {
 						_.msg('angleEye.systemError');
                         const sis = new SystemErrorAnalysis(d);
+                        _.warning(sis.getMsg());
                         new UnknownException(sis.getMsg(), sis.getCode());
                     },
                     lockOperation(d) {

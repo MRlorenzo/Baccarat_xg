@@ -1,6 +1,7 @@
 {
   "angleEye": {
     "connectSuccess": "连接成功",
+    "emptyPort": "找不到资源列表",
     "boot": "天使靴开机",
     "newGame": "开始新局",
     "drawMoreCard": "抽多牌了",
@@ -16,7 +17,8 @@
     "errorName": "串口名称不正确",
     "reOpen": "重复打开资源",
     "lostConnection": "失去连接",
-    "unableCloseException": "无法关闭资源"
+    "unableCloseException": "无法关闭资源",
+    "gameResult": "解析游戏结果"
   },
   "road": {
     "B": "庄",
@@ -83,7 +85,8 @@
     "close": "关闭",
     "restoreGameResult": "还原游戏记录",
     "confirmRestore": "此操作将会覆盖原记录，是否继续？",
-    "canceled": "已取消"
+    "canceled": "已取消",
+    "updated": "配置已更新"
   },
   "limit": {
     "setting": "限红组设置",

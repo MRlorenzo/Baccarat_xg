@@ -1,6 +1,6 @@
 <template>
     <div ref="cockLoad" class="load">
-        <table>
+        <table :style="tableStyle">
             <tr :style="trCss" v-for="item of rows">
                 <td :style="gridStyle(item , e)" v-for="e of cols">
 
@@ -51,6 +51,9 @@
             },
             height: {
                 type: Number
+            },
+            tableStyle: {
+            	type: String
             }
         },
         components:{ CockRoadGrid },

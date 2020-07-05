@@ -43,6 +43,10 @@
 			},
             backgroundColor: {
             	type: String
+            },
+            debug: {
+            	type: Boolean,
+                default: true
             }
         },
         data() {
@@ -109,7 +113,7 @@
                     // 没有串口
                     if (e instanceof EmptyPortException) {
                         // 不用管它，没有串口就不要使用helper
-                        console.log('没有串口');
+                        this.$notify.warning(this.$t('angleEye.emptyPort'))
                     }
                     // 存在多个串口，但是配置的串口名称不匹配
                     if (e instanceof ErrorNameException) {
@@ -124,7 +128,6 @@
             },
             initEvent() {
                 const helper = this.$angleEye;
-                window.helper = helper;
 
                 // 断线时
                 helper.whenDisconnect(err => {
@@ -132,6 +135,7 @@
                         if (err.code === 500) {
                             // 定时器检查到isOpen状态为false
                             this.$message.warning(this.$t('angleEye.lostConnection') + ':' + err.message);
+                            this.openComSetting();
                         }
                     } else if (err instanceof ModuleException) {
                         // 模块异常
@@ -171,11 +175,12 @@
             initHooks() {
                 const helper = this.$angleEye;
                 const that = this;
+                const _ = this;
 
                 helper.setHooks({
                     boot(d) {
                         // 天使靴开机
-						that.$notify.info(that.$t('angleEye.boot'));
+						_.info('angleEye.boot');
                         // 清空卡片列表
                         // 庄家牌
                         that.bankerCardList = [];
@@ -188,30 +193,30 @@
                         // 是不是开新靴的抽牌动作？
                         if (sis.direct() === 'newBoot') {
                             // 开新靴
-							that.$notify.info(that.$t('angleEye.newGame'));
+							_.info('angleEye.newGame');
 							that.$emit('newGame');
                         } else {
                             // 普通抽牌动作
 							// 抽牌的时候马上关掉上一局的扑克牌结果。
                             that.closeFullScreen();
-                            //const lot = sis.allot();
-                            // console.log(`发给${lot.master}的第${lot.index}张牌`);
+                            const lot = sis.allot();
+                            _.info(`发给${lot.master}的第${lot.index}张牌`);
                         }
 
                     },
                     // 抽多牌了
                     cardDrawingEgig(d) {
-						that.$notify.warning(that.$t('angleEye.drawMoreCard'));
+						_.warning('angleEye.drawMoreCard');
                     },
                     // 使用发多的牌
                     cardDrawingRetransmission(d) {
-						that.$notify.info(that.$t('angleEye.useDrawMoreCard'));
+						_.info('angleEye.useDrawMoreCard');
                         // const sis = new CardDrawingRetransmissionAnalysis(d);
                         // ...
                     },
                     // 撤销发多的牌
                     revokeMultipleCards(d) {
-						that.$notify.info(that.$t('angleEye.cancelDrawMoreCard'));
+						_.info('angleEye.cancelDrawMoreCard');
                     },
                     /*发牌结果*/
                     dealCardsShow(d) {
@@ -230,7 +235,6 @@
                                 that.playerCardList.push(sis.getCard());
                             }
                         }
-                        // console.log('发牌结果', sis.getCard());
                     },
                     /*天使靴发送结果*/
                     gameResult(d) {
@@ -240,29 +244,37 @@
                         that.$emit('result', sis.getResult());
                         // 显示扑克牌
                         that.openFullScreen(sis.getResult());
-                        // console.log('游戏结果:胜者:', sis.getWinner());
+                        _.info('angleEye.gameResult');
                     },
                     cancellationOfError(d) {
-						that.$notify.info(that.$t('angleEye.cancelError'));
+						_.info('angleEye.cancelError');
                     },
                     standBy(d) {
-						that.$notify.info(that.$t('angleEye.standBy'));
+						_.info('angleEye.standBy');
                     },
                     systemError(d) {
-						that.$notify.info(that.$t('angleEye.systemError'));
+						_.info('angleEye.systemError');
                         const sis = new SystemErrorAnalysis(d);
                         new UnknownException(sis.getMsg(), sis.getCode());
                     },
                     lockOperation(d) {
-						that.$notify.info(that.$t('angleEye.lock'));
+						_.info('angleEye.lock');
                     },
                     changeOfPresetValue(d) {
-						that.$notify.info(that.$t('angleEye.changeOfPresetValue'));
+						_.info('angleEye.changeOfPresetValue');
                     },
                     default(d) {
                         console.log('默认', d.getData())
                     }
                 });
+            },
+            info( code ){
+				if (this.debug){
+					this.$notify.info(this.$t(code));
+                }
+            },
+			warning( code ){
+				this.$notify.warning(this.$t(code));
             }
         },
         async created() {

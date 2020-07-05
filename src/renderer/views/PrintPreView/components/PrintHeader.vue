@@ -25,6 +25,35 @@
         <!-- 限红 与 台号 与 靴号 与 局数-->
         <el-row class="print-title-row">
             <div class="limit">
+
+                <div >
+
+                    <el-col :span="6">
+                        <div>
+                            <span >
+                                <span class="txt">最高投注</span> <br>
+                                <span class="txt">Maximum bet</span>
+                            </span>
+                            <span class="big-val">
+                                {{format(max)}}
+                            </span>
+                        </div>
+
+                    </el-col>
+                    <el-col :span="6">
+                        <div>
+                            <span>
+                                <span class="txt">最低投注</span><br>
+                                <span class="txt">Minimum bet</span>
+                            </span >
+                            <span class="big-val">
+                                {{format(min)}}
+                            </span>
+                        </div>
+                    </el-col>
+
+                </div>
+
                 <el-col :span="4">
                     <div>
                         <span>
@@ -130,6 +159,47 @@
             games: {
                 type: Number,
                 required: true
+            },
+			limitItem: {
+            	type: Object
+            }
+        },
+        computed: {
+        	betGroup(){
+        		if (this.limitItem == null){
+        			return null;
+                }
+                const {currencyNames} = this.limitItem;
+        		if (!Array.isArray(currencyNames) || currencyNames.length === 0){
+        			return null;
+                }
+                const [currency] = currencyNames;
+        		return this.limitItem[currency];
+            },
+            max(){
+        		const g = this.betGroup;
+        		if (g == null){
+        			return 0
+                }
+                return g.bet.max;
+            },
+            min(){
+				const g = this.betGroup;
+				if (g == null){
+					return 0
+				}
+				return g.bet.min;
+            }
+        },
+        methods: {
+            format( number ){
+                if(typeof number !== 'number'){
+                    number = parseFloat(number);
+                    if(isNaN(number)){
+                        number = 0;
+                    }
+                }
+                return number.toLocaleString('en');
             }
         }
     }

@@ -22,6 +22,7 @@
                     class="small-load"
                     :point-list="smallRoadResults"
                     :size-version="sizeVersion"
+                    table-style="margin:0"
             >
 
             </small-road>
@@ -31,6 +32,7 @@
                     class="small-load"
                     :point-list="cockRoadResults"
                     :size-version="sizeVersion"
+                    table-style="margin:0"
             >
 
             </cock-road>

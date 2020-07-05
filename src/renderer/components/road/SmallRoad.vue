@@ -1,6 +1,6 @@
 <template>
     <div ref="smallLoad" class="load">
-        <table>
+        <table :style="tableStyle">
             <tr :style="trCss" v-for="item of rows">
                 <td :style="gridStyle(item , e)" v-for="e of cols">
                     <small-road-grid
@@ -50,6 +50,9 @@
             },
             height: {
                 type: Number
+            },
+            tableStyle: {
+            	type: String
             }
         },
         components:{ SmallRoadGrid },

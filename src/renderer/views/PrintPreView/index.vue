@@ -1,5 +1,5 @@
 <template>
-    <div >
+    <div :style="pageStyle">
         <div :style="printOffset">
 
             <el-container>
@@ -10,6 +10,7 @@
                             :create-time-txt="createTimeTxt"
                             :table-name="settings.tableName"
                             :boot-no="settings.bootNo"
+                            :limit-item="limitItem"
                             :games="games"
                     ></print-header>
                 </el-header>
@@ -54,6 +55,24 @@
     import PrintGameCount from './components/PrintGameCount';
     import PrintBigRoad from './components/PrintBigRoad';
     import { cutFullScreen } from "../../../utils/for-window";
+    import { clone } from "../../../utils";
+    import Limit from '../../assest/def/limit.json';
+    import moment from 'moment'
+	const defaultCount = {
+		bCount: 0,
+		pCount: 0,
+		tCount: 0,
+		bPCount: 0,
+		pPCount: 0,
+		games: 0
+	}
+	const defaultSettings = {
+		tableName: '',
+		bootNo: 1,
+		marqueeText: '',
+		orderMarqueeText: '',
+        limitGroup: 'default'
+	}
 
     export default {
         name: 'print-pre-view',
@@ -69,33 +88,40 @@
                 printOffset: `padding-right: 250px;`,
                 beadResults: [],
                 roadResults: {},
-                settings: {
-                    tableName: '',
-                    bootNo: 1,
-                    marqueeText: '',
-                    orderMarqueeText: ''
-                },
+                settings: clone(defaultSettings),
+				limit: clone(Limit),
                 sizeVersion: 0,
-                gameCount: {
-                    bCount: 0,
-                    pCount: 0,
-                    tCount: 0,
-                    bPCount: 0,
-                    pPCount: 0,
-                    games: 0
-                }
+                gameCount: clone(defaultCount),
+                height: 1080
             }
         },
         computed: {
             games(){
                 return this.beadResults.length;
-            }
+            },
+            pageStyle(){
+            	return `height: ${this.height}px;`
+            },
+			limitItem(){
+				const { limitGroup } = this.settings;
+				return clone(this.limit[limitGroup]);
+			}
         },
         methods:{
-            change({beadResults , roadResults, settings}){
+            change(data){
+            	const {
+            		beadResults ,
+                    roadResults,
+                    settings ,
+					limit,
+                    height
+            	} = data;
                 this.beadResults = beadResults;
                 this.roadResults = roadResults;
                 this.settings = settings;
+                this.limit = limit;
+                this.height = height;
+                this.createTimeTxt = moment().format('YYYY/MM/DD HH:mm:ss')
                 this.gameCount = this.getGameCount();
                 if (this.sizeVersion === 0){
                     this.sizeVersion ++;

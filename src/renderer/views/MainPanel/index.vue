@@ -37,6 +37,7 @@
                 @result="angleEyeResult"
                 @newGame="newBoot"
                 :body-width="width"
+                :debug="userSetting.debug"
         ></angle-eye>
 
         <!-- 负责解析按键游戏结果-->
@@ -258,7 +259,9 @@
                 this.$emit('preView' , {
                     beadResults: this.beadResults,
                     roadResults: this.roadResults,
-                    settings: this.userSetting
+                    settings: this.userSetting,
+                    limit: this.userLimit,
+                    height: this.height
                 })
             }
 		},
@@ -279,10 +282,10 @@
             });
 
             // 保存游戏记录
-            /*this.$fnKeyMap.addHooks('/ /',async ()=>{
+            this.$fnKeyMap.addHooks('/ /',async ()=>{
 				this.$message.info(this.$t('game.saveCurrentResult'));
 				await this.saveGameResultsToFile();
-            });*/
+            });
         }
 	}
 </script>

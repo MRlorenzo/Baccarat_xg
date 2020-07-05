@@ -9,6 +9,7 @@ export default {
 			// 更新本地数据库
 			await setting.update({} , userSetting);
 			await limit.update({} , userLimit);
+			this.$notify.success(this.$t('settings.updated'));
 		},
 		async changeColor( style ){
 			this.userSetting.backgroundColor = style;

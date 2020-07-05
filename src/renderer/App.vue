@@ -21,7 +21,6 @@
         <print-pre-view
                 ref="preView"
                 v-show="currView === 'preView'"
-                :settings="userSetting"
                 @cut="pageCut"
         >
 

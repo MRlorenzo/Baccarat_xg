@@ -10,7 +10,7 @@
                     </el-form-item>
 
                     <el-form-item label="授权码:">
-                        <el-input type="textarea" v-model="code" :rows="10"></el-input>
+                        <el-input type="textarea" v-model="code" :rows="10" @contextmenu.native="sigShowRightClickMenu"></el-input>
                     </el-form-item>
                 </el-form>
             </el-main>
@@ -21,6 +21,7 @@
 
 <script>
     import { decrypt } from "../../utils/auth";
+	import {sigShowRightClickMenu} from "../../utils/for-window";
 
 	export default {
         name: "login-page",
@@ -45,6 +46,9 @@
                 }catch (e){
 
                 }
+            },
+			sigShowRightClickMenu(){
+				sigShowRightClickMenu();
             }
         },
         watch:{

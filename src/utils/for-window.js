@@ -1,6 +1,13 @@
 import { ipcRenderer , screen, desktopCapturer} from 'electron';
 
 /**
+ * 显示右键菜单
+ */
+export function sigShowRightClickMenu() {
+    ipcRenderer.send('sigShowRightClickMenu');
+}
+
+/**
  * 设置窗口全屏
  * @returns {Promise<any>}
  */

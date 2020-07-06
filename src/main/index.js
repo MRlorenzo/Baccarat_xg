@@ -1,4 +1,4 @@
-import {app, ipcMain , dialog , BrowserWindow} from 'electron'
+import {app, ipcMain , dialog , BrowserWindow, Menu , MenuItem} from 'electron'
 import unhandled from 'electron-unhandled';
 import log from '../utils/log';
 import { autoStart } from "./auto-start";
@@ -52,6 +52,18 @@ ipcMain.on('fullScreen', event => {
 			window.setSize(width , height);
         }
     }, 100);
+});
+
+ipcMain.on('sigShowRightClickMenu', (event) => {
+	// 生成菜单
+	const menu = new Menu();
+	menu.append(new MenuItem({label:'复制', role: 'copy' }));
+	menu.append(new MenuItem({label:'粘贴', role: 'paste' }));
+	menu.append(new MenuItem({label:'剪切', role: 'cut' }));
+	menu.append(new MenuItem({ label:'全选', role: 'selectall' }));
+
+	const win = BrowserWindow.fromWebContents(event.sender);
+	menu.popup(win);
 });
 
 // 打印页面

@@ -414,9 +414,10 @@
                 try {
                     const data = await loadSettingsFile( msg );
                     const { userSettings , limitSettings} = data;
+
                     this.$emit('submit' , {
-                        userSetting: userSettings,
-                        userLimit: limitSettings
+                        userSetting: mergeSetting(userSettings),
+                        userLimit: mergeSetting(limitSettings)
                     });
                     this.close();
                 }catch (e){

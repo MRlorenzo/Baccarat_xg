@@ -2,7 +2,7 @@
     <div class="code-box">
         <el-container >
             <el-header></el-header>
-            <el-main>
+            <el-main @contextmenu.native="sigShowRightClickMenu">
                 <el-form>
 
                     <el-form-item label="序列号:">
@@ -10,7 +10,7 @@
                     </el-form-item>
 
                     <el-form-item label="授权码:">
-                        <el-input type="textarea" v-model="code" :rows="10" @contextmenu.native="sigShowRightClickMenu"></el-input>
+                        <el-input type="textarea" v-model="code" :rows="10" ></el-input>
                     </el-form-item>
                 </el-form>
             </el-main>

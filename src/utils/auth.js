@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import macUtil from 'getmac';
+import WinReg from 'winreg';
 const publicKey = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArsIemA23WuMA9EwBArm9
 m/oZt1qWEjIWZKV1a+69jEgKeVSvoHxecZUKJf4xYug5zrLts2xGdjcck6QhF5oM
@@ -46,3 +47,24 @@ export function mac(){
 		});
 	});
 };
+
+const AUTH_LOCATION = '\\Software\\BaccaratXg';
+/**
+ * 从注册表中获取授权码，如果没有则返回空
+ */
+export async function getAuthCodeFromWinReg() {
+	let name = 'AUTH_CODE';
+	let key = new WinReg({
+		hive: WinReg.HKCU,
+		key: AUTH_LOCATION
+	});
+	return new Promise((resolve) => {
+		key.get(name , (err , result) =>{
+			if(result){
+				resolve(result.value);
+			}else{
+				resolve(null);
+			}
+		});
+	});
+}

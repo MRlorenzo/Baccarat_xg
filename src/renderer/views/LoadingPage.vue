@@ -18,7 +18,7 @@
     import defaultSetting from '../assest/def/setting.json';
     import defaultLimit from '../assest/def/limit.json';
     import { getLanguage } from "../../utils/lang";
-    import { mac , md5 , decrypt} from "../../utils/auth";
+    import { mac , md5 , decrypt, getAuthCodeFromWinReg } from "../../utils/auth";
     import Logo from '../../../static/images/com_logo.jpg';
 	export default {
         name: "loading-page",
@@ -56,8 +56,9 @@
             async initAuth(){
             	const data = await auth.findOne();
             	if (data == null){
-            		auth.save({code: ''});
-            		return null;
+            		const code = await getAuthCodeFromWinReg();
+            		auth.save({code: code});
+            		return code;
                 }
                 return data.code;
             },

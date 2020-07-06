@@ -416,8 +416,8 @@
                     const { userSettings , limitSettings} = data;
 
                     this.$emit('submit' , {
-                        userSetting: mergeSetting(userSettings),
-                        userLimit: mergeSetting(limitSettings)
+                        userSetting: mergeSetting(clone(this.d), userSettings),
+                        userLimit: mergeSetting(clone(this.limit), limitSettings)
                     });
                     this.close();
                 }catch (e){

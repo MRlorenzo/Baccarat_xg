@@ -164,7 +164,11 @@
             },
 			limitItem(){
 				const { limitGroup } = this.userSetting;
-				return clone(this.userLimit[limitGroup]);
+				let item = this.userLimit[limitGroup];
+				if (item == null){
+					item = this.userLimit.default;
+                }
+				return clone(item);
 			}
         },
 		watch: {

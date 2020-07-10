@@ -43,44 +43,59 @@ export default class Road extends RoadCounter{
 	 */
 	addPoint( rs ){
 
-		const last = this.squeezeList[this.squeezeList.length -1];
-		// 最后一个点的 {x,y}
-		const {x:lastX, y: lastY} = last!= null ?
-			last.getLocation()
-			: {x: 1, y: 1};
-
-		// 最后一个点的baccaratResult
-		const lbr = last && last.getObject();
-
 		let p = null;
-		let x ,y;
-
-		if (lbr == null){ // 第一个
-			x = 1;
-			y = 1;
-			if (rs.isT()){
+		const last = this.getLastPoint();
+		// 最后一个点的 {x,y}
+		let { x, y } = lastXY(last);
+		// 第一个
+		if (last == null)
+		{
+			// 和局
+			if (rs.isT())
+			{
 				p = point(x , y);
 				p.addTie(rs);
-			}else{
+			}
+			// 非和局
+			else
+			{
 				p = point(x , y , rs);
 			}
-		}else{
-			// 和局
-			if (rs.isT()){
+		}
+		// 不是第一个
+		else
+		{
+			// 最后一个点的baccaratResult
+			const lbr = last.getObject();
+			// 和局（坐标不变）
+			if (rs.isT())
+			{
 				last.addTie(rs);
 				p = last;
-			}else {
-				// 非和局
-				// 相同下移，不同右移
-				if (rs.getResult() === lbr.getResult()){
-					x= lastX;
-					y= lastY + 1;
-				}else{
-					x = lastX + 1;
-					y=1;
-				}
-				p = point(x , y , rs);
 			}
+			// 非和局
+			else
+			{
+				// 最后一个点不是B，或者P
+				if ( lbr != null){
+					// 相同下移。
+					if (rs.getResult() === lbr.getResult()){
+						++y;
+					}
+					// 不同，右移一列开始.
+					else{
+						++x;
+						y=1;
+					}
+					p = point(x , y , rs);
+				}else{
+					// 由于最后一个点全是和，所以没有占位。因此要将上面的和全部转移到当前
+					const ties = last.getTie();
+					p = point(x , y , rs);
+					p.setTie(ties);
+				}
+			}
+
 		}
 
 		if (this.pointList[y] == null){
@@ -122,6 +137,10 @@ export default class Road extends RoadCounter{
 		}
 	}
 
+	getLastPoint(){
+		return this.squeezeList[this.squeezeList.length -1];
+	}
+
 	/**
 	 * 新的一局（新靴）
 	 * 将所有的点位清空
@@ -149,6 +168,15 @@ export default class Road extends RoadCounter{
 		}
 	}
 
+	b(){
+		return BaccaratResult.getResult('1')
+	}
+	p(){
+		return BaccaratResult.getResult('2')
+	}
+	t(){
+		return BaccaratResult.getResult('3')
+	}
 }
 
 function genBaccaratResult( rsTxt , pairsTxt , skyTxt) {
@@ -205,4 +233,11 @@ function range( first , end = 100 ){
  */
 function point(x , y , baccaratResult) {
 	return new Point(x , y , baccaratResult);
+}
+
+function lastXY( point ) {
+	if (point == null){
+		return {x: 1, y: 1};
+	}
+	return point.getLocation();
 }

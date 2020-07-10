@@ -4,14 +4,14 @@
             <tr v-for="ps of pointList">
                 <td v-for="p of ps">
                     <div v-if="p != null">
-                        <p> <!--({{p.x}}:{{p.y}})--> [{{p.getObject().getResult().getName()}}]</p>
+                        <p> ({{p.x}}:{{p.y}})</p>
                     </div>
                 </td>
             </tr>
         </table>
 
         <div v-for="s of squeezeList">
-            {{s.getLocation()}} {{s.getObject().getResult().getName()}} tie: {{s.tie.length}}
+            {{s.getLocation()}} tie: {{s.tie.length}}
         </div>
     </div>
 </template>

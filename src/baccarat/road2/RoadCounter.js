@@ -25,6 +25,9 @@ export default class RoadCounter {
 		this.pSkyCard = 0;
 		//庄6点赢
 		this.bSixWin = 0;
+
+		// 游戏结果列表，相当于珠子路
+		this.resultList = [];
 	}
 
 	/**
@@ -32,13 +35,16 @@ export default class RoadCounter {
 	 * @param rs
 	 */
 	pushResult( rs ){
+		this.resultList.push(rs);
 		this[count](rs, 1);
 	}
 	/**
 	 * 移除一个结果
 	 */
-	popResult( rs ){
+	popResult(){
+		const rs = this.resultList.pop();
 		this[count](rs, -1);
+		return rs;
 	}
 
 	/**
@@ -48,7 +54,7 @@ export default class RoadCounter {
 	 */
 	[count](rs , step){
 		if (!(rs instanceof BaccaratResult)){
-			throw new Error('不支持的类型');
+			return ;
 		}
 		this.games += step;
 		// 庄，闲，和
@@ -116,6 +122,8 @@ export default class RoadCounter {
 		this.pSkyCard = 0;
 		//庄6点赢
 		this.bSixWin = 0;
+		// 游戏结果列表，相当于珠子路
+		this.resultList = [];
 	}
 
 }

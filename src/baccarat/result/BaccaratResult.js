@@ -72,12 +72,72 @@ export default class BaccaratResult {
         return this.id;
     }
 
-    isBankerSixWin(){
+	/**
+     * 是否是庄6点赢
+	 * @returns {*}
+	 */
+	isBankerSixWin(){
         return this.bSixWin;
     }
 
     setBankerSixWin( bSixWin ){
         this.bSixWin = bSixWin;
+    }
+
+	/**
+     * 是否是庄对
+	 * @returns {void|*|boolean}
+	 */
+	isBankerPair(){
+        return this.pairs.some(p => p === Pair.BP);
+    }
+
+	/**
+     * 是否是闲对
+	 * @returns {void|*|boolean}
+	 */
+	isPlayerPair(){
+        return this.pairs.some(p => p === Pair.PP);
+    }
+
+	/**
+     * 是否是庄天牌
+	 * @returns {void|*|boolean}
+	 */
+	isBankerSky(){
+	    return this.skyCards.some(s => s === SkyCard.B);
+    }
+
+	/**
+     * 是否是闲天牌
+	 * @returns {void|*|boolean}
+	 */
+	isPlayerSky(){
+	    return this.skyCards.some(s => s === SkyCard.P);
+    }
+
+	/**
+     * 是否是和
+	 * @returns {boolean}
+	 */
+	isT(){
+	    return this.result === BResult.T;
+    }
+
+	/**
+     * 是否是庄家赢
+	 * @returns {boolean}
+	 */
+	isB(){
+		return this.result === BResult.B;
+    }
+
+	/**
+     * 是否是玩家赢
+	 * @returns {boolean}
+	 */
+	isP(){
+	    return this.result === BResult.P;
     }
 
     // 转字符串(序列化)

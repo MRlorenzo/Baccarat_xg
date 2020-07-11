@@ -4,14 +4,14 @@
             <tr v-for="ps of pointList">
                 <td v-for="p of ps">
                     <div v-if="p != null">
-                        <p> ({{p.x}}:{{p.y}})</p>
+                        <p> ({{p.x}}:{{p.y}})</p> [{{p.z && p.z.result.getName()}}]
                     </div>
                 </td>
             </tr>
         </table>
 
         <div v-for="s of squeezeList">
-            {{s.getLocation()}} tie: {{s.tie.length}}
+            {{s.getLocation()}} tie: {{s.tie.length}} {{s.z && s.z.result.getName()}}
         </div>
     </div>
 </template>
@@ -34,7 +34,7 @@
             }
         },
         created(){
-			window.vm = this;
+			window.road = this.road;
         }
 	}
 </script>

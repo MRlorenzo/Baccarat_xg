@@ -9,6 +9,15 @@ export default class Point {
 		this.z = brs; // BaccaratResult
 		this.location = {x: x, y: y};
 		this.tie = []; // Array<Pairs>
+		this.root = null;
+	}
+	// 设置根节点
+	setRoot( root ){
+		this.root = root;
+	}
+	// 获取根节点
+	getRoot(){
+		return this.root;
 	}
 
 	getX(){
@@ -21,6 +30,10 @@ export default class Point {
 
 	getObject(){
 		return this.z;
+	}
+
+	setObject( z ){
+		this.z = z;
 	}
 
 	getLocation(){

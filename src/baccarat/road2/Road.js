@@ -3,12 +3,19 @@ import BaccaratResult from "../result/BaccaratResult";
 import Point from "./loc/Point";
 import { uuid } from "../../utils";
 
+const pushPoint = Symbol(),popPoint = Symbol(),
+	fillInRule = Symbol(),
+	fillFirst = Symbol(),
+	fillTie = Symbol(),
+	fillColumn = Symbol(),
+	fill = Symbol();
+const HEIGHT = 6;
 export default class Road extends RoadCounter{
 
 	constructor(){
 		super();
 		// 每个'点'存放的位置(二维数组)
-		this.pointList = [];
+		this.pointList = [null,[],[],[],[],[],[]];
 		// 按顺序排列的点，依次保存每个'点'(一维数组)
 		this.squeezeList = [];
 	}
@@ -25,7 +32,7 @@ export default class Road extends RoadCounter{
 		}
 		/*统计*/
 		super.pushResult(rs);
-		this.addPoint(rs);
+		this[pushPoint](rs);
 	}
 
 	/**
@@ -34,111 +41,169 @@ export default class Road extends RoadCounter{
 	pop(){
 		/*将最后一个结果从列表中删除。*/
 		const rs = super.popResult();
-		this.delPoint(rs);
+		const point = this[popPoint]();
+		return rs;
 	}
 
 	/**
 	 * 增加一个点
 	 * @param rs
 	 */
-	addPoint( rs ){
-
-		let p = null;
+	[pushPoint]( rs ){
 		const last = this.getLastPoint();
-		// 最后一个点的 {x,y}
-		let { x, y } = lastXY(last);
+		let p = this[fillInRule](last , rs);
+		this.squeezeList.push(p);
+	}
+
+
+	[fillInRule]( last , rs){
+		let p = null;
 		// 第一个
-		if (last == null)
-		{
-			// 和局
-			if (rs.isT())
-			{
-				p = point(x , y);
-				p.addTie(rs);
-			}
-			// 非和局
-			else
-			{
-				p = point(x , y , rs);
-			}
+		if (last == null){
+			p = this[fillFirst](rs);
 		}
 		// 不是第一个
-		else
-		{
-			// 最后一个点的baccaratResult
-			const lbr = last.getObject();
+		else{
 			// 和局（坐标不变）
-			if (rs.isT())
-			{
-				last.addTie(rs);
-				p = last;
+			if (rs.isT()){
+				p = this[fillTie](last , rs);
 			}
 			// 非和局
-			else
-			{
-				// 最后一个点不是B，或者P
-				if ( lbr != null){
-					// 相同下移。
-					if (rs.getResult() === lbr.getResult()){
-						++y;
-					}
-					// 不同，右移一列开始.
-					else{
-						++x;
-						y=1;
-					}
-					p = point(x , y , rs);
-				}else{
-					// 由于最后一个点全是和，所以没有占位。因此要将上面的和全部转移到当前
-					const ties = last.getTie();
-					p = point(x , y , rs);
-					p.setTie(ties);
-				}
+			else{
+				p = this[fillColumn]( last , rs);
 			}
-
 		}
 
+		return p;
+	}
+
+	[fill](x, y , p){
 		if (this.pointList[y] == null){
 			this.pointList[y] = [];
 		}
 		this.pointList[y][x] = p;
-		this.squeezeList.push(p);
+		return p;
+	}
+
+	// 填充第一个格子
+	[fillFirst]( rs ){
+		let p = null;
+		// 和局
+		if (rs.isT()){
+			p = point(1 , 1);
+			p.addTie(rs);
+		}
+		// 非和局
+		else{
+			p = point(1 , 1 , rs);
+		}
+		// 第一个格子的根节点就是它自己
+		p.setRoot(p);
+		return this[fill]( 1, 1, p);
+	}
+
+	// 填充'和'(坐标不变)
+	[fillTie](last , rs){
+		// 最后一个点的 {x,y}
+		let { x, y } = lastXY(last);
+		last.addTie(rs);
+		return this[fill](x , y , last);
+	}
+
+	[fillColumn]( last , rs ){
+		let p = null;
+		// 最后一个点的 {x,y}
+		let { x, y } = lastXY(last);
+		// 最后一个点的baccaratResult
+		const lbr = last.getObject();
+
+		if ( lbr != null){
+			// 默认最后一个的根节点就是下一个的根节点。
+			let root = last.getRoot();
+			// 相同下移。
+			if (rs.getResult() === lbr.getResult()){
+				// 根节点的x坐标
+				const rootX = root.x;
+				// 拐了(右移过)接着拐
+				if (x !== rootX){
+					++x;
+				}
+				// 笔直的
+				else{
+					++y;
+					//（检查是否超出范围（6）？如果超出范围右移一格，绝对不会发生右边被占用的情况）
+					if (y > HEIGHT){
+						--y; // 被占用了，向上退一格
+						++x; // 向右拐
+					}
+					// 下移一格不超出范围，但是被别的列占用了。
+					else if (this.existXY(x , y)){
+						--y; // 被占用了，向上退一格
+						++x; // 向右拐
+					}
+				}
+
+				p = point(x , y , rs);
+			}
+			// 不同，根节点的下一列开始.
+			else{
+				x = last.getRoot().x;
+				y=1;
+				// （下一列的第1个格子是否被占用了？占用了要怎么处理？）
+				do {
+					++x; // 一直向右拐，直到没有占用为止。
+				} while (this.existXY(x , y));
+
+				p = point(x , y , rs);
+				// 下一列的第一个格子就是根节点
+				root = p;
+			}
+
+			p.setRoot(root);
+		}else{
+			//如果最后一个点全是和，将会找不到baccaratResult。因为大路只显示庄/闲
+			last.setObject(rs);
+			p = last;
+		}
+
+		return this[fill](x , y , p);
 	}
 
 	/**
 	 * 删除一个点
-	 * @param rs
 	 */
-	delPoint( rs ){
+	[popPoint](){
 		// 最后一个点
 		const lastP = this.squeezeList.pop();
 		if (lastP == null){
 			return ;
 		}
 		// 如果是和局,仅当最后一个结果为和时才删除这个点
-		if (rs.isT()){
-			const ties = lastP.getTie();
+		const ties = lastP.getTie();
+		if (ties.length > 0){
 			ties.pop();
-			if (ties.length === 0){
-				const { x, y} = lastP.getLocation();
-				// 删除当前的点
-				this.pointList[y][x] = null;
-			}
-		}else{
-
-			const brs = lastP.getObject();
-			if (brs.getId() !== rs.getId()){
-				throw new Error('最后一个点的游戏结果不匹配');
-			}
-
+		}else if (ties.length === 0){
 			const { x, y} = lastP.getLocation();
 			// 删除当前的点
 			this.pointList[y][x] = null;
 		}
+
+		return lastP;
 	}
 
 	getLastPoint(){
 		return this.squeezeList[this.squeezeList.length -1];
+	}
+
+	/**
+	 * 是否存在x,y坐标
+	 * @param x
+	 * @param y
+	 * @returns {*|boolean}
+	 */
+	existXY(x , y){
+		const pointList = this.pointList;
+		return pointList[y] && pointList[y][x] != null
 	}
 
 	/**
@@ -169,13 +234,13 @@ export default class Road extends RoadCounter{
 	}
 
 	b(){
-		return BaccaratResult.getResult('1')
+		this.push(BaccaratResult.getResult('1'))
 	}
 	p(){
-		return BaccaratResult.getResult('2')
+		this.push(BaccaratResult.getResult('2'))
 	}
 	t(){
-		return BaccaratResult.getResult('3')
+		this.push(BaccaratResult.getResult('3'))
 	}
 }
 

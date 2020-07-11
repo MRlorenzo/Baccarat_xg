@@ -1,8 +1,6 @@
 import Road from "./Road";
 import BResult from "../result/BResult";
-import Point from "../road/Point";
 import BaccaratResult from "../result/BaccaratResult";
-const getResults = Symbol(), testPush = Symbol();
 export default class BigRoad extends Road {
 	constructor(){
 		super();
@@ -52,19 +50,23 @@ export default class BigRoad extends Road {
 	}
 
 	/**
-	 * 测试开出某个结果,返回放成功的点
+	 * 测试开出某个结果,
+	 * 如果是monitor，返回相应规则的结果(庄/闲)
+	 * 否则返回在此‘大路’对应的点
 	 * @param e
 	 * @param name
 	 */
-	[testPush](e, name){
+    testPush(e, name){
 		if (name){
+			// 返回BaccaratResult
 			return this.monitorMap[name].testPush(this, e);
 		}else{
+			// 返回Point
 			return super.nextPoint(e);
 		}
 	}
 
-	[getResults](name){
+    getResults(name){
 		if (name){
 			return this.monitorMap[name].getResults();
 		}

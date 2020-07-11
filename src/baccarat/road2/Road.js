@@ -2,6 +2,7 @@ import RoadCounter from "./RoadCounter";
 import BaccaratResult from "../result/BaccaratResult";
 import Point from "./loc/Point";
 import { uuid } from "../../utils";
+import BResult from "../result/BResult";
 
 const pushPoint = Symbol(),popPoint = Symbol(),
 	fillInRule = Symbol(),
@@ -32,7 +33,7 @@ export default class Road extends RoadCounter{
 		}
 		/*统计*/
 		super.pushResult(rs);
-		this[pushPoint](rs);
+		return this[pushPoint](rs);
 	}
 
 	/**
@@ -41,8 +42,7 @@ export default class Road extends RoadCounter{
 	pop(){
 		/*将最后一个结果从列表中删除。*/
 		const rs = super.popResult();
-		const point = this[popPoint]();
-		return rs;
+		return this[popPoint]();
 	}
 
 	/**
@@ -50,11 +50,21 @@ export default class Road extends RoadCounter{
 	 * @param rs
 	 */
 	[pushPoint]( rs ){
-		const last = this.getLastPoint();
-		let p = this[fillInRule](last , rs);
+		let p = this.nextPoint(rs);
+		this[fill](p);
 		this.squeezeList.push(p);
+		return p;
 	}
 
+	/**
+	 * 下一个点在哪里？
+	 * @param rs
+	 * @returns {*}
+	 */
+	nextPoint( rs ){
+		const last = this.getLastPoint();
+		return this[fillInRule](last , rs);
+	}
 
 	[fillInRule]( last , rs){
 		let p = null;
@@ -77,7 +87,8 @@ export default class Road extends RoadCounter{
 		return p;
 	}
 
-	[fill](x, y , p){
+	[fill](p){
+		const { x, y} = p.getLocation();
 		if (this.pointList[y] == null){
 			this.pointList[y] = [];
 		}
@@ -99,15 +110,13 @@ export default class Road extends RoadCounter{
 		}
 		// 第一个格子的根节点就是它自己
 		p.setRoot(p);
-		return this[fill]( 1, 1, p);
+		return p;
 	}
 
 	// 填充'和'(坐标不变)
 	[fillTie](last , rs){
-		// 最后一个点的 {x,y}
-		let { x, y } = lastXY(last);
 		last.addTie(rs);
-		return this[fill](x , y , last);
+		return last;
 	}
 
 	[fillColumn]( last , rs ){
@@ -166,7 +175,7 @@ export default class Road extends RoadCounter{
 			p = last;
 		}
 
-		return this[fill](x , y , p);
+		return p;
 	}
 
 	/**
@@ -234,13 +243,13 @@ export default class Road extends RoadCounter{
 	}
 
 	b(){
-		this.push(BaccaratResult.getResult('1'))
+		this.push(BaccaratResult.getResult(BResult.B))
 	}
 	p(){
-		this.push(BaccaratResult.getResult('2'))
+		this.push(BaccaratResult.getResult(BResult.P))
 	}
 	t(){
-		this.push(BaccaratResult.getResult('3'))
+		this.push(BaccaratResult.getResult(BResult.T))
 	}
 }
 

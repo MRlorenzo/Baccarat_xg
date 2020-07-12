@@ -3,7 +3,7 @@ export default {
 		/*随机*/
 		random(){
 			this.$road.random(30);
-			this.beadResults = this.$road.arr;
+			this.beadResults = this.$road.getBaccaratResults();
 			this.showShine();
 		}
 	},

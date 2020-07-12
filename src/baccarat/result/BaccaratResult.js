@@ -28,7 +28,7 @@ function getResultByString( rs ) {
 * */
 export default class BaccaratResult {
 
-    constructor(result , pairs , skyCards , bSixWin = false){
+    constructor(result , pairs = [] , skyCards = [] , bSixWin = false){
         this.result = result;
         this.pairs = pairs;
         // 是否存在天牌

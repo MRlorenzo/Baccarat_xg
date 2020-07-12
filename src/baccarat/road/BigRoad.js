@@ -1,163 +1,106 @@
 import Road from "./Road";
 import BResult from "../result/BResult";
-import Point from "./Point";
 import BaccaratResult from "../result/BaccaratResult";
-/**
- * 大路
- */
-export default class BigRoad extends Road{
+import RoadMonitor from "./monitor/RoadMonitor";
+export default class BigRoad extends Road {
+	constructor(){
+		super();
+		this.monitorMap = new Map();
+	}
 
-    constructor(arr){
-        super(arr);
-        let
-            //有高度柱状
-            rsa = this.rsa = [],
-            //每一列的最大高度
-            colHeight = this.colHeight = [],
-            HEIGHT = this.HEIGHT = 6;
-            this.monitors = [],
-            this.monitorMap = {};
+	push( rs ){
+		const point = super.push(rs);
 
-        //去除超过高度的 开始
-		this.noHeightWay.forEach(function (p) {
-            let x = p.x, y = p.y, height = colHeight[x];
-            rsa[y] = rsa[y]||[];
-            if (rsa[y][x] && !height){
-                height = colHeight[x++] = y - 1;
-            }
-            if (!height){
-                height = HEIGHT;
-            }
-            if (y > height){
-                y = height;
-                do{ x++; } while (rsa[y][x]);
-            }
-            rsa[y][x] = p;
-            p.location = {x:x,y:y};
-        });
-        //去除超过高度的 结束
-    }
+		this.executeMonitor('push', point);
+	}
 
-    push(e){
-        //无高度数据的放入
-        let p = super.push(e);
+	pop(){
+		const games = super.games;
+		if (games === 1){
+			// 只有一个结果的时候开启新的一局
+			this.newGame();
+		} else {
+			const point = super.pop();
+			this.executeMonitor('pop' , point);
+		}
+	}
 
-        if(p){//是否占位，包括第一局是和（特殊）。
-            //有高度的数据处理
-            let x = p.x, y = p.y, that = this, colHeight = that.colHeight, height = colHeight[x], rsa = that.rsa, HEIGHT = that.HEIGHT;
-            rsa[y] = rsa[y]||[];
-            //console.log(`x:${x} y:${y} , height:${height}`);
-            if (rsa[y][x] && !height){
-                height = colHeight[x] = y - 1;
-            }
+	newGame(){
+		super.newGame();
+		this.executeMonitor('newGame');
+	}
 
-            if (!height ){
-                height = HEIGHT;
-            }
+	// 添加监视器
+	addMonitor(monitor){
+		if (monitor instanceof RoadMonitor){
+			this.monitorMap.set(monitor.getName() , monitor);
+		}
+	}
 
-            if (y > height){
-                y = height;
-                rsa[y] = rsa[y]||[];
-                do { x++;}while (rsa[y][x])
-            }
-            //console.log(`set x:${x} set y:${y}`);
-            rsa[y][x] = p;
-            p.location = {x:x,y:y};
-        }
-        this.executeMonitor("push", p);
-    }
+	// 执行所有的监视器
+	executeMonitor( method, arg ){
+		for (const monitor of this.monitorMap.values()){
+			monitor.invoke(method , this, arg);
+		}
+	}
 
-    testPushBanker(name){
-        let result = BaccaratResult.getResult( BResult.B );
-        return this.testPush(result , name);
-    }
+	// 预测开庄
+	testPushBanker(name){
+		let result = BaccaratResult.getResult( BResult.B );
+		return this.testPush(result , name);
+	}
 
-    testPushPlayer( name ){
-        let result = BaccaratResult.getResult( BResult.P );
-        return this.testPush(result , name);
-    }
+	// 预测开闲
+	testPushPlayer( name ){
+		let result = BaccaratResult.getResult( BResult.P );
+		return this.testPush(result , name);
+	}
 
-    /**
-     * 测试开出某个结果,返回放成功的点
-     * @param e
-     */
-    testPush(e, name){
-        if (name){
-            return this.monitorMap[name].testPush(this, e);
-        }else{
-            let previous = this.last(), p;
-            let x = previous && previous.x||0, y = previous && previous.y||0;
-            //放入 珠盘路
-            if (e.result !== BResult.T){
-                if (previous && (!previous.z)){//首次出现和局
-                    y = 1;
-                }else if (previous && previous.z.result === e.result ){//同类
-                    y++;
-                }else {
-                    x++;
-                    y = 1;
-                }
-                p = new Point(x,y,e);
-            }
-            return p;
-        }
-    }
-
-    pop(){
-        let that = this;
-        if (that.games === 1 ){
-            //只有一个结果的时候开启新的一局
-            that.newGame();
-        }else{
-            let p = super.pop(), colHeight = that.colHeight;
-            //that.rsa[p.location.y].splice(p.location.x , 1 , null)
-            p && p.tie  && (that.rsa[p.location.y][p.location.x] = p.tie.length > 0 ? p : null);
-            p && colHeight[p.x] === p.y && (colHeight[p.x]=null);//高度限制解除
-            this.executeMonitor("pop", p);
-            return p;
-        }
-    }
-
-    //开始新的一局
-    newGame() {
-        super.newGame();
-        this.rsa = [];
-        this.colHeight = [];
-        this.executeMonitor("newGame");
-    };
-
-    addMonitor(monitor, name){
-        monitor.load(this);
-        this.monitors.push(monitor);
-        this.monitorMap[name] = monitor;
-    }
+	/**
+	 * 测试开出某个结果,
+	 * 如果是monitor，返回相应规则的结果(庄/闲)
+	 * 否则返回在此‘大路’对应的点
+	 * @param rs
+	 * @param name
+	 */
+    testPush(rs, name){
+		if (name){
+			// 返回BaccaratResult
+			const monitor = this.monitorMap.get(name);
+			if (monitor != null){
+				return monitor.invoke('testPush' , this, rs);
+			}
+		}else{
+			// 返回Point
+			return super.nextPoint(rs);
+		}
+	}
 
     getResults(name){
-        if (name){
-            return this.monitorMap[name].getResults();
-        }
-        return this.rsa;
-    }
+		if (name){
+			const monitor = this.monitorMap.get(name);
+			if (monitor != null){
+				return monitor.invoke('getResults');
+			}
+		}
+		return this.pointList;
+	}
 
-    executeMonitor(name, val){
-        let that = this;
-        that.monitors.forEach(function (e) {
-            e[name](that, val);
-        })
-    }
+	updateResult(){
+		const result = {} , nextTest = {};
+		result.BigRoad = [...this.getResults()];
 
-    updateResult(){
-        const result = {} , nextTest = {};
-        result.BigRoad = [...this.rsa];
-        Object.keys(this.monitorMap).forEach(name => {
-            const rsa = this.getResults(name);
-            result[name] = [...rsa];
-            nextTest[name] = {
-                banker: this.testPushBanker(name),
-                player: this.testPushPlayer(name)
-            }
-        });
+		for (const name of this.monitorMap.keys()){
+			const pointList = this.getResults(name);
 
-        return { result , nextTest};
-    }
+			result[name] = [...pointList];
+
+			nextTest[name] = {
+				banker: this.testPushBanker(name),
+				player: this.testPushPlayer(name)
+			}
+		}
+
+		return { result , nextTest};
+	}
 }

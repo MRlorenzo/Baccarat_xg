@@ -13,7 +13,7 @@ export default {
 		 */
 		cancelGame() {
 			this.$road.pop();
-			this.beadResults = this.$road.arr;
+			this.beadResults = this.$road.getBaccaratResults();
 			this.showShine();
 		}
 	}

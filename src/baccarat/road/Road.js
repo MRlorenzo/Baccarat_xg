@@ -1,236 +1,346 @@
-import RoadStatistics from "./RoadStatistics";
-import Point from "./Point";
-import BResult from "../result/BResult";
+import RoadCounter from "./RoadCounter";
 import BaccaratResult from "../result/BaccaratResult";
-import { uuid } from '../../utils';
-/**
- * 路基类, 存基本路子信息  无高度限制的路子
- */
-export default class Road extends RoadStatistics{
+import Point from "./loc/Point";
+import { uuid } from "../../utils";
+import BResult from "../result/BResult";
 
-	constructor(arr){
+const pushPoint = Symbol(),
+	popPoint = Symbol(),
+	fillInRule = Symbol(),
+	fillFirst = Symbol(),
+	fillTie = Symbol(),
+	fillColumn = Symbol(),
+	fill = Symbol();
+
+const HEIGHT = 6;
+export default class Road extends RoadCounter{
+
+	constructor(){
 		super();
-		this.arr = arr||[];
-		let that = this,
-			noHeightWay = this.noHeightWay = [],
-			noHeightRs = this.noHeightRs = [],
-			//首次和存放的位置
-			tArr = this.tArr = [], previous, x = 0, y = 0 ;
-
-		//noHeightWay 数据初始化
-		this.arr.forEach(function (z) {
-			z.setId(uuid(8 , 16));
-			if (z.result === BResult.T){
-				//开头和局
-				if (!previous){
-					x = 1;
-					y = 1;
-					noHeightWay.push(previous = p = new Point(x,y,null));
-				}
-				previous.tie.push(new Point(x,y,z));
-			}else{
-				if (previous && !previous.z){//首次出现和局
-					y = 1;
-				}else if (previous && previous.z.result === z.result ){//同类
-					y++;
-				}else {
-					x++;
-					y = 1;
-				}
-				if (previous && !previous.z){
-					noHeightWay[0].z = z;
-				}else{
-					noHeightWay.push(previous = new Point(x,y,z));
-					if (!noHeightRs[y]){
-						noHeightRs[y]=[];
-					}
-					noHeightRs[y][x] = previous;
-				}
-			}
-			that.pushRs(z);
-		});
+		// 每个'点'存放的位置(二维数组)
+		this.pointList = [null,[],[],[],[],[],[]];
+		// 按顺序排列的点，依次保存每个'点'(一维数组)
+		this.squeezeList = [];
 	}
 
 	/**
-	 * 放入一个结果
-	 * @param e
+	 * 放入一个结果，然后根据‘大路’的规则将每个点存放到相应的位置上
+	 * (不考虑高度的限制)
+	 *
+	 * @param rs
 	 */
-	push(e){
-		//为每一个结果设置唯一id,请勿使用var定义变量
-		if(!e.getId()){ //如果已经被赋予了id,请不要再设置id (OtherBigWay)
-			let id = uuid(8 , 16);
-			e.setId(id);
+	push( rs ){
+		if (rs.getId() == null){
+			rs.setId(uuid(8 , 32));
 		}
+		/*统计*/
+		super.pushResult(rs);
+		return this[pushPoint](rs);
+	}
 
-		this.arr.push(e);
-		this.pushRs(e);
-		let previous = this.last();
-		let p, tArr = this.tArr, noHeightWay = this.noHeightWay, noHeightRs = this.noHeightRs;
-		let x = previous && previous.x||0, y = previous && previous.y||0;
+	/**
+	 * 移除一个结果,并且将最后一个结果所在的点删除。
+	 */
+	pop(){
+		/*将最后一个结果从列表中删除。*/
+		const rs = super.popResult();
+		return this[popPoint]();
+	}
 
-		//放入 珠盘路
-		if (e.result === BResult.T){
-			//（没有上一颗）开头和局
-			if (!previous){
-				x = 1;
-				y = 1;
-				noHeightWay.push(previous = p = new Point(x,y,null));
-				if (!noHeightRs[x]){
-					noHeightRs[x]=[];
-				}
-				noHeightRs[x][y] = previous;
-			}
-			previous.tie.push(new Point(x,y,e));
-		}else{
-
-			if (previous && (!previous.z)){//上一颗出现特殊路子（首局为和）
-				//console.log('case 1');
-				y = 1;
-			}else if (previous && previous.z.result === e.result ){//同类
-				//console.log('case 2');
-				y++;
-			}else {
-				//console.log('case 3');
-				x++;
-				y = 1;
-			}
-
-			if (previous && !previous.z){
-				noHeightWay[0].z = e;
-			}else{
-				noHeightWay.push(p = new Point(x,y,e));
-				if (!noHeightRs[y]){
-					noHeightRs[y]=[];
-				}
-				noHeightRs[y][x] = p;
-			}
-		}
+	/**
+	 * 增加一个点
+	 * @param rs
+	 */
+	[pushPoint]( rs ){
+		let p = this.nextPoint(rs);
+		this[fill](p);
 		return p;
 	}
 
-
 	/**
-	 * 移除一个结果
+	 * 下一个点在哪里？
+	 * @param rs
+	 * @returns {*}
 	 */
-	pop(){
-		let that = this, z, p;
-		if (that.arr.length > 0){
-			z = that.arr.pop();
-			that.popRs(z);
-			if (z.result === BResult.T){
-				p = that.last();
-				(p?p.tie:that.tArr).pop();
-				if (p && !that.tArr.length && !p.z){
-					that.noHeightWay.pop();
-					return p;
-				}
-			}else {
-				p = that.noHeightWay.pop();
-				that.noHeightRs[p.y] && (that.noHeightRs[p.y][p.x] = null);
-				if( p.tie && p.tie.length > 0){
-					that.tArr = p.tie;
-					p = new Point(1, 1, null);
-					p.tie = that.tArr;
-					that.noHeightWay.push(p);
-				}
-				return p;
+	nextPoint( rs ){
+		const last = this.getLastPoint();
+		return this[fillInRule](last , rs);
+	}
+
+	[fillInRule]( last , rs){
+		let p = null;
+		// 第一个
+		if (last == null){
+			p = this[fillFirst](rs);
+		}
+		// 不是第一个
+		else{
+			// 和局（坐标不变）
+			if (rs.isT()){
+				p = this[fillTie](last , rs);
+			}
+			// 非和局
+			else{
+				p = this[fillColumn]( last , rs);
 			}
 		}
-		return null;
+
+		return p;
 	}
 
+	// 放入高度限制的点
+	[fill](p){
+		const { x, y} = p.getLocation();
+		if (this.pointList[y] == null){
+			this.pointList[y] = [];
+		}
+		this.pointList[y][x] = p;
+		this.squeezeList.push(p);
+		return p;
+	}
+
+	// 填充第一个格子
+	[fillFirst]( rs ){
+		let p = null;
+		// 和局
+		if (rs.isT()){
+			p = point(1 , 1);
+			p.addTie(rs);
+		}
+		// 非和局
+		else{
+			p = point(1 , 1 , rs);
+		}
+		// 第一个格子的根节点就是它自己
+		p.setRoot(p);
+		return p;
+	}
+
+	// 填充'和'(坐标不变)
+	[fillTie](last , rs){
+		last.addTie(rs);
+		return last;
+	}
+
+	[fillColumn]( last , rs ){
+		let p = null;
+		// 最后一个点的 {x,y}
+		let { x, y } = lastXY(last);
+		// 最后一个点的baccaratResult
+		const lbr = last.getObject();
+
+		if ( lbr != null){
+			// 默认最后一个的根节点就是下一个的根节点。
+			let root = last.getRoot();
+			// 相同下移。
+			if (rs.getResult() === lbr.getResult()){
+				// 根节点的x坐标
+				const rootX = root.x;
+				// 拐了(右移过)接着拐
+				if (x !== rootX){
+					++x;
+				}
+				// 笔直的
+				else{
+					++y;
+					//（检查是否超出范围（6）？如果超出范围右移一格，绝对不会发生右边被占用的情况）
+					if (y > HEIGHT){
+						--y; // 被占用了，向上退一格
+						++x; // 向右拐
+					}
+					// 下移一格不超出范围，但是被别的列占用了。
+					else if (this.existXY(x , y)){
+						--y; // 被占用了，向上退一格
+						++x; // 向右拐
+					}
+				}
+
+				p = point(x , y , rs);
+			}
+			// 不同，根节点的下一列开始.
+			else{
+				x = last.getRoot().x;
+				y=1;
+				// （下一列的第1个格子是否被占用了？占用了要怎么处理？）
+				do {
+					++x; // 一直向右拐，直到没有占用为止。
+				} while (this.existXY(x , y));
+
+				p = point(x , y , rs);
+				// 下一列的第一个格子就是根节点
+				root = p;
+			}
+
+			p.setRoot(root);
+		}else{
+			//如果最后一个点全是和，将会找不到baccaratResult。因为大路只显示庄/闲
+			last.setObject(rs);
+			p = last;
+		}
+
+		return p;
+	}
 
 	/**
-	 * 新开一局
+	 * 删除一个点
 	 */
-	newGame() {
-		this.clear();
+	[popPoint](){
+		// 最后一个点
+		const lastP = this.squeezeList.pop();
+		if (lastP == null){
+			return ;
+		}
+		// 如果是和局,仅当最后一个结果为和时才删除这个点
+		const ties = lastP.getTie();
+		if (ties.length > 0){
+			ties.pop();
+		}else if (ties.length === 0){
+			const { x, y} = lastP.getLocation();
+			// 删除当前的点
+			this.pointList[y][x] = null;
+		}
+
+		return lastP;
+	}
+
+	getLastPoint(){
+		return this.squeezeList[this.squeezeList.length -1];
 	}
 
 	/**
-	 * 清除结果
+	 * 根据横坐标获取一列(忽略‘和’)
+	 * @param x
+	 * @returns {*[]}
 	 */
-	clear(){
-		this.arr = [];
-		this.noHeightWay = [];
-		this.noHeightRs = [];
-		this.reSet();
+	getColumnByX(x){
+		const map = new Map();
+		this.squeezeList.filter(p => {
+			return p.root != null && p.z != null && p.root.x === x;
+		}).forEach(p=>{
+			const id = 	p.getObject().getId();
+			map.set(id , p);
+		});
+		return Array.from(map.values());
 	}
 
 	/**
-	 * 获取最后一个点
+	 * 根据横坐标获取一列的高度
+	 * @param x
+	 * @returns {number}
 	 */
-	last(){
-		let arr = this.noHeightWay, index = arr.length;
-		return index > 0 ? arr[index-1] : null;
+	getColumnLength(x){
+		const cols = this.getColumnByX(x);
+		return cols.length;
 	}
 
-
-	show(){
-
+	/**
+	 * 是否存在x,y坐标
+	 * @param x
+	 * @param y
+	 * @returns {*|boolean}
+	 */
+	existXY(x , y){
+		const pointList = this.pointList;
+		return pointList[y] && pointList[y][x] != null
 	}
 
-    /**
-     * 生成新的随机的一局
-     * @param n
-     */
-    random(n){
-        n = n || Math.floor((Math.random()*84)+1);
-        let rsTxt = getRsTxt({ '1':45, '2':45, '3':10});
+	/**
+	 * 新的一局（新靴）
+	 * 将所有的点位清空
+	 */
+	newGame(){
+		this.pointList = [];
+		this.squeezeList = [];
+		super.clear();
+	}
 
-        let pairsTxt = getRsTxt({'4':1,'5':1,' ':10});
-        let skyTxt = getRsTxt({'+':2,'-':2,' ':18});
+	/**
+	 * 生成新的随机的一局
+	 * @param n
+	 */
+	random(n){
+		n = n || Math.floor((Math.random()*84)+1);
+		let rsTxt = getRsTxt({ '1':45, '2':45, '3':10});
 
-        for (let i = 0; i < n; i++ ){
-            let rs = rsTxt.charAt(range(0 , rsTxt.length -1) );
-            let pairs = pairsTxt.charAt(range(0 , pairsTxt.length -1) ) + pairsTxt.charAt(range(0 , pairsTxt.length -1) );
-            let sky1 = skyTxt.charAt(range(0 , skyTxt.length -1) );
-            let sky2 = skyTxt.charAt(range(0 , skyTxt.length -1) );
+		let pairsTxt = getRsTxt({'4':1,'5':1,' ':10});
+		let skyTxt = getRsTxt({'+':2,'-':2,' ':18});
 
-            let sky = sky1 !== sky2 ?sky1 + sky2:sky1;
+		for (let i = 0; i < n; i++ ) {
+			const rs = genBaccaratResult(rsTxt , pairsTxt , skyTxt);
+			this.push(rs);
+		}
+	}
 
-            if(rs === '1'){
-                //庄赢了,但是庄没有天牌,则闲必定没有天牌
-                if(~sky.indexOf('-') && !~sky.indexOf('+')){
-                    sky = '';
-                }
-            }else if(rs === '2'){
-                if(~sky.indexOf('+') && !~sky.indexOf('-')){
-                    sky = '';
-                }
-            }else{
-                //打和, 要么都没有天牌,要么都有天牌
-                if(!((!~sky.indexOf('-')) ^ (!~sky.indexOf('+')))){
-                    sky = '';
-                }
-            }
-            const parseText = `${rs}${pairs.split(' ').join('')}${sky.split(' ').join('')}`;
+	b(){
+		this.push(BaccaratResult.getResult(BResult.B))
+	}
+	p(){
+		this.push(BaccaratResult.getResult(BResult.P))
+	}
+	t(){
+		this.push(BaccaratResult.getResult(BResult.T))
+	}
+}
 
-            let p = BaccaratResult.getResult(parseText);
+function genBaccaratResult( rsTxt , pairsTxt , skyTxt) {
+	let rs = rsTxt.charAt(range(0 , rsTxt.length -1) );
+	let pairs = pairsTxt.charAt(range(0 , pairsTxt.length -1) )
+			+ pairsTxt.charAt(range(0 , pairsTxt.length -1) );
+	let sky1 = skyTxt.charAt(range(0 , skyTxt.length -1) );
+	let sky2 = skyTxt.charAt(range(0 , skyTxt.length -1) );
 
-            this.push(p);
-        }
+	let sky = sky1 !== sky2 ?sky1 + sky2:sky1;
 
-    }
+	if(rs === '1'){
+		//庄赢了,但是庄没有天牌,则闲必定没有天牌
+		if(~sky.indexOf('-') && !~sky.indexOf('+')){
+			sky = '';
+		}
+	}else if(rs === '2'){
+		if(~sky.indexOf('+') && !~sky.indexOf('-')){
+			sky = '';
+		}
+	}else{
+		//打和, 要么都没有天牌,要么都有天牌
+		if(!((!~sky.indexOf('-')) ^ (!~sky.indexOf('+')))){
+			sky = '';
+		}
+	}
+	const parseText = `${rs}${pairs.split(' ').join('')}${sky.split(' ').join('')}`;
 
-    getResults(){
-
-    }
+	return BaccaratResult.getResult(parseText);
 }
 
 function getRsTxt( props ){
-    return Object.keys(props).map(k=>{
-        let txt = '';
-        let len = props[k];
-        for(let i=0; i<len ; i++){
-            txt +=k;
-        }
-        return txt;
-    }).join('');
+	return Object.keys(props).map(k=>{
+		let txt = '';
+		let len = props[k];
+		for(let i=0; i<len ; i++){
+			txt +=k;
+		}
+		return txt;
+	}).join('');
 }
 
 function range( first , end = 100 ){
 
-    return first + Math.floor(Math.random() * (end+1 - first));
+	return first + Math.floor(Math.random() * (end+1 - first));
 }
 
+/**
+ * 点
+ * @param x	横坐标
+ * @param y 纵坐标
+ * @param baccaratResult 百家乐结果
+ * @returns {Point}
+ */
+function point(x , y , baccaratResult) {
+	return new Point(x , y , baccaratResult);
+}
+
+function lastXY( point ) {
+	if (point == null){
+		return {x: 1, y: 1};
+	}
+	return point.getLocation();
+}

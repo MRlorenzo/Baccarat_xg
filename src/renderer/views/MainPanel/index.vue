@@ -235,7 +235,7 @@
                 }else{
                     this.$road.push(baccaratResult);
                 }
-                this.beadResults = this.$road.arr;
+                this.beadResults = this.$road.getBaccaratResults();
                 this.showShine();
             },
 
@@ -247,7 +247,7 @@
                 const bootNo = await this.updateBootNo();
                 // 清空当前路单
                 this.$road.newGame();
-                this.beadResults = this.$road.arr;
+                this.beadResults = this.$road.getBaccaratResults();
             },
 
             /*从历史记录中还原游戏记录*/

@@ -30,6 +30,10 @@ export default class RoadCounter {
 		this.resultList = [];
 	}
 
+	getBaccaratResults(){
+		return this.resultList;
+	}
+
 	/**
 	 * 放入一个结果并统计
 	 * @param rs

@@ -10,8 +10,10 @@ export default class BigRoad extends Road {
 
 	push( rs ){
 		const point = super.push(rs);
-
-		this.executeMonitor('push', point);
+		// 非和局
+		if (!rs.isT()){
+			this.executeMonitor('push', point);
+		}
 	}
 
 	pop(){
@@ -21,7 +23,10 @@ export default class BigRoad extends Road {
 			this.newGame();
 		} else {
 			const point = super.pop();
-			this.executeMonitor('pop' , point);
+			// 非和局
+			if (point.getTie().length === 0){
+				this.executeMonitor('pop' , point);
+			}
 		}
 	}
 

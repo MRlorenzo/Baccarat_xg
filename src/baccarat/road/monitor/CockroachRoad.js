@@ -18,7 +18,7 @@ export default class CockroachRoad extends BaseRoad{
     }
 
 	getLeftFootOffset(){
-		return 3;
+		return 2;
 	}
 
 	getRightFootOffset(){

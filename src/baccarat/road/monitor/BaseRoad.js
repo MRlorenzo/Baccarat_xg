@@ -39,7 +39,7 @@ export default class BaseRoad extends RoadMonitor{
 	 * @returns {boolean}
 	 */
 	isEqHeight(point , road){
-		let {x} = point.getLocation();
+		let x = point.root.x;
 		// 左偏移
 		let lf = this.getLeftFootOffset();
 		// 右偏移

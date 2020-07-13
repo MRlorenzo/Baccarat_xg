@@ -7,17 +7,36 @@ export default class Point {
 		this.x = x; // x坐标
 		this.y = y; // y坐标
 		this.z = brs; // BaccaratResult
-		this.location = {x: x, y: y};
+		this.location = {
+			x: x,
+			y: y,
+			rootX: x, //逻辑横坐标(忽略列的高度)
+			rootY: y // 逻辑纵坐标(忽略列的高度)
+		};
 		this.tie = []; // Array<Pairs>
-		this.root = null;
+		this.isRoot = false;
+		this.isForce = false;
 	}
-	// 设置根节点
-	setRoot( root ){
-		this.root = root;
+
+	/**
+	 * 修正逻辑坐标
+	 * @param x
+	 * @param y
+	 */
+	setRootXY(x , y){
+		this.location.rootX = x;
+		this.location.rootY = y;
 	}
-	// 获取根节点
-	getRoot(){
-		return this.root;
+
+	/**
+	 * 获取结果的id,如果这个点全都是‘和局’，那么 this.z==null 为 true
+	 * @returns {*}
+	 */
+	getResultId(){
+		if (this.z == null){
+			return null;
+		}
+		return this.z.getId();
 	}
 
 	getX(){

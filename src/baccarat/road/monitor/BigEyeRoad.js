@@ -12,9 +12,9 @@ export default class BigEyeRoad extends BaseRoad{
      * @returns {boolean}
      */
     isBoot(point){
-		let {x, y} = point.getLocation();
+		let { rootX, rootY} = point.getLocation();
         // 大眼仔起点位置 (2,2) | (3,1);
-        return (x + y) >= 4;
+        return (rootX>=2 && rootY >= 2) || (rootX>=3 && rootY >= 1);
     }
 
     getLeftFootOffset(){

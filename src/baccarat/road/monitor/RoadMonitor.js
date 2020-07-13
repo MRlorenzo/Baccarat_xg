@@ -22,7 +22,8 @@ export default class RoadMonitor {
     push(that , point){
         let rs = this[analysis](that , point);
         if (rs != null){
-            this.road.push(rs);
+            const p = this.road.push(rs);
+			logP(p, rs);
         }
     }
 
@@ -49,10 +50,12 @@ export default class RoadMonitor {
         if (!this.isBoot(p)){
             return null;
         }
+        let msg = '';
         let result = null;
         // 每列第一行比较'齐脚'
-        if (this.isRoot(p)){
+        if (p.isRoot){
 			result = this.isEqHeight(p , that) ? red() : blue();
+			msg = '齐脚:红';
         }
         // 每列2行后比较'碰点',没'碰点'后的下一行是否'重复'
         else {
@@ -60,23 +63,22 @@ export default class RoadMonitor {
             // 碰点划红
             if (this.isBump(p , pointList , that)){
 				result = red();
+				msg = '碰点:红';
             }
             // 没碰点后的下一行是否与前一行相同，相同为红，不同为蓝
             else if(this.isRepeat(p , pointList , that)){
 				result = red();
+				msg = '没碰点，但重复:红';
             }else {
 				result = blue();
+				msg = '既没碰到，也不重复:蓝';
             }
         }
+        // 为了方便找到目标，将解析后的结果设置同样的id
+        result.setId(p.getResultId());
+		log(msg);
         return result;
     }
-
-    // 是否是根节点
-    isRoot(point){
-		let {x, y} = point.getLocation();
-		const rootX = point.root.x;
-		return y === 1 && x === rootX;
-	}
 
     // 是否起点
     isBoot(point){
@@ -168,4 +170,22 @@ function red() {
 // 拿到一个蓝
 function blue() {
     return BaccaratResult.getResult(BResult.P);
+}
+const isDev = process.env.NODE_ENV === 'development';
+function log(msg) {
+    if (isDev){
+		console.log(msg);
+    }
+}
+
+function logP(p , result) {
+	if (isDev){
+		const rsName = result.getResult().getName();
+		const {x,y,rootX,rootY} = p.getLocation();
+		if (x === rootX){
+			console.warn(`${rsName}:放入(${x},${y})`)
+		}else{
+			console.warn(`${rsName}:原:(${rootX},${rootY})放入(${x},${y})`)
+		}
+    }
 }

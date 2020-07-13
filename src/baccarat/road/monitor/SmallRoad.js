@@ -12,9 +12,9 @@ export default class SmallRoad extends BaseRoad{
      * @returns {boolean}
      */
     isBoot(point){
-		let {x, y} = point.getLocation();
+		let {rootX, rootY} = point.getLocation();
         // 小路起点位置 (3,2) | (4,1);
-        return (x + y) >= 5;
+		return (rootX>=3 && rootY >= 2) || (rootX>=4 && rootY >= 1);
     }
 
 	getLeftFootOffset(){

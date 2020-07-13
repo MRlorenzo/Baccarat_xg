@@ -12,9 +12,9 @@ export default class CockroachRoad extends BaseRoad{
      * @returns {boolean}
      */
     isBoot(point){
-		let {x, y} = point.getLocation();
+		let { rootX, rootY} = point.getLocation();
         // 曱甴路起点位置 (4,2) | (5,1);
-        return (x + y) >= 6;
+		return (rootX>=4 && rootY >= 2) || (rootX>=5 && rootY >= 1);
     }
 
 	getLeftFootOffset(){

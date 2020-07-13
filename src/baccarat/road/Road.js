@@ -67,9 +67,15 @@ export default class Road extends RoadCounter{
 		return this[fillInRule](last , rs);
 	}
 
+	/**
+	 * 定义填充结果规则
+	 * @param last
+	 * @param rs
+	 * @returns {*}
+	 */
 	[fillInRule]( last , rs){
 		let p = null;
-		// 第一个
+		// 第一个（‘和’局不占位，但如果第一局就是‘和’就要先占一格格子，然后等待后面的非‘和’结果）
 		if (last == null){
 			p = this[fillFirst](rs);
 		}
@@ -79,7 +85,7 @@ export default class Road extends RoadCounter{
 			if (rs.isT()){
 				p = this[fillTie](last , rs);
 			}
-			// 非和局
+			// 非和局（相同的结果往下面追加，不同的结果另起一列）
 			else{
 				p = this[fillColumn]( last , rs);
 			}
@@ -111,8 +117,8 @@ export default class Road extends RoadCounter{
 		else{
 			p = point(1 , 1 , rs);
 		}
-		// 第一个格子的根节点就是它自己
-		p.setRoot(p);
+		// 第一个绝对是根节点
+		p.isRoot = true;
 		return p;
 	}
 
@@ -122,44 +128,48 @@ export default class Road extends RoadCounter{
 		return last;
 	}
 
+	// 填充列
 	[fillColumn]( last , rs ){
 		let p = null;
 		// 最后一个点的 {x,y}
-		let { x, y } = lastXY(last);
+		let { x, y, rootX, rootY } = lastXY(last);
 		// 最后一个点的baccaratResult
 		const lbr = last.getObject();
 
 		if ( lbr != null){
-			// 默认最后一个的根节点就是下一个的根节点。
-			let root = last.getRoot();
-			// 相同下移。
+
 			if (rs.getResult() === lbr.getResult()){
-				// 根节点的x坐标
-				const rootX = root.x;
+				let force = false;
+				// 相同的结果格子下移。
+				++rootY; // [表示逻辑上下移一格]
 				// 拐了(右移过)接着拐
-				if (x !== rootX){
+				// 如何判断是否被迫右拐？
+				// 【上一个位置被迫右移一格（可能是y超过了最大值6也可能是被前一列档住）】
+				if (last.isForce){
 					++x;
 				}
 				// 笔直的
 				else{
+					// 先试着往下移一格，如果被占用就向上退一格并右移一格。
 					++y;
-					//（检查是否超出范围（6）？如果超出范围右移一格，绝对不会发生右边被占用的情况）
-					if (y > HEIGHT){
+					//检查是否超出范围（6）？获取下一格被占用
+					// 如果超出范围右移一格，绝对不会发生右边被占用的情况
+					if (y > HEIGHT || this.existXY(x , y)){
 						--y; // 被占用了，向上退一格
 						++x; // 向右拐
-					}
-					// 下移一格不超出范围，但是被别的列占用了。
-					else if (this.existXY(x , y)){
-						--y; // 被占用了，向上退一格
-						++x; // 向右拐
+						force = true; // 被迫右拐
 					}
 				}
 
 				p = point(x , y , rs);
+				p.isForce = force; // 这个点是否是被迫右拐的？
 			}
-			// 不同，根节点的下一列开始.
+			// 不同的结果，按根节点的下一列开始.(如果下一列的第1行被占，则继续下一列)
 			else{
-				x = last.getRoot().x;
+				// 先将原(根)横坐标赋值给x,然后(根)横坐标+1
+				// [表示逻辑上右移一格,当出现x !== rootX时,足以说明它是被占用的格子]
+				x = rootX++;
+				rootY = 1;
 				y=1;
 				// （下一列的第1个格子是否被占用了？占用了要怎么处理？）
 				do {
@@ -167,16 +177,16 @@ export default class Road extends RoadCounter{
 				} while (this.existXY(x , y));
 
 				p = point(x , y , rs);
-				// 下一列的第一个格子就是根节点
-				root = p;
+				// 每次不同的结果开始都是根节点.
+				p.isRoot = true;
 			}
-
-			p.setRoot(root);
 		}else{
 			//如果最后一个点全是和，将会找不到baccaratResult。因为大路只显示庄/闲
 			last.setObject(rs);
 			p = last;
 		}
+		// rootX,rootY表示逻辑上的坐标，它们不受占位的影响。
+		p.setRootXY(rootX , rootY);
 
 		return p;
 	}
@@ -190,7 +200,7 @@ export default class Road extends RoadCounter{
 		if (lastP == null){
 			return ;
 		}
-		// 如果是和局,仅当最后一个结果为和时才删除这个点
+		// 如果是和局,仅当所有的和局被删除时才删除这个点
 		const ties = lastP.getTie();
 		if (ties.length > 0){
 			ties.pop();
@@ -215,7 +225,8 @@ export default class Road extends RoadCounter{
 	getColumnByX(x){
 		const map = new Map();
 		this.squeezeList.filter(p => {
-			return p.root != null && p.z != null && p.root.x === x;
+			const { rootX } = p.getLocation();
+			return p.z != null && rootX === x;
 		}).forEach(p=>{
 			const id = 	p.getObject().getId();
 			map.set(id , p);
@@ -271,12 +282,15 @@ export default class Road extends RoadCounter{
 		}
 	}
 
+	// 放入一个'庄家'结果
 	b(){
 		this.push(BaccaratResult.getResult(BResult.B))
 	}
+	// 放入一个'闲家'结果
 	p(){
 		this.push(BaccaratResult.getResult(BResult.P))
 	}
+	// 放入一个'和局'结果
 	t(){
 		this.push(BaccaratResult.getResult(BResult.T))
 	}
@@ -340,7 +354,7 @@ function point(x , y , baccaratResult) {
 
 function lastXY( point ) {
 	if (point == null){
-		return {x: 1, y: 1};
+		return {x: 1, y: 1, rootX:1, rootY:1};
 	}
 	return point.getLocation();
 }

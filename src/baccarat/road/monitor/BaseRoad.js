@@ -39,7 +39,8 @@ export default class BaseRoad extends RoadMonitor{
 	 * @returns {boolean}
 	 */
 	isEqHeight(point , road){
-		let x = point.root.x;
+		let {rootX} = point.getLocation();
+		let x = rootX;
 		// 左偏移
 		let lf = this.getLeftFootOffset();
 		// 右偏移
@@ -60,30 +61,15 @@ export default class BaseRoad extends RoadMonitor{
 	 * @returns {boolean}
 	 */
 	isBump(point , pointList, road){
-		let {x , y} = point.getLocation();
+		let {rootX , rootY} = point.getLocation();
 		// 点的横坐标应该以根节点为准
-		let rootX = point.root.x;
+		// 比较前列是否有点
+
 		// 获取前x列的点的长度
 		const pvx = this.getPrevColOffset();
-		// 比较前列是否有点
-		// '直线'部分
-		if (rootX === x){
-			x -= pvx;
-			// 当前行
-			const rows = pointList[y];
-			// 如果在它前一个点存在即碰点。
-			return rows !=null && rows[x] != null;
-		}
-		// '右拐'部分,(可能是因为超过6行而右拐也可能是受到其他列的影响)
-		else {
-			// 获取前x列的点的长度
-			const pvx = this.getPrevColOffset();
-			const plen = road.getColumnLength(rootX - pvx);
-			// 这个点相对于这一列的长度
-			const len = x - rootX + y;
-			// 如果此列的高度小于或等于前1列的高度，那么说明碰点。
-			return len <= plen;
-		}
+		const plen = road.getColumnLength(rootX - pvx);
+		// 如果此列的高度小于或等于前1列的高度，那么说明碰点。
+		return rootY <= plen;
 	}
 
 	/**
@@ -97,30 +83,17 @@ export default class BaseRoad extends RoadMonitor{
 	 * @returns {boolean}
 	 */
 	isRepeat(point, pointList, road){
-		let {x , y} = point.getLocation();
+		let {x , y, rootX, rootY} = point.getLocation();
 		// 点的横坐标应该以根节点为准
-		let rootX = point.root.x;
 		// 获取前x列的点的长度
 		const pvx = this.getPrevColOffset();
 		// (前1列)下一行是否与前一行相同
-		// '直线'部分
-		if (rootX === x){
-			x -= pvx;
-			let prev = pointList[y-1][x];
-			let curr = pointList[y][x];
-			// 全部是空也算重复,全部不是空也是
-			return ((prev == null && curr == null) || (prev != null && curr != null));
-		}
-		// '右拐'部分,(可能是因为超过6行而右拐也可能是受到其他列的影响)
-		else {
-			// 获取前一列的点的长度
-			const plen = road.getColumnLength(rootX - pvx);
-			// 这个点相对于这一列的长度
-			const len = x - rootX + y;
-			// 如果不碰点，说明当前列肯定比前1列要长
-			// 当前列比前1列多出1个格子以上时肯定是重复。
-			return len - plen > 1;
-		}
+		// 获取前一列的点的长度
+		const plen = road.getColumnLength(rootX - pvx);
+		// 这个点相对于这一列的长度
+		// 如果不碰点，说明当前列肯定比前1列要长
+		// 当前列比前1列多出1个格子以上时肯定是重复。
+		return rootY - plen > 1;
 
 	}
 

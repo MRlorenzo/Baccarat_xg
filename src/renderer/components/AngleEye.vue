@@ -282,9 +282,9 @@
             }
         },
         async created() {
-            this.initEvent();
-            this.initHooks();
             if (this.$angleEye != null) {
+				this.initEvent();
+				this.initHooks();
                 await this.tryOpen();
             }
         },

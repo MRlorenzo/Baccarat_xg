@@ -14,6 +14,7 @@ export default class BigRoad extends Road {
 		if (!rs.isT()){
 			this.executeMonitor('push', point);
 		}
+		return point;
 	}
 
 	pop(){

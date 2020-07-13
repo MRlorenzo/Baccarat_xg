@@ -7,9 +7,9 @@
 </template>
 
 <script>
-	import Pairs from '../../../../baccarat/result/Pairs';
 	import BResultEnum from "../../../../baccarat/result/BResult";
 	import BaccaratResult from "../../../../baccarat/result/BaccaratResult";
+    import Point from "../../../../baccarat/road/loc/Point";
     export default {
         name: "big-road-grid",
         props:{
@@ -17,12 +17,8 @@
                 type:String,
                 required:true
             },
-
-            result: {
-            	type: BaccaratResult
-            },
-            tie: {
-            	type: Array
+            point: {
+                type: Point
             },
             shine:{
                 type:Boolean
@@ -30,6 +26,12 @@
             lastResult:{ type: BaccaratResult }
         },
         computed:{
+            tie(){
+                return this.point && this.point.getTie();
+            },
+            result(){
+                return this.point && this.point.getObject();
+            },
             showClassName(){
                 let clazz = 'zocial-shadow big-grid';
                 if (this.result != null){
@@ -54,26 +56,16 @@
                 return clazz;
             },
 			isBankerPair(){
-				if (this.result == null){
-					return false;
-				}
-				const pairs = this.result.getPairs();
-				if (pairs == null){
-					return false;
-				}else {
-					return pairs.some(p=> p.index === Pairs.BP.index);
-				}
+				if (this.point == null){
+				    return false;
+                }
+                return this.point.isBankerPair();
 			},
 			isPlayerPair(){
-				if (this.result == null){
-					return false;
-				}
-				const pairs = this.result.getPairs();
-				if (pairs == null){
-					return false;
-				}else {
-					return pairs.some(p=> p.index === Pairs.PP.index);
-				}
+                if (this.point == null){
+                    return false;
+                }
+                return this.point.isPlayerPair();
 			},
             isSkyCard(){
 				if (this.result == null){

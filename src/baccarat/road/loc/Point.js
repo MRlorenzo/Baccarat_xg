@@ -1,6 +1,8 @@
 /**
  * 存放点对象数据
  */
+import Pairs from "../../result/Pairs";
+
 export default class Point {
 
 	constructor(x, y, brs) {
@@ -70,4 +72,54 @@ export default class Point {
 	addTie( ti ){
 		this.tie.push(ti);
 	}
+
+	isBankerPair(){
+        if (this.z == null){
+            return tieHas(this.tie , Pairs.BP.index)
+        }else{
+            if (rsPairsIs(this.z, Pairs.BP.index)){
+                return true;
+            }
+            // 如果result中没有找到符合的条件，继续找和局中的对子
+            else{
+                return tieHas(this.tie , Pairs.BP.index)
+            }
+        }
+	}
+
+	isPlayerPair(){
+		if (this.z == null){
+			return tieHas(this.tie , Pairs.PP.index)
+		}else{
+			if (rsPairsIs(this.z, Pairs.PP.index)){
+				return true;
+			}
+			// 如果result中没有找到符合的条件，继续找和局中的对子
+			else{
+				return tieHas(this.tie , Pairs.PP.index)
+			}
+		}
+	}
+
+	isSkyCard(){
+		if (this.z == null){
+			return false;
+		}
+		return this.z.getSkyCards().length > 0
+	}
+}
+
+function tieHas( tie , flag ) {
+	return tie.some(rs=>{
+        return rsPairsIs(rs, flag);
+	})
+}
+
+function rsPairsIs( rs , flag) {
+    const pairs = rs.getPairs();
+    if (pairs == null){
+        return false;
+    }else {
+        return pairs.some(p=> p.index === flag);
+    }
 }

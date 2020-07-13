@@ -5,8 +5,7 @@
                 <td :style="syncTdCss" v-for="col of cols">
                     <big-road-grid
                         :item-css="itemCss"
-                        :result="result(row , col)"
-                        :tie="tie(row , col)"
+                        :point="grid(row , col)"
                         :shine="shine"
                         :last-result="lastResult"
                     >

@@ -103,9 +103,8 @@ export default class RoadMonitor {
 					 * */
 						// 由于路头牌绝对是前一个结果相反的，因此可以看下这个点的结果是庄还是闲
 						// 然后将它取反，得到一个结果，看看将它放下去后的结果是什么
-					const prs = this.testPush(that, p.getObject());
-					// 相反的结果
-					result = fix(prs);
+                    // 相反的结果
+                    result = this.testPush(that, fix(p.getObject()));
 					msg = '获取上一列的相反结果:?';
 				}
 			}

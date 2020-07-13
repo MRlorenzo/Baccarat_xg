@@ -108,12 +108,12 @@ export default class BigRoad extends Road {
 
 			if (bankerRS && playerRS){
 				if (bankerRS.getResult() === playerRS.getResult()){
-					log.error(`${name}逻辑错误!!`);
+
 					if (isDev){
-						// throw new Error('逻辑错误!!');
-					}else{
-						playerRS = fix(bankerRS);
+                        log.error(`${name}逻辑错误!!`);
 					}
+
+                    playerRS = fix(bankerRS);
 				}
 			}
 			nextTest[name] = {

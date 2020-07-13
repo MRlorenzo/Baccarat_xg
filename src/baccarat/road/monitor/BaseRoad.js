@@ -32,7 +32,7 @@ export default class BaseRoad extends RoadMonitor{
 	/**
 	 * 是否齐脚
 		// 大眼仔齐脚比前1,2列
-	 	// 小路齐脚比前0,2列
+	 	// 小路齐脚比前2,3列
 	 	// 曱甴路齐脚比前3,4列
 	 * @param point
 	 * @param road
@@ -47,7 +47,6 @@ export default class BaseRoad extends RoadMonitor{
 		let rf = this.getRightFootOffset();
 		let al = road.getColumnLength(x - lf);
 		let bl = road.getColumnLength(x - rf);
-		console.log(`前${rf}列:${bl},前${lf}列:${al}`);
 		return al === bl;
 	}
 
@@ -57,11 +56,10 @@ export default class BaseRoad extends RoadMonitor{
 	 // 小路碰点、重复看前2列
 	 // 曱甴路碰点、重复看前3列
 	 * @param point
-	 * @param pointList
 	 * @param road
 	 * @returns {boolean}
 	 */
-	isBump(point , pointList, road){
+	isBump(point , road){
 		let {rootX , rootY} = point.getLocation();
 		// 点的横坐标应该以根节点为准
 		// 比较前列是否有点
@@ -79,12 +77,11 @@ export default class BaseRoad extends RoadMonitor{
 	 // 小路碰点、重复看前2列
 	 // 曱甴路碰点、重复看前3列
 	 * @param point
-	 * @param pointList
 	 * @param road
 	 * @returns {boolean}
 	 */
-	isRepeat(point, pointList, road){
-		let {x , y, rootX, rootY} = point.getLocation();
+	isRepeat(point, road){
+		let { rootX, rootY} = point.getLocation();
 		// 点的横坐标应该以根节点为准
 		// 获取前x列的点的长度
 		const pvx = this.getPrevColOffset();

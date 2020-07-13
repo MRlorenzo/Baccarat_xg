@@ -169,6 +169,10 @@ export default class BaccaratResult {
         }
     }
 
+    getResultName(){
+	    return this.result && this.result.getName();
+    }
+
     /**
      * 根据字符串解析对子
      * 形如'{bResult}?{pair.B}?{pair.P}?{sky.B}?{sky.P}'

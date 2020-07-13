@@ -112,8 +112,10 @@ export default class BigRoad extends Road {
 					if (isDev){
                         log.error(`${name}逻辑错误!!`);
 					}
-
-                    playerRS = fix(bankerRS);
+                    // 在生产环境中不要将该逻辑错误展示给用户，手动修改它。
+                    else{
+                        playerRS = fix(bankerRS);
+                    }
 				}
 			}
 			nextTest[name] = {
@@ -144,3 +146,6 @@ function red() {
 function blue() {
 	return BaccaratResult.getResult(BResult.P);
 }
+
+window.red = red;
+window.blue = blue;

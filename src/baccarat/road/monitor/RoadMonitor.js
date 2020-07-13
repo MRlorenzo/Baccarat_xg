@@ -12,6 +12,7 @@ export default class RoadMonitor {
 
     constructor(){
         this.road = new BigRoad();
+        this.isTest = true;
     }
 
     getName(){}
@@ -22,6 +23,7 @@ export default class RoadMonitor {
      * @param point
      */
     push(that , point){
+        this.isTest = false;
         let rs = this[analysis](that , point);
         if (rs != null){
             const p = this.road.push(rs);
@@ -35,6 +37,7 @@ export default class RoadMonitor {
      * @param point
      */
     pop(that , point){
+        this.isTest = false;
         let rs = this[analysis](that, point);
         if (rs != null){
             this.road.pop();
@@ -82,10 +85,14 @@ export default class RoadMonitor {
     [analysisHead](that , p){
         let result = null;
         let msg = '';
-        // 最后一个
-        const last = this.road.getLastPoint();
-        // 放入的当前这个点没有上一个，就比较齐脚
-        if (last == null){
+        // 上一个
+        // 预测下一个点，(大路还没有真正放入这个点，所以这个点是虚拟的)
+        // (由于大路已经放入了一个点了，所以这个点的上一个是大路的倒数第2个)
+        let last = that.getBackwards(this.isTest ? -1: -2);
+        let last2 = that.getBackwards(this.isTest ? -2: -3);
+
+        // 如果(大路)它的上一个点是路头，上上一个还是路头，只能比较齐脚了
+        if (last.getLocation().rootY === 1 && last2.getLocation().rootY === 1){
             if (this.isEqHeight(p, that)){
                 result = red();
                 msg = '齐脚:红';
@@ -93,44 +100,31 @@ export default class RoadMonitor {
                 result = blue();
                 msg = '不齐脚:蓝';
             }
-        }else{
-            // 如果它的上一个点是路头，再看它上上个点是不是也是路头
-            if (last.getLocation().rootY === 1){
-                // 倒数第二个（上上个）
-                const last2 = this.road.getBackwards(-2);
-                // 倒数第1,2个都是‘路头牌’，必定是红色
-                if (last2 != null && last2.getLocation().rootY === 1){
-                    result = red();
-                    msg = '连续单跳:红'
-                }
-                // 它的上上个点不是路头，那么这个点是‘单跳’单跳要对比‘齐脚’
-                else {
-                    if (this.isEqHeight(p, that)){
-                        result = red();
-                        msg = '齐脚:红';
-                    }else{
-                        result = blue();
-                        msg = '不齐脚:蓝';
-                    }
-                }
-            }
-            // 它的上一个点不是路头，就看它上一个点本该连续放入的结果的取反
-            else{
-                /**
-                 * ”路头牌”之后在大眼仔上添加的颜色应该是假设大路中
-                 * 上一列继续的情况下我们本应在大眼仔|小路|曱甴路上添加的颜色的相反颜色
-                 * */
-                // 由于路头牌绝对是前一个结果相反的，因此可以看下这个点的结果是庄还是闲
-                // 然后将它取反，得到一个结果，看看将它放下去后的结果是什么
-
-                // 放入相反的结果,得到假设大路中上一列继续的情况下我们本应在大眼仔|小路|曱甴路上添加的颜色
-                const prs = this.testPush(that, fix(p.getObject()));
-                // 再取反，得到结果
-                result = fix(prs);
-                msg = '获取上一列的相反结果:?'+ result.getResultName();
-            }
         }
-        log(msg);
+        // 它的上一个点不是路头，就看它上一个点本该连续放入的结果的取反
+        else{
+            /**
+             * ”路头牌”之后在大眼仔上添加的颜色应该是假设大路中
+             * 上一列继续的情况下我们本应在大眼仔|小路|曱甴路上添加的颜色的相反颜色
+             * */
+            // 由于路头牌绝对是前一个结果相反的，因此可以看下这个点的结果是庄还是闲
+            // 然后将它取反，得到一个结果，看看将它放下去后的结果是什么
+
+            // 放入相反的结果,得到假设大路中上一列继续的情况下我们本应在大眼仔|小路|曱甴路上添加的颜色
+            // console.log(`这个点是${p.getObject().getResultName()}(${p.x},${p.y})`);
+            const point = that.testPush(fix(p.getObject()));
+            const prs = this[analysisBody](that, point);
+
+            // console.log('如果放入它的相反的颜色'+fix(p.getObject()).getResultName());
+            // console.log(`得到的结果为:${prs.getResultName()}`);
+            // 再取反，得到结果
+            result = fix(prs);
+            // msg = '获取上一列的相反结果:?'+ result.getResultName();
+            // console.log(`取反后的结果为:${result.getResultName()}`)
+        }
+        if (!this.isTest){
+            log(msg);
+        }
         return result;
     }
 
@@ -140,7 +134,7 @@ export default class RoadMonitor {
      * @param ps
      * @returns {*}
      */
-    [analysisHead](that , p){
+    /*[analysisHead](that , p){
         let result = null;
         let msg = '';
         if (this.isEqHeight(p , that)){
@@ -150,9 +144,11 @@ export default class RoadMonitor {
             result = blue();
             msg = '不齐脚:蓝';
         }
-        log(msg);
+        if (!this.isTest){
+            log(msg);
+        }
         return result;
-    }
+    }*/
 
     /**
      * 每列2行后（路中牌）比较'碰点',没'碰点'后的下一行是否'重复'
@@ -176,7 +172,9 @@ export default class RoadMonitor {
             result = blue();
             msg = '既没碰到，也不重复:蓝';
         }
-        log(msg);
+        if (!this.isTest){
+            log(msg);
+        }
         return result;
     }
 
@@ -227,6 +225,7 @@ export default class RoadMonitor {
      * @returns {*} instanceof BigRoad
      */
     testPush(that, rs){
+        this.isTest = true;
         let point = that.testPush(rs);
         return this[analysis](that , point);
     }
@@ -297,4 +296,9 @@ function fix( rs ) {
 		case BResult.P:
 			return red();
 	}
+}
+
+function showLocation(point) {
+    const {x ,y} = point.getLocation();
+    return `(${x},${y})`
 }

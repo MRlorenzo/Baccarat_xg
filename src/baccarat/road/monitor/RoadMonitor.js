@@ -52,10 +52,63 @@ export default class RoadMonitor {
         }
         let msg = '';
         let result = null;
-        // 每列第一行比较'齐脚'
+        // 每列第一行即‘路头牌’
+		/**
+		 * ”路头牌”之后在大眼仔上添加的颜色应该是假设大路中
+		 * 上一列继续的情况下我们本应在大眼仔上添加的颜色的相反颜色
+		 * 如果一个”路头牌”之后紧接着是另一手”路头牌”呢？
+		 * 在大眼仔上单跳局面的前两手牌添加的标记颜色可红可蓝，
+		 * 取决于之前两列的长度，可一旦进行到单跳的第三手牌及之后，
+		 * 在大眼仔上添加的颜色必定是红色。
+		 * 只要这个牌靴继续单跳，大眼仔就必定继续填入一连串的红色。
+		 * link:https://wgm8.com/szh-fate-in-the-cards-understanding-baccarat-trends-part-2/
+		 */
         if (p.isRoot){
-			result = this.isEqHeight(p , that) ? red() : blue();
-			msg = '齐脚:红';
+        	// 最后一个
+        	const last = this.road.getLastPoint();
+        	// 如果没有最后一个，就比较齐脚
+			if (last == null){
+				if (this.isEqHeight(p, that)){
+					result = red();
+					msg = '齐脚:红';
+				}else{
+					result = blue();
+					msg = '不齐脚:蓝';
+				}
+			}else{
+				if (last.getLocation().rootY === 1){
+					// 倒数第二个
+					const last2 = this.road.getBackwards(-2);
+					// 倒数第1,2个都是‘路头牌’，必定是红色
+					if (last2 != null && last2.getLocation().rootY === 1){
+						result = red();
+						msg = '连续单跳:红'
+					}
+					// 单跳要对比‘齐脚’
+					else {
+						if (this.isEqHeight(p, that)){
+							result = red();
+							msg = '齐脚:红';
+						}else{
+							result = blue();
+							msg = '不齐脚:蓝';
+						}
+					}
+				}
+				// 最后一个不是路头牌
+				else{
+					/**
+					 * ”路头牌”之后在大眼仔上添加的颜色应该是假设大路中
+					 * 上一列继续的情况下我们本应在大眼仔上添加的颜色的相反颜色
+					 * */
+						// 由于路头牌绝对是前一个结果相反的，因此可以看下这个点的结果是庄还是闲
+						// 然后将它取反，得到一个结果，看看将它放下去后的结果是什么
+					const prs = this.testPush(that, p.getObject());
+					// 相反的结果
+					result = fix(prs);
+					msg = '获取上一列的相反结果:?';
+				}
+			}
         }
         // 每列2行后比较'碰点',没'碰点'后的下一行是否'重复'
         else {
@@ -188,4 +241,13 @@ function logP(p , result) {
 			console.warn(`${rsName}:原:(${rootX},${rootY})放入(${x},${y})`)
 		}
     }
+}
+
+function fix( rs ) {
+	switch (rs.getResult()){
+		case BResult.B:
+			return blue();
+		case BResult.P:
+			return red();
+	}
 }

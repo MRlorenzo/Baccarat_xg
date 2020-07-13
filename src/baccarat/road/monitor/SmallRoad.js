@@ -18,7 +18,7 @@ export default class SmallRoad extends BaseRoad{
     }
 
 	getLeftFootOffset(){
-		return 1;
+		return 2;
 	}
 
 	getRightFootOffset(){

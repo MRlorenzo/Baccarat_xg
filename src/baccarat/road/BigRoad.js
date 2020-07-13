@@ -2,6 +2,8 @@ import Road from "./Road";
 import BResult from "../result/BResult";
 import BaccaratResult from "../result/BaccaratResult";
 import RoadMonitor from "./monitor/RoadMonitor";
+import log from '../../utils/log';
+const isDev = process.env.NODE_ENV === 'development';
 export default class BigRoad extends Road {
 	constructor(){
 		super();
@@ -101,12 +103,44 @@ export default class BigRoad extends Road {
 
 			result[name] = [...pointList];
 
+			const bankerRS = this.testPushBanker(name);
+			let playerRS = this.testPushPlayer(name);
+
+			if (bankerRS && playerRS){
+				if (bankerRS.getResult() === playerRS.getResult()){
+					log.error(`${name}逻辑错误!!`);
+					if (isDev){
+						// throw new Error('逻辑错误!!');
+					}else{
+						playerRS = fix(bankerRS);
+					}
+				}
+			}
 			nextTest[name] = {
-				banker: this.testPushBanker(name),
-				player: this.testPushPlayer(name)
+				banker: bankerRS,
+				player: playerRS
 			}
 		}
 
 		return { result , nextTest};
 	}
+}
+
+function fix( rs ) {
+	switch (rs.getResult()){
+		case BResult.B:
+			return blue();
+		case BResult.P:
+			return red();
+	}
+}
+
+// 拿到一个红
+function red() {
+	return BaccaratResult.getResult(BResult.B);
+}
+
+// 拿到一个蓝
+function blue() {
+	return BaccaratResult.getResult(BResult.P);
 }

@@ -214,7 +214,14 @@ export default class Road extends RoadCounter{
 	}
 
 	getLastPoint(){
-		return this.squeezeList[this.squeezeList.length -1];
+		return this.getBackwards(-1);
+	}
+
+	getBackwards(index){
+		if (index >0 ){
+			index = -index;
+		}
+		return this.squeezeList[this.squeezeList.length + index];
 	}
 
 	/**

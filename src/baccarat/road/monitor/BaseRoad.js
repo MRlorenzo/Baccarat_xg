@@ -32,7 +32,7 @@ export default class BaseRoad extends RoadMonitor{
 	/**
 	 * 是否齐脚
 		// 大眼仔齐脚比前1,2列
-	 	// 小路齐脚比前1,3列
+	 	// 小路齐脚比前0,2列
 	 	// 曱甴路齐脚比前3,4列
 	 * @param point
 	 * @param road
@@ -47,6 +47,7 @@ export default class BaseRoad extends RoadMonitor{
 		let rf = this.getRightFootOffset();
 		let al = road.getColumnLength(x - lf);
 		let bl = road.getColumnLength(x - rf);
+		console.log(`前${rf}列:${bl},前${lf}列:${al}`);
 		return al === bl;
 	}
 

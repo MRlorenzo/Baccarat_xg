@@ -115,7 +115,7 @@ export default class Road extends RoadCounter{
 			p = this[fillFirst](rs);
 		}
 		else if(last.getObject() == null){
-			p = this[fillFirstEmpty](last , rs);
+			p = this[fillFirstEmpty](last , rs , test);
 		}
 		// 不是第一个
 		else{
@@ -160,11 +160,12 @@ export default class Road extends RoadCounter{
 		return p;
 	}
 
-	[fillFirstEmpty](last , rs){
+	[fillFirstEmpty](last , rs , test){
 		if (rs.isT()){
 			return this[fillTie](last , rs);
 		}else{
-			last.setObject(rs);
+			if (!test)
+				last.setObject(rs);
 			return last;
 		}
 	}

@@ -110,6 +110,9 @@ export default class Road extends RoadCounter{
 	 */
 	[fillInRule]( last , rs , test){
 		let p = null;
+		if (rs == null){
+			return null;
+		}
 		// 第一个（‘和’局不占位，但如果第一局就是‘和’就要先占一格格子，然后等待后面的非‘和’结果）
 		if (last == null){
 			p = this[fillFirst](rs);

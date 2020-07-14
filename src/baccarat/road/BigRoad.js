@@ -1,9 +1,8 @@
 import Road from "./Road";
-import BResult from "../result/BResult";
-import BaccaratResult from "../result/BaccaratResult";
 import RoadMonitor from "./monitor/RoadMonitor";
 import log from '../../utils/log';
-const isDev = process.env.NODE_ENV === 'development';
+import { fix , red , blue ,isDev} from "./utils";
+
 export default class BigRoad extends Road {
 	constructor(){
 		super();
@@ -26,8 +25,8 @@ export default class BigRoad extends Road {
 			this.newGame();
 		} else {
 			const point = super.pop();
-			// 非和局
-			if (point!=null && point.getTie().length === 0){
+			// 非和局(point被删除后resultId被置空)
+			if (point.getResultId() == null){
 				this.executeMonitor('pop' , point);
 			}
 		}
@@ -54,13 +53,13 @@ export default class BigRoad extends Road {
 
 	// 预测开庄
 	testPushBanker(name){
-		let result = BaccaratResult.getResult( BResult.B );
+		let result = red();
 		return this.testPush(result , name);
 	}
 
 	// 预测开闲
 	testPushPlayer( name ){
-		let result = BaccaratResult.getResult( BResult.P );
+		let result = blue();
 		return this.testPush(result , name);
 	}
 
@@ -125,25 +124,3 @@ export default class BigRoad extends Road {
 		return { result , nextTest};
 	}
 }
-
-function fix( rs ) {
-	switch (rs.getResult()){
-		case BResult.B:
-			return blue();
-		case BResult.P:
-			return red();
-	}
-}
-
-// 拿到一个红
-function red() {
-	return BaccaratResult.getResult(BResult.B);
-}
-
-// 拿到一个蓝
-function blue() {
-	return BaccaratResult.getResult(BResult.P);
-}
-
-window.red = red;
-window.blue = blue;

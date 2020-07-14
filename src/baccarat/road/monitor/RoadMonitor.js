@@ -1,6 +1,5 @@
 import BigRoad from "../BigRoad";
-import BaccaratResult from "../../result/BaccaratResult";
-import BResult from "../../result/BResult";
+import { fix , red , blue , log , logP } from "../utils";
 
 const analysis = Symbol(),
     analysisHead = Symbol(), // 解析'路头牌'
@@ -113,14 +112,25 @@ export default class RoadMonitor {
             // 放入相反的结果,得到假设大路中上一列继续的情况下我们本应在大眼仔|小路|曱甴路上添加的颜色
             // console.log(`这个点是${p.getObject().getResultName()}(${p.x},${p.y})`);
             const point = that.testPush(fix(p.getObject()));
-            const prs = this[analysisBody](that, point);
+            if (point == null){
+				if (this.isEqHeight(p, that)){
+					result = red();
+					msg = '齐脚:红';
+				}else{
+					result = blue();
+					msg = '不齐脚:蓝';
+				}
+            }else {
+				const prs = this[analysisBody](that, point);
 
-            // console.log('如果放入它的相反的颜色'+fix(p.getObject()).getResultName());
-            // console.log(`得到的结果为:${prs.getResultName()}`);
-            // 再取反，得到结果
-            result = fix(prs);
-            // msg = '获取上一列的相反结果:?'+ result.getResultName();
-            // console.log(`取反后的结果为:${result.getResultName()}`)
+				// console.log('如果放入它的相反的颜色'+fix(p.getObject()).getResultName());
+				// console.log(`得到的结果为:${prs.getResultName()}`);
+				// 再取反，得到结果
+				result = fix(prs);
+
+				// msg = '获取上一列的相反结果:?'+ result.getResultName();
+				// console.log(`取反后的结果为:${result.getResultName()}`)
+            }
         }
         if (!this.isTest){
             log(msg);
@@ -261,44 +271,3 @@ export default class RoadMonitor {
     }
 }
 
-// 拿到一个红
-function red() {
-    return BaccaratResult.getResult(BResult.B);
-}
-
-// 拿到一个蓝
-function blue() {
-    return BaccaratResult.getResult(BResult.P);
-}
-const isDev = process.env.NODE_ENV === 'development';
-function log(msg) {
-    if (isDev){
-		console.log(msg);
-    }
-}
-
-function logP(p , result) {
-	if (isDev){
-		const rsName = result.getResult().getName();
-		const {x,y,rootX,rootY} = p.getLocation();
-		if (x === rootX){
-			console.warn(`${rsName}:放入(${x},${y})`)
-		}else{
-			console.warn(`${rsName}:原:(${rootX},${rootY})放入(${x},${y})`)
-		}
-    }
-}
-
-function fix( rs ) {
-	switch (rs.getResult()){
-		case BResult.B:
-			return blue();
-		case BResult.P:
-			return red();
-	}
-}
-
-function showLocation(point) {
-    const {x ,y} = point.getLocation();
-    return `(${x},${y})`
-}

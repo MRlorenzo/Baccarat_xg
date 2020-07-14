@@ -18,6 +18,7 @@ export default class Point {
 		this.tie = []; // Array<Pairs>
 		this.isRoot = false;
 		this.isForce = false;
+		this.fs = ()=>{}
 	}
 
 	/**
@@ -55,6 +56,13 @@ export default class Point {
 
 	setObject( z ){
 		this.z = z;
+		this.fs(z);
+	}
+
+	onFirstEmptyChange(fn){
+		if (typeof fn === 'function'){
+			this.fs = fn;
+		}
 	}
 
 	getLocation(){
@@ -110,9 +118,11 @@ export default class Point {
 }
 
 function tieHas( tie , flag ) {
-	return tie.some(rs=>{
-        return rsPairsIs(rs, flag);
-	})
+	if (tie == null || tie.length === 0){
+		return 0;
+	}
+	const last = tie[tie.length -1];
+	return rsPairsIs(last , flag);
 }
 
 function rsPairsIs( rs , flag) {

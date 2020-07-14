@@ -1,5 +1,5 @@
 <template>
-    <div :style="itemCss" :class="showClassName" v-show="result != null || tie != null">
+    <div :style="itemCss" :class="showClassName()" v-show="result != null || tie != null">
             {{tieLen}}
         <div class="pair-point pair-point-b" v-show="point && point.isBankerPair()"></div>
         <div class="pair-point pair-point-p" v-show="point && point.isPlayerPair()"></div>
@@ -25,36 +25,30 @@
             },
             lastResult:{ type: BaccaratResult }
         },
-        computed:{
-            tie(){
-                return this.point && this.point.getTie();
-            },
-            result(){
-                return this.point && this.point.getObject();
-            },
-            showClassName(){
-                let clazz = 'zocial-shadow big-grid';
-                if (this.result != null){
-                	const bResult = this.result.getResult();
-                	switch (bResult){
-						case BResultEnum.B: clazz += ' border-b';break;
-						case BResultEnum.P: clazz += ' border-p';break;
-						case BResultEnum.T: clazz += ' border-t';break;
-						default:;
+        watch: {
+        	point( p ){
+                if (p != null){
+        			if (p.z == null){
+						p.onFirstEmptyChange((z)=>{
+							this.$set(this.point , 'z', z);
+							this.result = z;
+						})
                     }
-                } else {
-					clazz += ' border-none'
+					this.result = this.point && this.point.z;
+					this.tie = this.point && this.point.tie;
+                }else{
+                	this.result = null;
+                	this.tie = null;
                 }
-
-                if(this.canShine()){
-                    clazz += ' shine-border';
-                }
-                if (this.tie && this.tie.length){
-                    clazz += ' tieClass';
-                }
-
-                return clazz;
-            },
+            }
+        },
+        data(){
+        	return {
+        		tie: this.point && this.point.tie,
+        		result: this.point && this.point.z
+            }
+        },
+        computed:{
             isSkyCard(){
 				if (this.result == null){
 					return false;
@@ -72,6 +66,29 @@
             }
         },
         methods:{
+			showClassName(){
+				let clazz = 'zocial-shadow big-grid';
+				if (this.result != null){
+					const bResult = this.result.getResult();
+					switch (bResult){
+						case BResultEnum.B: clazz += ' border-b';break;
+						case BResultEnum.P: clazz += ' border-p';break;
+						case BResultEnum.T: clazz += ' border-t';break;
+						default:;
+					}
+				} else {
+					clazz += ' border-t'
+				}
+
+				if(this.canShine()){
+					clazz += ' shine-border';
+				}
+				if (this.tie && this.tie.length){
+					clazz += ' tieClass';
+				}
+
+				return clazz;
+			},
             canShine(){
 				let can = false;
 

@@ -97,14 +97,6 @@
                 return this.pointList[x] &&
                     this.pointList[x][y+this.offset]|| null;
             },
-            result( x, y){
-            	const grid = this.grid(x, y);
-            	return grid && grid.z;
-            },
-            tie( x , y){
-				const grid = this.grid(x, y);
-				return grid && grid.tie;
-            },
             autoResize(){
                 //自适应表格,根据组件的总宽度,总高度算出合适的值
                 let el = this.$refs.bigLoad;

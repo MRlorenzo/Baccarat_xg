@@ -8,6 +8,7 @@ const pushPoint = Symbol(),
 	popPoint = Symbol(),
 	fillInRule = Symbol(),
 	fillFirst = Symbol(),
+	fillFirstEmpty = Symbol(),
 	fillTie = Symbol(),
 	fillColumn = Symbol(),
 	fill = Symbol();
@@ -44,7 +45,7 @@ export default class Road extends RoadCounter{
 	pop(){
 		/*将最后一个结果从列表中删除。*/
 		const rs = super.popResult();
-		return this[popPoint]();
+		return this[popPoint](rs);
 	}
 
 	/**
@@ -58,26 +59,63 @@ export default class Road extends RoadCounter{
 	}
 
 	/**
+	 * 删除一个点
+	 * @param rs
+	 */
+	[popPoint](rs){
+
+		// 最后一个点
+		const lastP = this.squeezeList.pop();
+		if (lastP == null){
+			return ;
+		}
+
+		if (rs.isT()){
+			// 删除和局列表
+			const ties = lastP.getTie();
+			if (ties.length > 0){
+				ties.pop();
+			}
+		}else{
+			// 置空
+			lastP.setObject(null);
+		}
+
+		if (lastP.getObject() == null && lastP.getTie().length === 0){
+			const { x, y} = lastP.getLocation();
+			// 删除当前的点
+			this.pointList[y][x] = null;
+		}
+
+		return lastP;
+	}
+
+	/**
 	 * 下一个点在哪里？
 	 * @param rs
+	 * @param test
 	 * @returns {*}
 	 */
-	nextPoint( rs ){
+	nextPoint( rs , test = false){
 		const last = this.getLastPoint();
-		return this[fillInRule](last , rs);
+		return this[fillInRule](last , rs , test);
 	}
 
 	/**
 	 * 定义填充结果规则
 	 * @param last
 	 * @param rs
+	 * @param test
 	 * @returns {*}
 	 */
-	[fillInRule]( last , rs){
+	[fillInRule]( last , rs , test){
 		let p = null;
 		// 第一个（‘和’局不占位，但如果第一局就是‘和’就要先占一格格子，然后等待后面的非‘和’结果）
 		if (last == null){
 			p = this[fillFirst](rs);
+		}
+		else if(last.getObject() == null){
+			p = this[fillFirstEmpty](last , rs);
 		}
 		// 不是第一个
 		else{
@@ -87,7 +125,7 @@ export default class Road extends RoadCounter{
 			}
 			// 非和局（相同的结果往下面追加，不同的结果另起一列）
 			else{
-				p = this[fillColumn]( last , rs);
+				p = this[fillColumn]( last , rs, test);
 			}
 		}
 
@@ -122,6 +160,15 @@ export default class Road extends RoadCounter{
 		return p;
 	}
 
+	[fillFirstEmpty](last , rs){
+		if (rs.isT()){
+			return this[fillTie](last , rs);
+		}else{
+			last.setObject(rs);
+			return last;
+		}
+	}
+
 	// 填充'和'(坐标不变)
 	[fillTie](last , rs){
 		last.addTie(rs);
@@ -129,7 +176,7 @@ export default class Road extends RoadCounter{
 	}
 
 	// 填充列
-	[fillColumn]( last , rs ){
+	[fillColumn]( last , rs , test = false){
 		let p = null;
 		// 最后一个点的 {x,y}
 		let { x, y, rootX, rootY } = lastXY(last);
@@ -182,35 +229,14 @@ export default class Road extends RoadCounter{
 			}
 		}else{
 			//如果最后一个点全是和，将会找不到baccaratResult。因为大路只显示庄/闲
-			last.setObject(rs);
+			if (!test)
+				last.setObject(rs);
 			p = last;
 		}
 		// rootX,rootY表示逻辑上的坐标，它们不受占位的影响。
 		p.setRootXY(rootX , rootY);
 
 		return p;
-	}
-
-	/**
-	 * 删除一个点
-	 */
-	[popPoint](){
-		// 最后一个点
-		const lastP = this.squeezeList.pop();
-		if (lastP == null){
-			return ;
-		}
-		// 如果是和局,仅当所有的和局被删除时才删除这个点
-		const ties = lastP.getTie();
-		if (ties.length > 0){
-			ties.pop();
-		}else if (ties.length === 0){
-			const { x, y} = lastP.getLocation();
-			// 删除当前的点
-			this.pointList[y][x] = null;
-		}
-
-		return lastP;
 	}
 
 	getLastPoint(){

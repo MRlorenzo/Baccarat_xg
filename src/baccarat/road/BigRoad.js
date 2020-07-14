@@ -20,14 +20,14 @@ export default class BigRoad extends Road {
 	}
 
 	pop(){
-		const games = super.games;
+		const games = this.games;
 		if (games === 1){
 			// 只有一个结果的时候开启新的一局
 			this.newGame();
 		} else {
 			const point = super.pop();
 			// 非和局
-			if (point.getTie().length === 0){
+			if (point!=null && point.getTie().length === 0){
 				this.executeMonitor('pop' , point);
 			}
 		}
@@ -80,7 +80,7 @@ export default class BigRoad extends Road {
 			}
 		}else{
 			// 返回Point
-			return super.nextPoint(rs);
+			return super.nextPoint(rs , true);
 		}
 	}
 
@@ -96,8 +96,7 @@ export default class BigRoad extends Road {
 
 	updateResult(){
 		const result = {} , nextTest = {};
-		result.BigRoad = [...this.getResults()];
-
+		result.BigRoad = this.getResults();
 		for (const name of this.monitorMap.keys()){
 			const pointList = this.getResults(name);
 
@@ -123,7 +122,6 @@ export default class BigRoad extends Road {
 				player: playerRS
 			}
 		}
-
 		return { result , nextTest};
 	}
 }

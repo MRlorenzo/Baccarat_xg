@@ -1,8 +1,8 @@
 <template>
     <div :style="itemCss" :class="showClassName" v-show="result != null || tie != null">
             {{tieLen}}
-        <div class="pair-point pair-point-b" v-show="isBankerPair"></div>
-        <div class="pair-point pair-point-p" v-show="isPlayerPair"></div>
+        <div class="pair-point pair-point-b" v-show="point && point.isBankerPair()"></div>
+        <div class="pair-point pair-point-p" v-show="point && point.isPlayerPair()"></div>
     </div>
 </template>
 
@@ -55,18 +55,6 @@
 
                 return clazz;
             },
-			isBankerPair(){
-				if (this.point == null){
-				    return false;
-                }
-                return this.point.isBankerPair();
-			},
-			isPlayerPair(){
-                if (this.point == null){
-                    return false;
-                }
-                return this.point.isPlayerPair();
-			},
             isSkyCard(){
 				if (this.result == null){
 					return false;

@@ -31,9 +31,9 @@
         "smallRoad": "小路"
     },
     "title": {
-        "minToMax": "min/max",
-        "tie": "tie",
-        "pairs": "pairs"
+        "minToMax": "Min/Max",
+        "tie": "Tie",
+        "pairs": "Pairs"
     },
     "game": {
         "bankerWin": "Banker",

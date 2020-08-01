@@ -85,13 +85,12 @@ export default class Point {
         if (this.z == null){
             return tieHas(this.tie , Pairs.BP.index)
         }else{
-            if (rsPairsIs(this.z, Pairs.BP.index)){
-                return true;
-            }
-            // 如果result中没有找到符合的条件，继续找和局中的对子
-            else{
-                return tieHas(this.tie , Pairs.BP.index)
-            }
+
+        	if (this.tie && this.tie.length > 0){
+				return tieHas(this.tie , Pairs.BP.index)
+			}else{
+        		return rsPairsIs(this.z, Pairs.BP.index)
+			}
         }
 	}
 
@@ -99,12 +98,11 @@ export default class Point {
 		if (this.z == null){
 			return tieHas(this.tie , Pairs.PP.index)
 		}else{
-			if (rsPairsIs(this.z, Pairs.PP.index)){
-				return true;
-			}
-			// 如果result中没有找到符合的条件，继续找和局中的对子
-			else{
+
+			if (this.tie && this.tie.length > 0){
 				return tieHas(this.tie , Pairs.PP.index)
+			}else{
+				return rsPairsIs(this.z, Pairs.PP.index)
 			}
 		}
 	}

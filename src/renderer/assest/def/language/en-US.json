@@ -49,8 +49,8 @@
         "setting": "Set up",
         "base": "Basic Settings",
         "order": "other settings",
-        "tableName": "table name",
-        "bootNo": "bootNo.",
+        "tableName": "TABLE NUMBER",
+        "bootNo": "SHOE NUMBER",
         "coin": "Currency",
         "selectCoin": "Please select currency",
         "language": "Language",
@@ -89,7 +89,7 @@
         "updated": "Configuration updated"
     },
     "limit": {
-        "setting": "Red limit group setting",
+        "setting": "TABLE LIMIT",
         "groupName": "Group name",
         "cancel": "cancel",
         "new": "new",

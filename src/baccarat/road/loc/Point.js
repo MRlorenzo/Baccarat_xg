@@ -81,24 +81,37 @@ export default class Point {
 		this.tie.push(ti);
 	}
 
-	isBankerPair(){
-        if (this.z == null){
-            return tieHas(this.tie , Pairs.BP.index)
-        }else{
+	isFirstPoint(){
+		return this.x === 1 && this.y === 1;
+	}
 
-        	if (this.tie && this.tie.length > 0){
+	isBankerPair(){
+
+		if (this.z == null){
+			return tieHas(this.tie , Pairs.BP.index)
+		}
+
+		if (this.isFirstPoint()){
+			return rsPairsIs(this.z , Pairs.BP.index)
+		}else {
+			if (this.tie && this.tie.length > 0){
 				return tieHas(this.tie , Pairs.BP.index)
 			}else{
-        		return rsPairsIs(this.z, Pairs.BP.index)
+				return rsPairsIs(this.z, Pairs.BP.index)
 			}
-        }
+		}
+
 	}
 
 	isPlayerPair(){
+
 		if (this.z == null){
 			return tieHas(this.tie , Pairs.PP.index)
-		}else{
+		}
 
+		if (this.isFirstPoint()){
+			return rsPairsIs(this.z , Pairs.PP.index)
+		}else {
 			if (this.tie && this.tie.length > 0){
 				return tieHas(this.tie , Pairs.PP.index)
 			}else{

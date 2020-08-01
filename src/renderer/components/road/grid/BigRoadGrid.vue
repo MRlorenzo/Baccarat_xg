@@ -1,8 +1,8 @@
 <template>
     <div :style="itemCss" :class="showClassName()" v-show="result != null || tie != null">
             {{tieLen}}
-        <div class="pair-point pair-point-b" v-show="point && point.isBankerPair()"></div>
-        <div class="pair-point pair-point-p" v-show="point && point.isPlayerPair()"></div>
+        <div class="pair-point pair-point-b" v-show="isBankerPair()"></div>
+        <div class="pair-point pair-point-p" v-show="isPlayerPair()"></div>
     </div>
 </template>
 
@@ -66,6 +66,39 @@
             }
         },
         methods:{
+        	isLastResult(p){
+				return p.getObject() === this.$road.getLastResult();
+            },
+			isBankerPair(){
+				const p = this.point;
+				if (p == null){
+					return false;
+                }
+
+                if (!p.isFirstPoint())
+                    return p.isBankerPair();
+
+				if (this.isLastResult(p)){
+					return p.isBankerPair();
+                }else{
+					// 第一颗点的位置后面包含了和局
+                    return Point.tieHasBankerPair(p.tie);
+                }
+            },
+			isPlayerPair(){
+				const p = this.point;
+				if (p == null){
+					return false;
+				}
+				if (!p.isFirstPoint())
+					return p.isPlayerPair();
+
+				if (this.isLastResult(p)){
+					return p.isPlayerPair();
+				}else {
+					return Point.tieHasPlayerPair(p.tie);
+                }
+            },
 			showClassName(){
 				let clazz = 'zocial-shadow big-grid';
 				if (this.result != null){

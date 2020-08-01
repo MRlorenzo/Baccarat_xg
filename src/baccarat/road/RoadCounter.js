@@ -34,6 +34,13 @@ export default class RoadCounter {
 		return this.resultList;
 	}
 
+	getLastResult(){
+		if (this.resultList == null || this.resultList.length === 0){
+			return null;
+		}
+		return this.resultList[this.resultList.length -1];
+	}
+
 	/**
 	 * 放入一个结果并统计
 	 * @param rs

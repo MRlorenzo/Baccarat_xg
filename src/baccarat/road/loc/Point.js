@@ -93,12 +93,12 @@ export default class Point {
 
 		if (this.isFirstPoint()){
 			return rsPairsIs(this.z , Pairs.BP.index)
-		}else {
-			if (this.tie && this.tie.length > 0){
-				return tieHas(this.tie , Pairs.BP.index)
-			}else{
-				return rsPairsIs(this.z, Pairs.BP.index)
-			}
+		}
+
+		if (this.tie && this.tie.length > 0){
+			return tieHas(this.tie , Pairs.BP.index)
+		}else{
+			return rsPairsIs(this.z, Pairs.BP.index)
 		}
 
 	}
@@ -111,12 +111,12 @@ export default class Point {
 
 		if (this.isFirstPoint()){
 			return rsPairsIs(this.z , Pairs.PP.index)
-		}else {
-			if (this.tie && this.tie.length > 0){
-				return tieHas(this.tie , Pairs.PP.index)
-			}else{
-				return rsPairsIs(this.z, Pairs.PP.index)
-			}
+		}
+
+		if (this.tie && this.tie.length > 0){
+			return tieHas(this.tie , Pairs.PP.index)
+		}else{
+			return rsPairsIs(this.z, Pairs.PP.index)
 		}
 	}
 
@@ -125,6 +125,14 @@ export default class Point {
 			return false;
 		}
 		return this.z.getSkyCards().length > 0
+	}
+
+	static tieHasBankerPair(tie){
+		return tieHas(tie , Pairs.BP.index)
+	}
+
+	static tieHasPlayerPair(tie){
+		return tieHas(tie , Pairs.PP.index)
 	}
 }
 

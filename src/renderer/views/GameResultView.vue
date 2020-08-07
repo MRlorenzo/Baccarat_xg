@@ -61,7 +61,10 @@
             playerCardList: {
             	type: Array
             },
-            bgColor:'',
+            bgColor:{
+				type: String,
+				default: '#ED8A20'
+            },
 			bodyWidth: {
             	type: Number,
                 default: 0

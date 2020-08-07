@@ -38,6 +38,7 @@
                 @newGame="newBoot"
                 :body-width="width"
                 :debug="userSetting.debug"
+                :showResultTime="userSetting.showResultTime"
         ></angle-eye>
 
         <!-- 负责解析按键游戏结果-->

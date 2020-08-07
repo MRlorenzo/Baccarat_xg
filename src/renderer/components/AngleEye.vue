@@ -34,8 +34,8 @@
         components: {GameResultView , ComSettingPage },
         props: {
             showResultTime: {
-                type: Number,
-                default: 10
+                type: String,
+                default: '10'
             },
 			bodyWidth: {
 				type: Number,
@@ -150,8 +150,7 @@
                 this.showResult = true;
                 this.result = result;
 
-                let time = this.showResultTime;
-
+                let time = parseFloat(this.showResultTime);
                 time = parseFloat(time);
                 if (isNaN(time)) {
                     time = 10;

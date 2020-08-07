@@ -150,7 +150,7 @@
                 this.showResult = true;
                 this.result = result;
 
-                let time = parseFloat(this.showResultTime);
+                let time = this.showResultTime;
                 time = parseFloat(time);
                 if (isNaN(time)) {
                     time = 10;

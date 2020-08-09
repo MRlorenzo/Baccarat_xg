@@ -221,6 +221,7 @@
                     dealCardsShow(d) {
 
                         const sis = new DealCardsShowAnalysis(d);
+                          console.log('sis',sis)
                         // 是不是开新靴的抽牌动作？
                         if (sis.direct() === 'newBoot') {
 
@@ -239,6 +240,7 @@
                     gameResult(d) {
 
                         const sis = new GameResultAnalysis(d);
+                        sis.checkSkyCards(that.bankerCardList,that.playerCardList)
 
                         that.$emit('result', sis.getResult());
                         // 显示扑克牌

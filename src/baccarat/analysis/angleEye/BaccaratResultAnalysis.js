@@ -50,6 +50,41 @@ export default class BaccaratResultAnalysis extends AngleEyeAnalysis{
 		this.result = getBaccaratResult(super.analysis());
 	}
 
+	checkSkyCards(bankerCardList, playerCardList){
+		let skyCardStr = '';
+		//判断闲天牌
+		if(playerCardList.length == 2){
+			let sum = 0;
+			playerCardList.forEach(p =>{
+				//点数
+				let pointVal = p.getPoint().value;
+				if(pointVal > 10){
+					pointVal = 10;
+				}
+				sum += pointVal;
+			})
+			if(sum == 8 || sum == 9 || sum == 18 || sum == 19){
+				skyCardStr = '1-'
+			}
+		}
+		//判断庄天牌
+		if(bankerCardList.length == 2){
+			let sum = 0;
+			bankerCardList.forEach(p =>{
+				//点数
+				let pointVal = p.getPoint().value;
+				if(pointVal > 10){
+					pointVal = 10;
+				}
+				sum += pointVal;
+			})
+			if(sum == 8 || sum == 9 || sum == 18 || sum == 19){
+				skyCardStr = '2+'
+			}
+		}
+		this.result.skyCards = BaccaratResult.getSkyCardsByString(skyCardStr);
+	}
+
 	getResult(){
 		return this.result;
 	}
